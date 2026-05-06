@@ -1,0 +1,21 @@
+{
+  "name": "상식왕 퀴즈",
+  "short_name": "상식왕",
+  "description": "다양한 카테고리의 상식 퀴즈를 풀어보세요!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
