@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { categories } from "@/data/quizData";
 import { getDailyStatus, getHighScores, type CategoryScore } from "@/utils/storage";
 import Link from "next/link";
+import AdBanner from "@/components/AdBanner";
 
 export default function Home() {
   const [dailyDone, setDailyDone] = useState(false);
@@ -77,8 +78,13 @@ export default function Home() {
         </Link>
       </div>
 
+      {/* Ad - top */}
+      <div className="px-5 pb-2">
+        <AdBanner slot="XXXXXXXXXX" format="horizontal" />
+      </div>
+
       {/* Categories */}
-      <div className="px-5 pb-8 flex-1">
+      <div className="px-5 pb-4 flex-1">
         <h2 className="text-lg font-bold mb-4">카테고리별 퀴즈</h2>
         <div className="grid grid-cols-2 gap-3">
           {categories.map((cat) => {
@@ -107,6 +113,11 @@ export default function Home() {
             );
           })}
         </div>
+      </div>
+
+      {/* Ad - bottom */}
+      <div className="px-5 pb-8">
+        <AdBanner slot="XXXXXXXXXX" format="horizontal" />
       </div>
     </div>
   );

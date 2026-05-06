@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, Suspense } from "react";
 import { categories } from "@/data/quizData";
 import { saveHighScore, saveDailyStatus } from "@/utils/storage";
+import AdBanner from "@/components/AdBanner";
 
 function getGrade(percent: number) {
   if (percent >= 90) return { emoji: "🏆", text: "천재", color: "#FFD700" };
@@ -100,6 +101,11 @@ function ResultContent() {
             <p className="text-xs text-[#a0a0b0]">점수</p>
           </div>
         </div>
+      </div>
+
+      {/* Ad */}
+      <div className="w-full mb-6">
+        <AdBanner slot="XXXXXXXXXX" format="rectangle" />
       </div>
 
       {/* Actions */}
