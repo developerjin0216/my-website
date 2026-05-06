@@ -5,6 +5,7 @@ import { categories } from "@/data/quizData";
 import { getDailyStatus, getHighScores, type CategoryScore } from "@/utils/storage";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
+import DailyQuote from "@/components/DailyQuote";
 
 export default function Home() {
   const [dailyDone, setDailyDone] = useState(false);
@@ -30,6 +31,9 @@ export default function Home() {
           당신의 상식을 테스트해보세요!
         </p>
       </header>
+
+      {/* Daily Quote */}
+      <DailyQuote />
 
       {/* Stats */}
       <div className="px-5 py-4">
