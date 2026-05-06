@@ -32,6 +32,9 @@ function QuizContent() {
   const [showHint, setShowHint] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const answersRef = useRef<
+    { question: string; options: string[]; answer: number; selected: number; correct: boolean; explanation?: string }[]
+  >([]);
 
   const category = categories.find((c) => c.id === categoryId);
   const title =
@@ -51,6 +54,9 @@ function QuizContent() {
     if (currentIndex + 1 >= TOTAL_QUESTIONS) {
       const finalScore = score;
       const finalCorrect = correctCount;
+      try {
+        sessionStorage.setItem("quiz_answers", JSON.stringify(answersRef.current));
+      } catch { /* silent */ }
       router.push(
         `/result?score=${finalScore}&correct=${finalCorrect}&total=${TOTAL_QUESTIONS}&mode=${mode}&category=${categoryId}`
       );
@@ -73,6 +79,17 @@ function QuizContent() {
           clearInterval(timerRef.current!);
           setIsAnswered(true);
           setSelectedAnswer(-1); // timeout
+          const q = questions[currentIndex];
+          if (q) {
+            answersRef.current.push({
+              question: q.question,
+              options: q.options,
+              answer: q.answer,
+              selected: -1,
+              correct: false,
+              explanation: q.explanation,
+            });
+          }
           return 0;
         }
         return t - 1;
@@ -98,11 +115,20 @@ function QuizContent() {
     setIsAnswered(true);
 
     const q = questions[currentIndex];
-    if (index === q.answer) {
+    const isCorrect = index === q.answer;
+    if (isCorrect) {
       const points = hintUsed ? 5 : 10;
       setScore((s) => s + points);
       setCorrectCount((c) => c + 1);
     }
+    answersRef.current.push({
+      question: q.question,
+      options: q.options,
+      answer: q.answer,
+      selected: index,
+      correct: isCorrect,
+      explanation: q.explanation,
+    });
   };
 
   const handleHint = () => {
