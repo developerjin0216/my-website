@@ -17,6 +17,7 @@ export const categories: Category[] = [
   { id: 'economy', name: '경제·재테크', icon: '💰', color: '#F39C12' },
   { id: 'mz', name: 'MZ 트렌드', icon: '🔥', color: '#FF6B6B' },
   { id: 'mudo', name: '무도퀴즈', icon: '📺', color: '#5B86E5' },
+  { id: 'it', name: 'IT용어', icon: '💻', color: '#00B894' },
   { id: 'general', name: '일반 상식', icon: '🧠', color: '#4A90D9' },
   { id: 'science', name: '과학', icon: '🔬', color: '#27AE60' },
   { id: 'history', name: '역사', icon: '📜', color: '#E67E22' },
@@ -34,11 +35,13 @@ import { geographyQuizzes } from './categories/geography';
 import { economyQuizzes } from './categories/economy';
 import { mzQuizzes } from './categories/mz';
 import { mudoQuizzes } from './categories/mudo';
+import { itQuizzes } from './categories/it';
 
 export const quizzes: Record<string, Quiz[]> = {
   economy: economyQuizzes,
   mz: mzQuizzes,
   mudo: mudoQuizzes,
+  it: itQuizzes,
   general: generalQuizzes,
   science: scienceQuizzes,
   history: historyQuizzes,
