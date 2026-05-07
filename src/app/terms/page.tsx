@@ -90,8 +90,8 @@ export default function TermsPage() {
             <h2 className="text-base font-bold text-white mb-2">제8조 (문의)</h2>
             <p>
               서비스 이용 관련 문의:{" "}
-              <a href="mailto:hjkwon@megastudy.net" className="text-accent underline">
-                hjkwon@megastudy.net
+              <a href="mailto:developerjin0216@gmail.com" className="text-accent underline">
+                developerjin0216@gmail.com
               </a>
             </p>
           </section>
