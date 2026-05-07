@@ -5,7 +5,7 @@ import { getSocket, disconnectSocket } from "@/utils/socket";
 import { quizzes, categories, type Quiz } from "@/data/quizData";
 import Link from "next/link";
 
-type GameState = "lobby" | "waiting" | "playing" | "finished";
+type GameState = "connecting" | "lobby" | "waiting" | "playing" | "finished";
 
 interface Player {
   id: string;
@@ -43,7 +43,7 @@ function getCategoryInfo(id: string) {
 }
 
 export default function BattlePage() {
-  const [gameState, setGameState] = useState<GameState>("lobby");
+  const [gameState, setGameState] = useState<GameState>("connecting");
   const [nickname, setNickname] = useState("");
   const [roomId, setRoomId] = useState("");
   const [roomCategory, setRoomCategory] = useState("general");
@@ -74,7 +74,11 @@ export default function BattlePage() {
   useEffect(() => {
     const socket = getSocket();
     socket.connect();
-    socket.emit("join-lobby");
+
+    socket.on("connect", () => {
+      setGameState("lobby");
+      socket.emit("join-lobby");
+    });
 
     socket.on("room-list", (list: RoomInfo[]) => {
       setRoomList(list);
@@ -120,6 +124,7 @@ export default function BattlePage() {
     });
 
     return () => {
+      socket.off("connect");
       socket.off("room-list");
       socket.off("room-update");
       socket.off("game-start");
@@ -215,18 +220,41 @@ export default function BattlePage() {
 
   const backToLobby = useCallback(() => {
     disconnectSocket();
-    setGameState("lobby");
+    setGameState("connecting");
     setPlayers([]);
     setRankings([]);
     setShowCreate(false);
     setError("");
-    // 재접속
     setTimeout(() => {
       const s = getSocket();
+      s.on("connect", () => {
+        setGameState("lobby");
+        s.emit("join-lobby");
+      });
       s.connect();
-      s.emit("join-lobby");
     }, 100);
   }, []);
+
+  // ── CONNECTING ──
+  if (gameState === "connecting") {
+    return (
+      <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full items-center justify-center px-5">
+        <div className="text-center">
+          <div className="text-5xl mb-6 animate-bounce">🔌</div>
+          <h1 className="text-xl font-bold text-accent mb-3">서버 연결 중...</h1>
+          <p className="text-sm text-[#a0a0b0] leading-relaxed">
+            잠시만 기다려주세요.<br />
+            서버가 준비되고 있습니다.
+          </p>
+          <div className="mt-6 flex justify-center gap-1.5">
+            <span className="w-2.5 h-2.5 bg-accent rounded-full animate-bounce [animation-delay:0ms]" />
+            <span className="w-2.5 h-2.5 bg-accent rounded-full animate-bounce [animation-delay:150ms]" />
+            <span className="w-2.5 h-2.5 bg-accent rounded-full animate-bounce [animation-delay:300ms]" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ── LOBBY ──
   if (gameState === "lobby") {
