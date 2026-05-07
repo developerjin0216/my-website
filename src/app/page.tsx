@@ -81,14 +81,14 @@ export default function Home() {
         <div className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold mb-3 text-accent">상식왕 퀴즈란?</h2>
           <p className="text-sm text-[#a0a0b0] leading-relaxed mb-4">
-            상식왕 퀴즈는 경제·재테크, MZ 트렌드, 무한도전, 일반 상식, 과학, 역사,
-            연예, 스포츠, 지리까지 총 9개 카테고리 900문제를 제공하는 무료
+            상식왕 퀴즈는 경제·재테크, MZ 트렌드, 무한도전, IT용어, 일반 상식, 과학,
+            역사, 연예, 스포츠, 지리까지 총 10개 카테고리 1,000문제를 제공하는 무료
             온라인 퀴즈 서비스입니다. 매일 새로운 오늘의 퀴즈에 도전하고,
             친구들과 실시간 퀴즈 배틀로 대결해보세요!
           </p>
           <h3 className="text-sm font-bold mb-2">주요 기능</h3>
           <ul className="text-xs text-[#a0a0b0] leading-relaxed space-y-1.5">
-            <li>• 9개 카테고리, 900문제 — 경제, MZ, 무도, 상식, 과학, 역사, 연예, 스포츠, 지리</li>
+            <li>• 10개 카테고리, 1,000문제 — 경제, MZ, 무도, IT, 상식, 과학, 역사, 연예, 스포츠, 지리</li>
             <li>• 오늘의 퀴즈 — 매일 랜덤 10문제 도전</li>
             <li>• 퀴즈 배틀 — 최대 10명 실시간 대결</li>
             <li>• 오답 노트 — 틀린 문제 풀이 해설 제공</li>
@@ -105,6 +105,15 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
+        <div className="flex justify-center gap-3 mb-2">
+          <Link href="/privacy" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
+            개인정보처리방침
+          </Link>
+          <span className="text-xs text-[#606070]">|</span>
+          <Link href="/terms" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
+            이용약관
+          </Link>
+        </div>
         <p className="text-xs text-[#606070]">
           © 2026 상식왕 퀴즈. 매일 새로운 퀴즈로 상식을 넓혀보세요.
         </p>
