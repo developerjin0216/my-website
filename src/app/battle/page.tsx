@@ -5,7 +5,7 @@ import { getSocket, disconnectSocket } from "@/utils/socket";
 import { quizzes, categories, type Quiz } from "@/data/quizData";
 import Link from "next/link";
 
-type GameState = "lobby" | "waiting" | "playing" | "result" | "finished";
+type GameState = "lobby" | "waiting" | "playing" | "finished";
 
 interface Player {
   id: string;
@@ -13,6 +13,14 @@ interface Player {
   score: number;
   answered: number;
   isHost: boolean;
+}
+
+interface RoomInfo {
+  roomId: string;
+  category: string;
+  hostNickname: string;
+  playerCount: number;
+  maxPlayers: number;
 }
 
 interface Ranking {
@@ -30,15 +38,21 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a;
 }
 
+function getCategoryInfo(id: string) {
+  return categories.find((c) => c.id === id) || { icon: "❓", name: id, color: "#888" };
+}
+
 export default function BattlePage() {
   const [gameState, setGameState] = useState<GameState>("lobby");
   const [nickname, setNickname] = useState("");
   const [roomId, setRoomId] = useState("");
-  const [joinCode, setJoinCode] = useState("");
+  const [roomCategory, setRoomCategory] = useState("general");
   const [category, setCategory] = useState("general");
   const [players, setPlayers] = useState<Player[]>([]);
   const [isHost, setIsHost] = useState(false);
   const [error, setError] = useState("");
+  const [roomList, setRoomList] = useState<RoomInfo[]>([]);
+  const [showCreate, setShowCreate] = useState(false);
 
   // Quiz state
   const [question, setQuestion] = useState<Quiz | null>(null);
@@ -51,23 +65,25 @@ export default function BattlePage() {
   const [explanation, setExplanation] = useState("");
   const [showResult, setShowResult] = useState(false);
 
-  // Final
   const [rankings, setRankings] = useState<Ranking[]>([]);
-
-  // Scores feed
-  const [scoreFeed, setScoreFeed] = useState<string[]>([]);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeLeftRef = useRef(15);
 
-  // ── Socket listeners ──
+  // ── Socket setup ──
   useEffect(() => {
     const socket = getSocket();
     socket.connect();
+    socket.emit("join-lobby");
+
+    socket.on("room-list", (list: RoomInfo[]) => {
+      setRoomList(list);
+    });
 
     socket.on("room-update", (data) => {
       setPlayers(data.players);
       setRoomId(data.roomId);
+      setRoomCategory(data.category);
     });
 
     socket.on("game-start", (data) => {
@@ -75,34 +91,16 @@ export default function BattlePage() {
       setQuestion(data.question);
       setQuestionIndex(data.index);
       setTotalQuestions(data.total);
-      setSelectedAnswer(null);
-      setIsAnswered(false);
-      setCorrectAnswer(null);
-      setShowResult(false);
-      setTimeLeft(15);
-      timeLeftRef.current = 15;
-      setScoreFeed([]);
+      resetQuestionState();
     });
 
     socket.on("next-question", (data) => {
       setQuestion(data.question);
       setQuestionIndex(data.index);
-      setSelectedAnswer(null);
-      setIsAnswered(false);
-      setCorrectAnswer(null);
-      setShowResult(false);
-      setExplanation("");
-      setTimeLeft(15);
-      timeLeftRef.current = 15;
+      resetQuestionState();
     });
 
     socket.on("score-update", (data) => {
-      if (data.correct) {
-        setScoreFeed((prev) => [
-          `${data.nickname} +${data.points}점!`,
-          ...prev.slice(0, 4),
-        ]);
-      }
       setPlayers((prev) =>
         prev.map((p) =>
           p.id === data.playerId ? { ...p, score: data.totalScore } : p
@@ -114,12 +112,6 @@ export default function BattlePage() {
       setCorrectAnswer(data.correctAnswer);
       setExplanation(data.explanation);
       setShowResult(true);
-      setPlayers(
-        data.scores.map((s: { nickname: string; score: number }) => {
-          const existing = players.find((p) => p.nickname === s.nickname);
-          return { ...existing, ...s };
-        })
-      );
     });
 
     socket.on("game-end", (data) => {
@@ -128,6 +120,7 @@ export default function BattlePage() {
     });
 
     return () => {
+      socket.off("room-list");
       socket.off("room-update");
       socket.off("game-start");
       socket.off("next-question");
@@ -136,8 +129,17 @@ export default function BattlePage() {
       socket.off("game-end");
       disconnectSocket();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function resetQuestionState() {
+    setSelectedAnswer(null);
+    setIsAnswered(false);
+    setCorrectAnswer(null);
+    setShowResult(false);
+    setExplanation("");
+    setTimeLeft(15);
+    timeLeftRef.current = 15;
+  }
 
   // ── Timer ──
   useEffect(() => {
@@ -168,30 +170,34 @@ export default function BattlePage() {
     getSocket().emit("create-room", { nickname: nickname.trim(), category }, (res: { success: boolean; roomId?: string; error?: string }) => {
       if (res.success) {
         setRoomId(res.roomId!);
+        setRoomCategory(category);
         setIsHost(true);
         setGameState("waiting");
       } else setError(res.error || "방 생성 실패");
     });
   }, [nickname, category]);
 
-  const joinRoom = useCallback(() => {
-    if (!nickname.trim()) return setError("닉네임을 입력해주세요.");
-    if (!joinCode.trim()) return setError("방 코드를 입력해주세요.");
-    setError("");
-    getSocket().emit("join-room", { roomId: joinCode.trim(), nickname: nickname.trim() }, (res: { success: boolean; roomId?: string; error?: string }) => {
-      if (res.success) {
-        setRoomId(res.roomId!);
-        setIsHost(false);
-        setGameState("waiting");
-      } else setError(res.error || "참가 실패");
-    });
-  }, [nickname, joinCode]);
+  const joinRoom = useCallback(
+    (targetRoomId: string) => {
+      if (!nickname.trim()) return setError("닉네임을 먼저 입력해주세요.");
+      setError("");
+      getSocket().emit("join-room", { roomId: targetRoomId, nickname: nickname.trim() }, (res: { success: boolean; roomId?: string; category?: string; error?: string }) => {
+        if (res.success) {
+          setRoomId(res.roomId!);
+          setRoomCategory(res.category || "general");
+          setIsHost(false);
+          setGameState("waiting");
+        } else setError(res.error || "참가 실패");
+      });
+    },
+    [nickname]
+  );
 
   const startGame = useCallback(() => {
-    const pool = quizzes[category] || Object.values(quizzes).flat();
+    const pool = quizzes[roomCategory] || Object.values(quizzes).flat();
     const selected = shuffleArray(pool).slice(0, 10);
     getSocket().emit("start-game", { questions: selected });
-  }, [category]);
+  }, [roomCategory]);
 
   const handleAnswer = useCallback(
     (index: number) => {
@@ -207,11 +213,28 @@ export default function BattlePage() {
     [isAnswered]
   );
 
-  // ── Lobby ──
+  const backToLobby = useCallback(() => {
+    disconnectSocket();
+    setGameState("lobby");
+    setPlayers([]);
+    setRankings([]);
+    setShowCreate(false);
+    setError("");
+    // 재접속
+    setTimeout(() => {
+      const s = getSocket();
+      s.connect();
+      s.emit("join-lobby");
+    }, 100);
+  }, []);
+
+  // ── LOBBY ──
   if (gameState === "lobby") {
+    const catInfo = getCategoryInfo(category);
+
     return (
       <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
-        <header className="bg-header px-5 py-6 text-center">
+        <header className="bg-header px-5 py-5 text-center">
           <Link href="/" className="text-sm text-[#a0a0b0] mb-1 block">
             ← 홈으로
           </Link>
@@ -221,10 +244,10 @@ export default function BattlePage() {
           </p>
         </header>
 
-        <div className="flex-1 px-5 py-6 flex flex-col gap-5">
+        <div className="flex-1 px-5 py-5 flex flex-col gap-4">
           {/* Nickname */}
           <div>
-            <label className="text-sm font-medium text-[#a0a0b0] mb-2 block">
+            <label className="text-sm font-medium text-[#a0a0b0] mb-1.5 block">
               닉네임
             </label>
             <input
@@ -241,63 +264,103 @@ export default function BattlePage() {
             <p className="text-[#EF4444] text-sm text-center">{error}</p>
           )}
 
-          {/* Create Room */}
-          <div className="bg-card rounded-2xl p-5">
-            <h2 className="font-bold mb-3">방 만들기</h2>
-            <label className="text-xs text-[#a0a0b0] mb-2 block">
-              카테고리 선택
-            </label>
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setCategory(cat.id)}
-                  className={`text-xs py-2 px-2 rounded-lg transition-all ${
-                    category === cat.id
-                      ? "bg-accent text-[#1a1a2e] font-bold"
-                      : "bg-[#2a3a5a] text-[#a0a0b0] hover:brightness-110"
-                  }`}
-                >
-                  {cat.icon} {cat.name}
-                </button>
-              ))}
+          {/* Room List */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-bold">대기 중인 방</h2>
+              <button
+                onClick={() => setShowCreate(!showCreate)}
+                className="text-xs px-3 py-1.5 rounded-lg bg-accent text-[#1a1a2e] font-bold"
+              >
+                + 방 만들기
+              </button>
             </div>
-            <button
-              onClick={createRoom}
-              className="w-full py-3 rounded-xl bg-accent text-[#1a1a2e] font-bold text-sm active:scale-[0.98] transition-transform"
-            >
-              방 만들기
-            </button>
+
+            {roomList.length === 0 ? (
+              <div className="bg-card rounded-2xl p-8 text-center">
+                <p className="text-[#606070] text-sm">
+                  대기 중인 방이 없습니다
+                </p>
+                <p className="text-[#404050] text-xs mt-1">
+                  새로운 방을 만들어보세요!
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {roomList.map((room) => {
+                  const cat = getCategoryInfo(room.category);
+                  return (
+                    <button
+                      key={room.roomId}
+                      onClick={() => joinRoom(room.roomId)}
+                      className="bg-card rounded-xl px-4 py-3.5 flex items-center justify-between transition-all active:scale-[0.98] hover:brightness-110 text-left w-full"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{cat.icon}</span>
+                        <div>
+                          <p className="text-sm font-semibold">
+                            {room.hostNickname}의 방
+                          </p>
+                          <p className="text-xs text-[#a0a0b0]">
+                            {cat.name}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-accent">
+                          {room.playerCount}/{room.maxPlayers}
+                        </p>
+                        <p className="text-[10px] text-[#a0a0b0]">참가</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          {/* Join Room */}
-          <div className="bg-card rounded-2xl p-5">
-            <h2 className="font-bold mb-3">방 참가하기</h2>
-            <input
-              type="text"
-              maxLength={6}
-              value={joinCode}
-              onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-              placeholder="6자리 방 코드 입력"
-              className="w-full px-4 py-3 rounded-xl bg-[#1a1a2e] text-white border border-[#2a3a5a] focus:border-accent outline-none text-sm text-center tracking-[0.3em] font-mono uppercase mb-3"
-            />
-            <button
-              onClick={joinRoom}
-              className="w-full py-3 rounded-xl border border-accent text-accent font-bold text-sm active:scale-[0.98] transition-transform hover:bg-accent/10"
-            >
-              참가하기
-            </button>
-          </div>
+          {/* Create Room Panel */}
+          {showCreate && (
+            <div className="bg-card rounded-2xl p-5">
+              <h2 className="font-bold mb-3">새 방 만들기</h2>
+              <label className="text-xs text-[#a0a0b0] mb-2 block">
+                카테고리 선택
+              </label>
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setCategory(cat.id)}
+                    className={`text-xs py-2 px-2 rounded-lg transition-all ${
+                      category === cat.id
+                        ? "bg-accent text-[#1a1a2e] font-bold"
+                        : "bg-[#2a3a5a] text-[#a0a0b0] hover:brightness-110"
+                    }`}
+                  >
+                    {cat.icon} {cat.name}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={createRoom}
+                className="w-full py-3 rounded-xl bg-accent text-[#1a1a2e] font-bold text-sm active:scale-[0.98] transition-transform"
+              >
+                방 만들기
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
-  // ── Waiting Room ──
+  // ── WAITING ROOM ──
   if (gameState === "waiting") {
+    const cat = getCategoryInfo(roomCategory);
+
     return (
       <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
-        <header className="bg-header px-5 py-6 text-center">
+        <header className="bg-header px-5 py-5 text-center">
           <h1 className="text-2xl font-bold text-accent">대기실</h1>
           <div className="mt-3 bg-[#2a3a5a] rounded-xl py-3 px-4 inline-block">
             <p className="text-xs text-[#a0a0b0] mb-1">방 코드</p>
@@ -305,19 +368,18 @@ export default function BattlePage() {
               {roomId}
             </p>
           </div>
-          <p className="text-xs text-[#a0a0b0] mt-2">
-            친구에게 이 코드를 알려주세요!
-          </p>
         </header>
 
-        <div className="flex-1 px-5 py-6">
+        <div className="flex-1 px-5 py-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold">
               참가자 ({players.length}/10)
             </h2>
-            <span className="text-xs text-accent bg-accent/10 px-3 py-1 rounded-full">
-              {categories.find((c) => c.id === category)?.icon}{" "}
-              {categories.find((c) => c.id === category)?.name}
+            <span
+              className="text-xs px-3 py-1.5 rounded-full font-medium"
+              style={{ backgroundColor: cat.color + "20", color: cat.color }}
+            >
+              {cat.icon} {cat.name}
             </span>
           </div>
 
@@ -328,9 +390,7 @@ export default function BattlePage() {
                 className="bg-card rounded-xl px-4 py-3 flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-lg">
-                    {p.isHost ? "👑" : "👤"}
-                  </span>
+                  <span className="text-lg">{p.isHost ? "👑" : "👤"}</span>
                   <span className="font-medium text-sm">{p.nickname}</span>
                 </div>
                 {p.isHost && (
@@ -364,11 +424,13 @@ export default function BattlePage() {
     );
   }
 
-  // ── Playing ──
+  // ── PLAYING ──
   if (gameState === "playing" && question) {
     const timerPercent = (timeLeft / 15) * 100;
     const timerColor =
       timeLeft <= 5 ? "#EF4444" : timeLeft <= 10 ? "#F59E0B" : "#22C55E";
+
+    const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
 
     return (
       <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
@@ -390,17 +452,12 @@ export default function BattlePage() {
             <span className="text-xs font-bold" style={{ color: timerColor }}>
               {timeLeft}초
             </span>
-            {/* Mini scoreboard */}
             <div className="flex gap-2">
-              {[...players]
-                .sort((a, b) => b.score - a.score)
-                .slice(0, 3)
-                .map((p, i) => (
-                  <span key={p.nickname} className="text-[10px] text-[#a0a0b0]">
-                    {["🥇", "🥈", "🥉"][i]}
-                    {p.nickname} {p.score}
-                  </span>
-                ))}
+              {sortedPlayers.slice(0, 3).map((p, i) => (
+                <span key={p.nickname} className="text-[10px] text-[#a0a0b0]">
+                  {["🥇", "🥈", "🥉"][i]} {p.nickname} {p.score}
+                </span>
+              ))}
             </div>
           </div>
         </header>
@@ -413,31 +470,17 @@ export default function BattlePage() {
             </p>
           </div>
 
-          {/* Score feed */}
-          {scoreFeed.length > 0 && !showResult && (
-            <div className="mb-3 space-y-1">
-              {scoreFeed.map((msg, i) => (
-                <p
-                  key={i}
-                  className="text-xs text-[#22C55E] text-center animate-pulse"
-                >
-                  {msg}
-                </p>
-              ))}
-            </div>
-          )}
-
           {/* Options */}
           <div className="flex flex-col gap-3 flex-1">
             {question.options.map((opt, i) => {
               let style = "bg-card border-2 border-transparent";
-              if (showResult || isAnswered) {
-                if (correctAnswer !== null && i === correctAnswer) {
+              if (showResult) {
+                if (i === correctAnswer) {
                   style = "bg-[#22C55E]/20 border-2 border-[#22C55E]";
                 } else if (i === selectedAnswer && i !== correctAnswer) {
                   style = "bg-[#EF4444]/20 border-2 border-[#EF4444]";
                 }
-              } else if (i === selectedAnswer) {
+              } else if (isAnswered && i === selectedAnswer) {
                 style = "bg-accent/20 border-2 border-accent";
               }
 
@@ -447,9 +490,7 @@ export default function BattlePage() {
                   onClick={() => handleAnswer(i)}
                   disabled={isAnswered}
                   className={`w-full text-left rounded-xl px-4 py-3.5 transition-all active:scale-[0.98] ${style} ${
-                    isAnswered
-                      ? "cursor-default"
-                      : "cursor-pointer hover:brightness-110"
+                    isAnswered ? "cursor-default" : "cursor-pointer hover:brightness-110"
                   }`}
                 >
                   <span className="text-sm font-medium">{opt}</span>
@@ -458,7 +499,7 @@ export default function BattlePage() {
             })}
           </div>
 
-          {/* Result overlay */}
+          {/* Explanation after result */}
           {showResult && explanation && (
             <div className="mt-4 bg-[#162040] rounded-xl p-3 border border-[#2a3a5a]/50">
               <p className="text-xs text-accent font-bold mb-1">풀이</p>
@@ -472,7 +513,7 @@ export default function BattlePage() {
     );
   }
 
-  // ── Finished ──
+  // ── FINISHED ──
   if (gameState === "finished") {
     return (
       <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full items-center justify-center px-5">
@@ -488,27 +529,13 @@ export default function BattlePage() {
             >
               <div className="flex items-center gap-4">
                 <span className="text-2xl">
-                  {r.rank === 1
-                    ? "🥇"
-                    : r.rank === 2
-                    ? "🥈"
-                    : r.rank === 3
-                    ? "🥉"
-                    : `${r.rank}위`}
+                  {r.rank === 1 ? "🥇" : r.rank === 2 ? "🥈" : r.rank === 3 ? "🥉" : `${r.rank}위`}
                 </span>
-                <span
-                  className={`font-bold ${
-                    r.rank === 1 ? "text-accent text-lg" : "text-sm"
-                  }`}
-                >
+                <span className={`font-bold ${r.rank === 1 ? "text-accent text-lg" : "text-sm"}`}>
                   {r.nickname}
                 </span>
               </div>
-              <span
-                className={`font-bold ${
-                  r.rank === 1 ? "text-accent text-xl" : "text-[#a0a0b0]"
-                }`}
-              >
+              <span className={`font-bold ${r.rank === 1 ? "text-accent text-xl" : "text-[#a0a0b0]"}`}>
                 {r.score}점
               </span>
             </div>
@@ -517,12 +544,7 @@ export default function BattlePage() {
 
         <div className="flex flex-col gap-3 w-full">
           <button
-            onClick={() => {
-              disconnectSocket();
-              setGameState("lobby");
-              setPlayers([]);
-              setRankings([]);
-            }}
+            onClick={backToLobby}
             className="w-full py-3.5 rounded-xl bg-accent text-[#1a1a2e] font-bold text-sm active:scale-[0.98]"
           >
             새 게임

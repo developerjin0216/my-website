@@ -21,6 +21,23 @@ function generateCode() {
   return code;
 }
 
+function getRoomList() {
+  const list = [];
+  rooms.forEach((room) => {
+    if (room.state === "waiting") {
+      const host = room.players.find((p) => p.isHost);
+      list.push({
+        roomId: room.id,
+        category: room.category,
+        hostNickname: host?.nickname || "???",
+        playerCount: room.players.length,
+        maxPlayers: 10,
+      });
+    }
+  });
+  return list;
+}
+
 function broadcastRoom(roomId) {
   const room = rooms.get(roomId);
   if (!room) return;
@@ -39,20 +56,39 @@ function broadcastRoom(roomId) {
     totalQuestions: room.questions.length,
     category: room.category,
   });
+  // 로비에 있는 사람들에게 방 리스트 갱신
+  io.to("lobby").emit("room-list", getRoomList());
 }
 
 io.on("connection", (socket) => {
   console.log("connected:", socket.id);
 
+  // ── 로비 입장 (방 리스트 구독) ──
+  socket.on("join-lobby", () => {
+    socket.join("lobby");
+    socket.emit("room-list", getRoomList());
+  });
+
+  socket.on("leave-lobby", () => {
+    socket.leave("lobby");
+  });
+
   // ── 방 만들기 ──
   socket.on("create-room", ({ nickname, category }, cb) => {
+    // 모든 방에서 닉네임 중복 체크
+    for (const [, room] of rooms) {
+      if (room.players.some((p) => p.nickname === nickname)) {
+        return cb({ success: false, error: "이미 다른 방에서 사용 중인 닉네임입니다." });
+      }
+    }
+
     let code;
     do { code = generateCode(); } while (rooms.has(code));
 
     const room = {
       id: code,
       category,
-      state: "waiting", // waiting → playing → finished
+      state: "waiting",
       players: [{ id: socket.id, nickname, score: 0, answered: 0, isHost: true }],
       questions: [],
       currentQuestion: -1,
@@ -61,6 +97,7 @@ io.on("connection", (socket) => {
     };
     rooms.set(code, room);
     socket.join(code);
+    socket.leave("lobby");
     socket.roomId = code;
     cb({ success: true, roomId: code });
     broadcastRoom(code);
@@ -73,13 +110,16 @@ io.on("connection", (socket) => {
     if (!room) return cb({ success: false, error: "방을 찾을 수 없습니다." });
     if (room.state !== "waiting") return cb({ success: false, error: "이미 게임이 진행 중입니다." });
     if (room.players.length >= 10) return cb({ success: false, error: "방이 가득 찼습니다. (최대 10명)" });
+
+    // 같은 방 닉네임 중복 체크
     if (room.players.some((p) => p.nickname === nickname))
       return cb({ success: false, error: "이미 사용 중인 닉네임입니다." });
 
     room.players.push({ id: socket.id, nickname, score: 0, answered: 0, isHost: false });
     socket.join(code);
+    socket.leave("lobby");
     socket.roomId = code;
-    cb({ success: true, roomId: code });
+    cb({ success: true, roomId: code, category: room.category });
     broadcastRoom(code);
   });
 
@@ -112,11 +152,11 @@ io.on("connection", (socket) => {
 
     const qi = room.currentQuestion;
     const key = `${socket.id}_${qi}`;
-    if (room.answers[key]) return; // 이미 답변
+    if (room.answers[key]) return;
 
     const q = room.questions[qi];
     const correct = answerIndex === q.answer;
-    const points = correct ? Math.max(5, timeLeft * 2) : 0; // 빠를수록 높은 점수
+    const points = correct ? Math.max(5, timeLeft * 2) : 0;
 
     room.answers[key] = { answerIndex, correct, points };
 
@@ -126,7 +166,6 @@ io.on("connection", (socket) => {
       player.answered++;
     }
 
-    // 실시간 점수 알림
     io.to(socket.roomId).emit("score-update", {
       playerId: socket.id,
       nickname: player?.nickname,
@@ -135,7 +174,6 @@ io.on("connection", (socket) => {
       totalScore: player?.score || 0,
     });
 
-    // 모든 플레이어 답변 완료 시 다음 문제로
     const allAnswered = room.players.every((p) =>
       room.answers[`${p.id}_${qi}`]
     );
@@ -157,10 +195,10 @@ io.on("connection", (socket) => {
     if (room.players.length === 0) {
       clearTimeout(room.timer);
       rooms.delete(roomId);
+      io.to("lobby").emit("room-list", getRoomList());
       return;
     }
 
-    // 방장이 나가면 다음 사람이 방장
     if (!room.players.some((p) => p.isHost)) {
       room.players[0].isHost = true;
     }
@@ -175,7 +213,6 @@ function startTimer(roomId) {
   if (!room) return;
 
   room.timer = setTimeout(() => {
-    // 시간 초과: 미답변자 처리
     const qi = room.currentQuestion;
     room.players.forEach((p) => {
       const key = `${p.id}_${qi}`;
@@ -184,7 +221,7 @@ function startTimer(roomId) {
       }
     });
     advanceQuestion(roomId);
-  }, 16000); // 15초 + 1초 여유
+  }, 16000);
 }
 
 function advanceQuestion(roomId) {
@@ -194,7 +231,6 @@ function advanceQuestion(roomId) {
   const qi = room.currentQuestion;
   const q = room.questions[qi];
 
-  // 정답 공개
   io.to(roomId).emit("question-result", {
     index: qi,
     correctAnswer: q.answer,
@@ -206,19 +242,15 @@ function advanceQuestion(roomId) {
     })),
   });
 
-  // 2초 후 다음 문제 또는 종료
   setTimeout(() => {
     room.currentQuestion++;
     if (room.currentQuestion >= room.questions.length) {
-      // 게임 종료
       room.state = "finished";
       const rankings = [...room.players]
         .sort((a, b) => b.score - a.score)
         .map((p, i) => ({ rank: i + 1, nickname: p.nickname, score: p.score }));
       io.to(roomId).emit("game-end", { rankings });
       broadcastRoom(roomId);
-
-      // 5분 후 방 삭제
       setTimeout(() => rooms.delete(roomId), 300000);
     } else {
       room.answers = {};
@@ -232,9 +264,13 @@ function advanceQuestion(roomId) {
   }, 2500);
 }
 
-// ── Health check ──
+// ── Health check + Room list API ──
 app.get("/", (req, res) => {
   res.json({ status: "ok", rooms: rooms.size });
+});
+
+app.get("/rooms", (req, res) => {
+  res.json(getRoomList());
 });
 
 const PORT = process.env.PORT || 3001;
