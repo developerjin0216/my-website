@@ -61,6 +61,19 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Battle Mode */}
+      <div className="px-5 pb-3">
+        <Link
+          href="/battle"
+          className="block w-full rounded-2xl p-5 text-center transition-transform active:scale-[0.98] bg-gradient-to-r from-[#5B86E5] to-[#36D1DC]"
+        >
+          <p className="text-lg font-bold text-white">퀴즈 배틀</p>
+          <p className="text-sm text-white/70 mt-1">
+            친구들과 실시간 퀴즈 대결! (최대 10명)
+          </p>
+        </Link>
+      </div>
+
       {/* Daily Quiz */}
       <div className="px-5 pb-4">
         <Link
