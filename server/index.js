@@ -146,7 +146,7 @@ io.on("connection", (socket) => {
   });
 
   // ── 답변 제출 ──
-  socket.on("submit-answer", ({ answerIndex, timeLeft }) => {
+  socket.on("submit-answer", ({ answerIndex, hintUsed }) => {
     const room = rooms.get(socket.roomId);
     if (!room || room.state !== "playing") return;
 
@@ -156,7 +156,7 @@ io.on("connection", (socket) => {
 
     const q = room.questions[qi];
     const correct = answerIndex === q.answer;
-    const points = correct ? Math.max(5, timeLeft * 2) : 0;
+    const points = correct ? (hintUsed ? 5 : 10) : 0;
 
     room.answers[key] = { answerIndex, correct, points };
 

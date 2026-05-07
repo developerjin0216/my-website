@@ -64,6 +64,8 @@ export default function BattlePage() {
   const [correctAnswer, setCorrectAnswer] = useState<number | null>(null);
   const [explanation, setExplanation] = useState("");
   const [showResult, setShowResult] = useState(false);
+  const [hintUsed, setHintUsed] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   const [rankings, setRankings] = useState<Ranking[]>([]);
 
@@ -142,6 +144,8 @@ export default function BattlePage() {
     setCorrectAnswer(null);
     setShowResult(false);
     setExplanation("");
+    setHintUsed(false);
+    setShowHint(false);
     setTimeLeft(15);
     timeLeftRef.current = 15;
   }
@@ -159,7 +163,7 @@ export default function BattlePage() {
         clearInterval(timerRef.current!);
         if (!isAnswered) {
           setIsAnswered(true);
-          getSocket().emit("submit-answer", { answerIndex: -1, timeLeft: 0 });
+          getSocket().emit("submit-answer", { answerIndex: -1, hintUsed });
         }
       }
     }, 1000);
@@ -212,10 +216,10 @@ export default function BattlePage() {
       if (timerRef.current) clearInterval(timerRef.current);
       getSocket().emit("submit-answer", {
         answerIndex: index,
-        timeLeft: timeLeftRef.current,
+        hintUsed,
       });
     },
-    [isAnswered]
+    [isAnswered, hintUsed]
   );
 
   const backToLobby = useCallback(() => {
@@ -520,6 +524,25 @@ export default function BattlePage() {
               );
             })}
           </div>
+
+          {/* Hint */}
+          {showHint && question.hint && (
+            <div className="mt-3 bg-[#2a3a5a] rounded-xl p-3 border border-accent/30">
+              <p className="text-sm text-accent">
+                <span className="font-bold">힌트:</span> {question.hint}
+              </p>
+            </div>
+          )}
+
+          {/* Hint button */}
+          {!hintUsed && !isAnswered && !showResult && (
+            <button
+              onClick={() => { setHintUsed(true); setShowHint(true); }}
+              className="mt-3 w-full py-2.5 rounded-xl border border-accent/40 text-accent text-sm font-medium hover:bg-accent/10 transition-colors active:scale-[0.98]"
+            >
+              힌트 보기 (점수 절반)
+            </button>
+          )}
 
           {/* Explanation after result */}
           {showResult && explanation && (
