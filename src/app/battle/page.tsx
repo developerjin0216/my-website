@@ -362,12 +362,6 @@ export default function BattlePage() {
       <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
         <header className="bg-header px-5 py-5 text-center">
           <h1 className="text-2xl font-bold text-accent">대기실</h1>
-          <div className="mt-3 bg-[#2a3a5a] rounded-xl py-3 px-4 inline-block">
-            <p className="text-xs text-[#a0a0b0] mb-1">방 코드</p>
-            <p className="text-3xl font-mono font-bold tracking-[0.3em] text-white">
-              {roomId}
-            </p>
-          </div>
         </header>
 
         <div className="flex-1 px-5 py-5">
@@ -544,17 +538,21 @@ export default function BattlePage() {
 
         <div className="flex flex-col gap-3 w-full">
           <button
-            onClick={backToLobby}
+            onClick={() => {
+              setGameState("waiting");
+              setRankings([]);
+              resetQuestionState();
+            }}
             className="w-full py-3.5 rounded-xl bg-accent text-[#1a1a2e] font-bold text-sm active:scale-[0.98]"
           >
-            새 게임
+            대기실로 돌아가기
           </button>
-          <Link
-            href="/"
-            className="w-full py-3.5 rounded-xl border border-[#2a3a5a] text-[#a0a0b0] font-medium text-sm text-center active:scale-[0.98] hover:bg-[#2a3a5a]/50"
+          <button
+            onClick={backToLobby}
+            className="w-full py-3.5 rounded-xl border border-[#2a3a5a] text-[#a0a0b0] font-medium text-sm active:scale-[0.98] hover:bg-[#2a3a5a]/50"
           >
-            홈으로
-          </Link>
+            방 나가기
+          </button>
         </div>
       </div>
     );

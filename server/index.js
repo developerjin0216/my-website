@@ -245,13 +245,16 @@ function advanceQuestion(roomId) {
   setTimeout(() => {
     room.currentQuestion++;
     if (room.currentQuestion >= room.questions.length) {
-      room.state = "finished";
+      // 게임 종료 → 방 유지, 대기실로 복귀
+      room.state = "waiting";
+      room.questions = [];
+      room.currentQuestion = -1;
+      room.answers = {};
       const rankings = [...room.players]
         .sort((a, b) => b.score - a.score)
         .map((p, i) => ({ rank: i + 1, nickname: p.nickname, score: p.score }));
       io.to(roomId).emit("game-end", { rankings });
       broadcastRoom(roomId);
-      setTimeout(() => rooms.delete(roomId), 300000);
     } else {
       room.answers = {};
       io.to(roomId).emit("next-question", {
