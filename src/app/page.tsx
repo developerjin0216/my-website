@@ -48,6 +48,19 @@ export default function Home() {
         </Link>
       </div>
 
+      {/* Calculators */}
+      <div className="px-5 pb-4">
+        <Link
+          href="/calculators"
+          className="block w-full rounded-2xl p-5 text-center transition-transform active:scale-[0.98] bg-gradient-to-r from-[#27AE60] to-[#1ABC9C]"
+        >
+          <p className="text-lg font-bold text-white">생활 계산기 모음</p>
+          <p className="text-sm text-white/70 mt-1">
+            연봉 실수령액 · 퇴직금 · 전기요금 · 환율 등 11가지
+          </p>
+        </Link>
+      </div>
+
       {/* Ad */}
       <div className="px-5 pb-2">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
@@ -93,6 +106,7 @@ export default function Home() {
             <li>• 퀴즈 배틀 — 최대 10명 실시간 대결</li>
             <li>• 오답 노트 — 틀린 문제 풀이 해설 제공</li>
             <li>• 오늘의 명언 — 365일 매일 새로운 명언</li>
+            <li>• 생활 계산기 — 연봉 실수령액, 퇴직금, 전기요금, 환율 등 11종</li>
             <li>• 모바일 최적화 — 언제 어디서든 플레이</li>
           </ul>
         </div>

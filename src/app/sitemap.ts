@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { categories } from "@/data/quizData";
+import { calculators } from "@/data/calculators";
 
 const BASE_URL = "https://my-website-nine-fawn-47.vercel.app";
 
@@ -31,6 +32,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     ...categoryPages,
+    {
+      url: `${BASE_URL}/calculators`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    ...calculators.map((calc) => ({
+      url: `${BASE_URL}/calculators/${calc.id}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
     {
       url: `${BASE_URL}/privacy`,
       lastModified: new Date(),
