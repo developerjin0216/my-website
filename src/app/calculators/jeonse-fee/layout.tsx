@@ -1,14 +1,7 @@
-import type { Metadata } from "next";
 import CalcShell from "@/components/calculators/CalcShell";
-import { getCalc } from "@/data/calculators";
+import { buildCalcMetadata } from "@/data/calculators";
 
-const calc = getCalc("jeonse-fee");
-
-export const metadata: Metadata = {
-  title: calc.metaTitle,
-  description: calc.metaDescription,
-  keywords: calc.keywords,
-};
+export const metadata = buildCalcMetadata("jeonse-fee");
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return <CalcShell id="jeonse-fee">{children}</CalcShell>;

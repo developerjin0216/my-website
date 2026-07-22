@@ -3,11 +3,35 @@ import { categories } from "@/data/quizData";
 import AdBanner from "@/components/AdBanner";
 import DailyQuote from "@/components/DailyQuote";
 import HomeClient from "@/components/HomeClient";
+import { BASE_URL, SITE_NAME } from "@/lib/site";
+
+// 홈에서 검색 수요가 높은 계산기 바로가기 (내부 링크 깊이 단축)
+const POPULAR_CALCS = [
+  { id: "salary", label: "연봉 실수령액 계산기" },
+  { id: "electricity", label: "전기요금 계산기" },
+  { id: "severance", label: "퇴직금 계산기" },
+  { id: "bmi", label: "BMI 계산기" },
+  { id: "exchange", label: "환율 계산기" },
+];
 
 // 서버 컴포넌트 — Google 크롤러가 정적 콘텐츠를 읽을 수 있음
 export default function Home() {
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: BASE_URL,
+    inLanguage: "ko",
+  };
+
   return (
     <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(websiteJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* Header */}
       <header className="bg-header px-5 py-6 text-center">
         <h1 className="text-3xl font-bold text-accent">상식왕 퀴즈</h1>
@@ -109,6 +133,19 @@ export default function Home() {
             <li>• 생활 계산기 — 연봉 실수령액, 퇴직금, 전기요금, 환율 등 11종</li>
             <li>• 모바일 최적화 — 언제 어디서든 플레이</li>
           </ul>
+
+          <h3 className="text-sm font-bold mb-2 mt-4">인기 계산기 바로가기</h3>
+          <div className="flex flex-wrap gap-2">
+            {POPULAR_CALCS.map((c) => (
+              <Link
+                key={c.id}
+                href={`/calculators/${c.id}`}
+                className="text-xs bg-[#16213e] border border-[#2a3a5a] rounded-full px-3 py-1.5 text-[#a0a0b0] hover:text-accent hover:border-accent transition-colors"
+              >
+                {c.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

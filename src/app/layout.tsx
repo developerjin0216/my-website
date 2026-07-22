@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { BASE_URL, SITE_NAME } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,9 +14,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "상식왕 퀴즈",
-  description: "다양한 카테고리의 상식 퀴즈를 풀어보세요!",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "상식왕 퀴즈 - 무료 상식 퀴즈 1,000제 & 생활 계산기 11종",
+    template: `%s | ${SITE_NAME}`,
+  },
+  description:
+    "경제·역사·과학 등 10개 카테고리 1,000문제 상식 퀴즈와 실시간 퀴즈 배틀, 그리고 연봉 실수령액·퇴직금·전기요금·환율·BMI 등 생활 계산기 11종을 무료로 이용하세요.",
   manifest: "/manifest.json",
+  alternates: { canonical: "/" },
+  openGraph: {
+    siteName: SITE_NAME,
+    locale: "ko_KR",
+    type: "website",
+    url: "/",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

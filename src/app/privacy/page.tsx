@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "개인정보처리방침 - 상식왕 퀴즈",
+  title: "개인정보처리방침",
   description: "상식왕 퀴즈 개인정보처리방침 안내 페이지입니다.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

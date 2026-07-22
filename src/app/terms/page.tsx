@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "이용약관 - 상식왕 퀴즈",
+  title: "이용약관",
   description: "상식왕 퀴즈 서비스 이용약관 안내 페이지입니다.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

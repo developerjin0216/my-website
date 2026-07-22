@@ -1,11 +1,38 @@
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import { calculators, calcGroups } from "@/data/calculators";
+import { BASE_URL } from "@/lib/site";
 
 // 서버 컴포넌트 — 계산기 허브. 크롤러가 읽을 수 있는 정적 콘텐츠 포함
 export default function CalculatorsPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "생활 계산기 모음",
+    description:
+      "연봉 실수령액, 퇴직금, 연차, 대출 이자, 전기요금, 환율, BMI 등 무료 생활 계산기 11종",
+    url: `${BASE_URL}/calculators`,
+    inLanguage: "ko",
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: calculators.length,
+      itemListElement: calculators.map((c, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: c.name,
+        url: `${BASE_URL}/calculators/${c.id}`,
+      })),
+    },
+  };
+
   return (
     <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <header className="bg-header px-5 py-6">
         <Link href="/" className="text-sm text-[#a0a0b0] hover:text-accent">
           ← 상식왕 퀴즈 홈
