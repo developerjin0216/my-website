@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { calcResidentialBill } from "@/utils/electricity";
 import { calcMonthlyDeductions } from "@/utils/salary";
+import { CALC_URL, CALC_SITE_NAME } from "@/lib/site";
 
 export interface CalcFaq {
   q: string;
@@ -633,19 +634,20 @@ export function getCalc(id: string): CalculatorInfo {
 }
 
 // 계산기 레이아웃 공용 메타데이터 — canonical·OG 포함
+// 도메인 분리 시 CALC_URL이 계산기 도메인을 가리켜 canonical이 자동 전환됩니다.
 export function buildCalcMetadata(id: string): Metadata {
   const calc = getCalc(id);
-  const path = `/calculators/${id}`;
+  const url = `${CALC_URL}/calculators/${id}`;
   return {
     title: { absolute: calc.metaTitle },
     description: calc.metaDescription,
     keywords: calc.keywords,
-    alternates: { canonical: path },
+    alternates: { canonical: url },
     openGraph: {
       title: calc.metaTitle,
       description: calc.metaDescription,
-      url: path,
-      siteName: "상식왕 퀴즈",
+      url,
+      siteName: CALC_SITE_NAME,
       locale: "ko_KR",
       type: "website",
     },

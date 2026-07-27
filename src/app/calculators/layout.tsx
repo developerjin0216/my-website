@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CALC_URL, CALC_SITE_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "생활 계산기 모음",
@@ -12,13 +13,13 @@ export const metadata: Metadata = {
     "환율 계산기",
     "BMI 계산기",
   ],
-  alternates: { canonical: "/calculators" },
+  alternates: { canonical: `${CALC_URL}/calculators` },
   openGraph: {
     title: "생활 계산기 모음",
     description:
       "연봉 실수령액·퇴직금·전기요금·환율·BMI 등 무료 생활 계산기 11종",
-    url: "/calculators",
-    siteName: "상식왕 퀴즈",
+    url: `${CALC_URL}/calculators`,
+    siteName: CALC_SITE_NAME,
     locale: "ko_KR",
     type: "website",
   },

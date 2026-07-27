@@ -1,28 +1,44 @@
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import { calculators, calcGroups } from "@/data/calculators";
-import { BASE_URL } from "@/lib/site";
+import { QUIZ_URL, CALC_URL, SPLIT, CALC_SITE_NAME } from "@/lib/site";
 
 // 서버 컴포넌트 — 계산기 허브. 크롤러가 읽을 수 있는 정적 콘텐츠 포함
+// 도메인 분리 시 계산기 도메인의 홈 역할을 겸합니다 (proxy가 / 를 여기로 rewrite)
 export default function CalculatorsPage() {
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: "생활 계산기 모음",
-    description:
-      "연봉 실수령액, 퇴직금, 연차, 대출 이자, 전기요금, 환율, BMI 등 무료 생활 계산기 11종",
-    url: `${BASE_URL}/calculators`,
-    inLanguage: "ko",
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: calculators.length,
-      itemListElement: calculators.map((c, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        name: c.name,
-        url: `${BASE_URL}/calculators/${c.id}`,
-      })),
-    },
+    "@graph": [
+      // 분리 시 계산기 도메인의 사이트 이름 신호
+      ...(SPLIT
+        ? [
+            {
+              "@type": "WebSite",
+              name: CALC_SITE_NAME,
+              url: CALC_URL,
+              inLanguage: "ko",
+            },
+          ]
+        : []),
+      {
+        "@type": "CollectionPage",
+        name: "생활 계산기 모음",
+        description:
+          "연봉 실수령액, 퇴직금, 연차, 대출 이자, 전기요금, 환율, BMI 등 무료 생활 계산기 11종",
+        url: `${CALC_URL}/calculators`,
+        inLanguage: "ko",
+        mainEntity: {
+          "@type": "ItemList",
+          numberOfItems: calculators.length,
+          itemListElement: calculators.map((c, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: c.name,
+            url: `${CALC_URL}/calculators/${c.id}`,
+          })),
+        },
+      },
+    ],
   };
 
   return (
@@ -34,9 +50,18 @@ export default function CalculatorsPage() {
         }}
       />
       <header className="bg-header px-5 py-6">
-        <Link href="/" className="text-sm text-[#a0a0b0] hover:text-accent">
-          ← 상식왕 퀴즈 홈
-        </Link>
+        {SPLIT ? (
+          <a
+            href={QUIZ_URL}
+            className="text-sm text-[#a0a0b0] hover:text-accent"
+          >
+            상식왕 퀴즈 →
+          </a>
+        ) : (
+          <Link href="/" className="text-sm text-[#a0a0b0] hover:text-accent">
+            ← 상식왕 퀴즈 홈
+          </Link>
+        )}
         <h1 className="text-3xl font-bold text-accent mt-2">생활 계산기 모음</h1>
         <p className="text-sm text-[#a0a0b0] mt-1">
           월급부터 전기요금까지, 일상에 필요한 계산기를 무료로 이용하세요
@@ -107,9 +132,26 @@ export default function CalculatorsPage() {
       </div>
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
-        <div className="flex justify-center gap-3 mb-2">
-          <Link href="/" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
+        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-2">
+          <a
+            href={SPLIT ? QUIZ_URL : "/"}
+            className="text-xs text-[#606070] hover:text-[#a0a0b0]"
+          >
             상식왕 퀴즈
+          </a>
+          <span className="text-xs text-[#606070]">|</span>
+          <Link
+            href="/about"
+            className="text-xs text-[#606070] hover:text-[#a0a0b0]"
+          >
+            소개
+          </Link>
+          <span className="text-xs text-[#606070]">|</span>
+          <Link
+            href="/contact"
+            className="text-xs text-[#606070] hover:text-[#a0a0b0]"
+          >
+            문의
           </Link>
           <span className="text-xs text-[#606070]">|</span>
           <Link

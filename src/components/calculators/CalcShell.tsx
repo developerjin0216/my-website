@@ -1,7 +1,13 @@
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import { getCalc } from "@/data/calculators";
-import { BASE_URL, SITE_NAME } from "@/lib/site";
+import {
+  QUIZ_URL,
+  CALC_URL,
+  SPLIT,
+  SITE_NAME,
+  CALC_SITE_NAME,
+} from "@/lib/site";
 
 // 계산기 페이지 공용 셸 (서버 컴포넌트)
 // 헤더 + 계산기 본문(children) + 광고 + SEO 텍스트 + 예시 표 + FAQ + 관련 계산기 + 푸터
@@ -14,7 +20,29 @@ export default function CalcShell({
   children: React.ReactNode;
 }) {
   const calc = getCalc(id);
-  const url = `${BASE_URL}/calculators/${id}`;
+  const url = `${CALC_URL}/calculators/${id}`;
+
+  // 도메인 분리 시: 계산기 허브가 사이트 홈 역할 (2단계 경로)
+  const breadcrumb = SPLIT
+    ? [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: CALC_SITE_NAME,
+          item: `${CALC_URL}/calculators`,
+        },
+        { "@type": "ListItem", position: 2, name: calc.name, item: url },
+      ]
+    : [
+        { "@type": "ListItem", position: 1, name: SITE_NAME, item: QUIZ_URL },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "생활 계산기 모음",
+          item: `${CALC_URL}/calculators`,
+        },
+        { "@type": "ListItem", position: 3, name: calc.name, item: url },
+      ];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -33,16 +61,7 @@ export default function CalcShell({
       },
       {
         "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: SITE_NAME, item: BASE_URL },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: "생활 계산기 모음",
-            item: `${BASE_URL}/calculators`,
-          },
-          { "@type": "ListItem", position: 3, name: calc.name, item: url },
-        ],
+        itemListElement: breadcrumb,
       },
     ],
   };
@@ -192,9 +211,26 @@ export default function CalcShell({
       </div>
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
-        <div className="flex justify-center gap-3 mb-2">
-          <Link href="/" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
+        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-2">
+          <a
+            href={SPLIT ? QUIZ_URL : "/"}
+            className="text-xs text-[#606070] hover:text-[#a0a0b0]"
+          >
             상식왕 퀴즈
+          </a>
+          <span className="text-xs text-[#606070]">|</span>
+          <Link
+            href="/about"
+            className="text-xs text-[#606070] hover:text-[#a0a0b0]"
+          >
+            소개
+          </Link>
+          <span className="text-xs text-[#606070]">|</span>
+          <Link
+            href="/contact"
+            className="text-xs text-[#606070] hover:text-[#a0a0b0]"
+          >
+            문의
           </Link>
           <span className="text-xs text-[#606070]">|</span>
           <Link

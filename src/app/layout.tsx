@@ -30,6 +30,18 @@ export const metadata: Metadata = {
     url: "/",
   },
   twitter: { card: "summary_large_image" },
+  // Search Console·네이버 서치어드바이저 소유 확인 — Vercel env에 코드만 넣으면 됨
+  verification: {
+    ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION && {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    }),
+    ...(process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION && {
+      other: {
+        "naver-site-verification":
+          process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION,
+      },
+    }),
+  },
 };
 
 export const viewport: Viewport = {

@@ -156,7 +156,15 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
-        <div className="flex justify-center gap-3 mb-2">
+        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-2">
+          <Link href="/about" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
+            소개
+          </Link>
+          <span className="text-xs text-[#606070]">|</span>
+          <Link href="/contact" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
+            문의
+          </Link>
+          <span className="text-xs text-[#606070]">|</span>
           <Link href="/privacy" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
             개인정보처리방침
           </Link>

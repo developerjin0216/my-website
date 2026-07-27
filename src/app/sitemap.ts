@@ -1,44 +1,54 @@
 import type { MetadataRoute } from "next";
 import { calculators } from "@/data/calculators";
-import { BASE_URL } from "@/lib/site";
+import { QUIZ_URL, CALC_URL } from "@/lib/site";
 
 // 사이트맵에는 캐노니컬 URL만 등재합니다.
-// 쿼리 파라미터 URL(/quiz?mode=...&category=...)은 '&' XML 이스케이프 문제와
-// 중복 메타데이터 문제로 제외 — 카테고리 퀴즈는 /quiz 캐노니컬로 통합.
+// 도메인 분리 시 계산기 URL은 CALC_URL 기준으로 생성됩니다 — 두 도메인 모두
+// Search Console에 등록(소유 확인)하면 교차 도메인 사이트맵이 허용됩니다.
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: BASE_URL,
+      url: QUIZ_URL,
       changeFrequency: "daily",
       priority: 1,
     },
     {
-      url: `${BASE_URL}/quiz`,
+      url: `${QUIZ_URL}/quiz`,
       changeFrequency: "daily",
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/battle`,
+      url: `${QUIZ_URL}/battle`,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/calculators`,
+      url: `${CALC_URL}/calculators`,
       changeFrequency: "weekly",
       priority: 0.9,
     },
     ...calculators.map((calc) => ({
-      url: `${BASE_URL}/calculators/${calc.id}`,
+      url: `${CALC_URL}/calculators/${calc.id}`,
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
     {
-      url: `${BASE_URL}/privacy`,
+      url: `${QUIZ_URL}/about`,
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
+      url: `${QUIZ_URL}/contact`,
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
+      url: `${QUIZ_URL}/privacy`,
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
-      url: `${BASE_URL}/terms`,
+      url: `${QUIZ_URL}/terms`,
       changeFrequency: "yearly",
       priority: 0.3,
     },
