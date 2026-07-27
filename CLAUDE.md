@@ -25,6 +25,9 @@ This is a Korean-language quiz app ("상식왕 퀴즈") built with **Next.js 16*
 - **Next.js frontend** (`src/`): Quiz UI, results, Google AdSense integration. Deployed on Vercel.
 - **Socket.IO server** (`server/index.js`): Express + Socket.IO for real-time multiplayer quiz battles. Standalone Node.js process with its own `package.json`, port via `PORT` env var (default 3001). Client connect URL comes from `NEXT_PUBLIC_SOCKET_URL` (defaults to `http://localhost:3001`).
 
+### Domain split (quiz vs calculators)
+One codebase serves two sites. `src/proxy.ts` (Next 16 renamed middleware → proxy) branches on the request host: on the calc domain, `/` rewrites to `/calculators` and quiz paths 308-redirect to the quiz domain; on the quiz domain, `/calculators*` 308-redirects to the calc domain. `/about`, `/contact`, `/privacy`, `/terms` serve on both. Controlled by `NEXT_PUBLIC_QUIZ_URL` / `NEXT_PUBLIC_CALC_URL` env vars via `src/lib/site.ts` (`SPLIT` build-time constant — canonical/OG/JSON-LD/sitemap/branding all switch on it). **No env set → split inactive, single-domain behavior.** Test locally: build with both env vars set, then `curl -H "Host: <calc-host>" localhost:3000/...`.
+
 ### Route structure (`src/app/`)
 | Route | Rendering | Purpose |
 |-------|-----------|---------|

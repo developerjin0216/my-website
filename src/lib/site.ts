@@ -4,17 +4,33 @@
 // Vercel 프로젝트에 퀴즈/계산기 도메인 두 개를 연결하고 아래 env를 설정하면
 // src/proxy.ts가 접속 도메인을 보고 섹션을 분리합니다.
 //   NEXT_PUBLIC_QUIZ_URL=https://퀴즈도메인
-//   NEXT_PUBLIC_CALC_URL=https://계산기도메인
-// env가 없으면 지금처럼 단일 도메인으로 동작합니다 (분리 비활성).
+//   NEXT_PUBLIC_CALC_URL=https://calc.퀴즈도메인
+// env가 없거나 잘못된 값이면 단일 도메인으로 동작합니다 (fail-open).
 // env 변경 후에는 재배포해야 반영됩니다 (빌드 타임 상수).
 
 const DEFAULT_URL = "https://my-website-nine-fawn-47.vercel.app";
 
-export const QUIZ_URL = process.env.NEXT_PUBLIC_QUIZ_URL || DEFAULT_URL;
-export const CALC_URL = process.env.NEXT_PUBLIC_CALC_URL || QUIZ_URL;
+// 잘못된 env(스킴 누락 등)는 무시하고 폴백 — 사이트가 죽는 것보다 분리 비활성이 낫다
+function parseUrl(raw: string | undefined, fallback: string): URL {
+  if (!raw) return new URL(fallback);
+  try {
+    return new URL(raw);
+  } catch {
+    return new URL(fallback);
+  }
+}
 
-// 도메인 분리 활성 여부 (빌드 타임에 결정)
-export const SPLIT = CALC_URL !== QUIZ_URL;
+const quizUrl = parseUrl(process.env.NEXT_PUBLIC_QUIZ_URL, DEFAULT_URL);
+const calcUrl = parseUrl(process.env.NEXT_PUBLIC_CALC_URL, quizUrl.href);
+
+// origin으로 정규화 — 트레일링 슬래시·경로가 섞여 들어와도 안전
+export const QUIZ_URL = quizUrl.origin;
+export const CALC_URL = calcUrl.origin;
+export const QUIZ_HOST = quizUrl.host;
+export const CALC_HOST = calcUrl.host;
+
+// 도메인 분리 활성 여부 — 문자열이 아닌 host 비교 (표기 차이로 인한 오작동 방지)
+export const SPLIT = QUIZ_HOST !== CALC_HOST;
 
 export const SITE_NAME = "상식왕 퀴즈";
 // 계산기 사이트 브랜드 — 도메인 확정 시 이름만 바꾸면 OG·JSON-LD·푸터에 일괄 반영
