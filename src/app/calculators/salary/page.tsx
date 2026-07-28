@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense } from "react";
 import {
   Card,
   Field,
@@ -9,17 +9,20 @@ import {
   BigResult,
   ResultRow,
   Notice,
+  ShareButton,
+  useUrlState,
   won,
 } from "@/components/calculators/ui";
 import { calcMonthlyDeductions } from "@/utils/salary";
 
-export default function SalaryCalcPage() {
-  const [mode, setMode] = useState<"annual" | "monthly">("annual");
-  const [amount, setAmount] = useState("");
-  const [sevMode, setSevMode] = useState<"separate" | "included">("separate");
-  const [taxFree, setTaxFree] = useState("200000");
-  const [family, setFamily] = useState("1");
-  const [children, setChildren] = useState("0");
+function SalaryCalc() {
+  // URL 쿼리와 동기화 — 계산 결과를 링크로 공유 가능
+  const [mode, setMode] = useUrlState("mode", "annual");
+  const [amount, setAmount] = useUrlState("amount", "");
+  const [sevMode, setSevMode] = useUrlState("sev", "separate");
+  const [taxFree, setTaxFree] = useUrlState("taxfree", "200000");
+  const [family, setFamily] = useUrlState("family", "1");
+  const [children, setChildren] = useUrlState("children", "0");
 
   const amt = Number(amount || 0);
   const monthlyGross =
@@ -39,8 +42,8 @@ export default function SalaryCalcPage() {
         <Field label="급여 기준">
           <Segmented
             options={[
-              { value: "annual" as const, label: "연봉" },
-              { value: "monthly" as const, label: "월급" },
+              { value: "annual", label: "연봉" },
+              { value: "monthly", label: "월급" },
             ]}
             value={mode}
             onChange={setMode}
@@ -58,8 +61,8 @@ export default function SalaryCalcPage() {
           <Field label="퇴직금">
             <Segmented
               options={[
-                { value: "separate" as const, label: "별도" },
-                { value: "included" as const, label: "포함 (÷13)" },
+                { value: "separate", label: "별도" },
+                { value: "included", label: "포함 (÷13)" },
               ]}
               value={sevMode}
               onChange={setSevMode}
@@ -97,6 +100,10 @@ export default function SalaryCalcPage() {
             <ResultRow label="공제액 합계" value={`−${won(d.total)}`} negative />
             <ResultRow label="월 실수령액" value={won(d.net)} strong />
           </div>
+          <ShareButton
+            title="연봉 실수령액 계산기"
+            text={`연봉 실수령액 계산: 월 ${won(d.net)} (세전 ${won(monthlyGross)}) — 모두의 계산기`}
+          />
         </Card>
       )}
 
@@ -106,5 +113,13 @@ export default function SalaryCalcPage() {
         있습니다.
       </Notice>
     </>
+  );
+}
+
+export default function SalaryCalcPage() {
+  return (
+    <Suspense fallback={null}>
+      <SalaryCalc />
+    </Suspense>
   );
 }

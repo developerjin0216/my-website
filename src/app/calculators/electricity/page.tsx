@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense } from "react";
 import {
   Card,
   Field,
@@ -9,21 +9,28 @@ import {
   BigResult,
   ResultRow,
   Notice,
+  ShareButton,
+  useUrlState,
   won,
   fmt,
   inputCls,
 } from "@/components/calculators/ui";
 import { calcResidentialBill, type Contract } from "@/utils/electricity";
 
-export default function ElectricityCalcPage() {
-  const [kwh, setKwh] = useState("");
-  const [month, setMonth] = useState(new Date().getMonth() + 1);
-  const [contract, setContract] = useState<Contract>("low");
+function ElectricityCalc() {
+  // URL 쿼리와 동기화 — 계산 결과를 링크로 공유 가능
+  const [kwh, setKwh] = useUrlState("kwh", "");
+  const [month, setMonth] = useUrlState(
+    "month",
+    String(new Date().getMonth() + 1)
+  );
+  const [contract, setContract] = useUrlState("contract", "low");
 
   const usage = Number(kwh || 0);
+  const monthN = Number(month) || 1;
   const valid = usage > 0;
-  const bill = calcResidentialBill(usage, month, contract);
-  const summer = month === 7 || month === 8;
+  const bill = calcResidentialBill(usage, monthN, contract as Contract);
+  const summer = monthN === 7 || monthN === 8;
 
   return (
     <>
@@ -41,10 +48,10 @@ export default function ElectricityCalcPage() {
             <select
               className={inputCls}
               value={month}
-              onChange={(e) => setMonth(Number(e.target.value))}
+              onChange={(e) => setMonth(e.target.value)}
             >
               {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                <option key={m} value={m}>
+                <option key={m} value={String(m)}>
                   {m}월{m === 7 || m === 8 ? " (하계)" : ""}
                 </option>
               ))}
@@ -53,8 +60,8 @@ export default function ElectricityCalcPage() {
           <Field label="계약 종류">
             <Segmented
               options={[
-                { value: "low" as const, label: "저압" },
-                { value: "high" as const, label: "고압" },
+                { value: "low", label: "저압" },
+                { value: "high", label: "고압" },
               ]}
               value={contract}
               onChange={setContract}
@@ -90,6 +97,10 @@ export default function ElectricityCalcPage() {
               {fmt(summer ? 450 : 400)}kWh 이하로 줄이면 단가가 크게 낮아집니다.
             </p>
           )}
+          <ShareButton
+            title="전기요금 계산기"
+            text={`전기요금 계산: ${fmt(usage)}kWh(${monthN}월) → 약 ${won(bill.total)} — 모두의 계산기`}
+          />
         </Card>
       )}
 
@@ -98,5 +109,13 @@ export default function ElectricityCalcPage() {
         연료비조정단가 변동은 반영되지 않으며 실제 청구액과 다를 수 있습니다.
       </Notice>
     </>
+  );
+}
+
+export default function ElectricityCalcPage() {
+  return (
+    <Suspense fallback={null}>
+      <ElectricityCalc />
+    </Suspense>
   );
 }

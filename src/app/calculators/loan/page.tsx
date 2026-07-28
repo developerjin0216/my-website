@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import {
   Card,
   Field,
@@ -9,6 +9,8 @@ import {
   BigResult,
   ResultRow,
   Notice,
+  ShareButton,
+  useUrlState,
   won,
   fmt,
 } from "@/components/calculators/ui";
@@ -61,12 +63,13 @@ function buildSchedule(P: number, annualRate: number, n: number, method: Method)
   return { rows, totalInterest };
 }
 
-export default function LoanCalcPage() {
-  const [amount, setAmount] = useState("");
-  const [rate, setRate] = useState("");
-  const [term, setTerm] = useState("");
-  const [termUnit, setTermUnit] = useState<"year" | "month">("year");
-  const [method, setMethod] = useState<Method>("equalTotal");
+function LoanCalc() {
+  // URL 쿼리와 동기화 — 계산 결과를 링크로 공유 가능
+  const [amount, setAmount] = useUrlState("amount", "");
+  const [rate, setRate] = useUrlState("rate", "");
+  const [term, setTerm] = useUrlState("term", "");
+  const [termUnit, setTermUnit] = useUrlState("unit", "year");
+  const [method, setMethod] = useUrlState("method", "equalTotal");
   const [showAll, setShowAll] = useState(false);
 
   const P = Number(amount || 0);
@@ -75,7 +78,7 @@ export default function LoanCalcPage() {
   const valid = P > 0 && annualRate >= 0 && n > 0;
 
   const { rows, totalInterest } = valid
-    ? buildSchedule(P, annualRate, n, method)
+    ? buildSchedule(P, annualRate, n, method as Method)
     : { rows: [] as ScheduleRow[], totalInterest: 0 };
 
   const bigLabel =
@@ -121,8 +124,8 @@ export default function LoanCalcPage() {
         <Field label="기간 단위">
           <Segmented
             options={[
-              { value: "year" as const, label: "년" },
-              { value: "month" as const, label: "개월" },
+              { value: "year", label: "년" },
+              { value: "month", label: "개월" },
             ]}
             value={termUnit}
             onChange={setTermUnit}
@@ -131,9 +134,9 @@ export default function LoanCalcPage() {
         <Field label="상환방식">
           <Segmented
             options={[
-              { value: "equalTotal" as const, label: "원리금균등" },
-              { value: "equalPrincipal" as const, label: "원금균등" },
-              { value: "bullet" as const, label: "만기일시" },
+              { value: "equalTotal", label: "원리금균등" },
+              { value: "equalPrincipal", label: "원금균등" },
+              { value: "bullet", label: "만기일시" },
             ]}
             value={method}
             onChange={setMethod}
@@ -154,6 +157,10 @@ export default function LoanCalcPage() {
               <ResultRow label="총 이자" value={won(totalInterest)} negative />
               <ResultRow label="총 상환액" value={won(P + totalInterest)} strong />
             </div>
+            <ShareButton
+              title="대출 이자 계산기"
+              text={`대출 이자 계산: ${won(P)} · 연 ${annualRate}% → 월 ${bigValue}, 총 이자 ${won(totalInterest)} — 모두의 계산기`}
+            />
           </Card>
 
           <Card className="mt-4">
@@ -194,5 +201,13 @@ export default function LoanCalcPage() {
         금리 변동 등에 따라 달라질 수 있습니다.
       </Notice>
     </>
+  );
+}
+
+export default function LoanCalcPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoanCalc />
+    </Suspense>
   );
 }

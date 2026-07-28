@@ -25,7 +25,7 @@ export default function CalculatorsPage() {
         "@type": "CollectionPage",
         name: "생활 계산기 모음",
         description:
-          "연봉 실수령액, 퇴직금, 연차, 대출 이자, 전기요금, 환율, BMI 등 무료 생활 계산기 11종",
+          "연봉 실수령액, 퇴직금, 연차, 대출 이자, 전기요금, 환율, BMI 등 무료 생활 계산기 12종",
         url: `${CALC_URL}/calculators`,
         inLanguage: "ko",
         mainEntity: {
@@ -134,7 +134,7 @@ export default function CalculatorsPage() {
           <p className="text-sm text-[#a0a0b0] leading-relaxed mb-4">
             연봉 실수령액, 퇴직금, 연차, 대출 이자, 청년 버팀목 전세대출, 부동산
             복비, 전기요금, 에어컨 전기료, 환율, BMI, 칼로리까지 — 일상에서 자주
-            찾는 계산기 11종을 한 곳에 모았습니다. 회원가입 없이 무료로 이용할 수
+            찾는 계산기 12종을 한 곳에 모았습니다. 회원가입 없이 무료로 이용할 수
             있으며, 모든 계산은 브라우저에서 즉시 처리되어 입력한 정보가 서버로
             전송되지 않습니다.
           </p>

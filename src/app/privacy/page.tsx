@@ -68,7 +68,25 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-bold text-white mb-2">3. 개인정보의 보관 및 파기</h2>
+            <h2 className="text-base font-bold text-white mb-2">3. 방문 통계 수집</h2>
+            <p>
+              본 서비스는 Google Analytics를 사용하여 방문 통계(페이지뷰, 유입
+              경로, 기기·브라우저 정보)를 수집합니다. 이 정보는 개인을 식별하지
+              않으며 서비스 개선 목적으로만 사용됩니다. 사용자는{" "}
+              <a
+                href="https://tools.google.com/dlpage/gaoptout"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent underline"
+              >
+                Google Analytics 차단 브라우저 부가기능
+              </a>
+              으로 수집을 거부할 수 있습니다.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-bold text-white mb-2">4. 개인정보의 보관 및 파기</h2>
             <p>
               퀴즈 점수 등 이용 기록은 사용자의 브라우저 로컬 스토리지에만 저장되며,
               브라우저 데이터를 삭제하면 함께 제거됩니다. 퀴즈 배틀에서 사용한 닉네임은
@@ -77,7 +95,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-bold text-white mb-2">4. 이용자의 권리</h2>
+            <h2 className="text-base font-bold text-white mb-2">5. 이용자의 권리</h2>
             <p>
               사용자는 언제든지 브라우저의 로컬 스토리지를 삭제하여 저장된 퀴즈 기록을
               제거할 수 있습니다. 서비스 이용에 관한 문의 사항은 아래 연락처로
@@ -86,7 +104,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-bold text-white mb-2">5. 개인정보처리방침의 변경</h2>
+            <h2 className="text-base font-bold text-white mb-2">6. 개인정보처리방침의 변경</h2>
             <p>
               본 방침은 2026년 5월 7일부터 시행됩니다. 법령이나 서비스 변경에 따라
               내용이 추가·삭제·수정될 수 있으며, 변경 시 본 페이지를 통해 공지합니다.
@@ -94,7 +112,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-base font-bold text-white mb-2">6. 문의</h2>
+            <h2 className="text-base font-bold text-white mb-2">7. 문의</h2>
             <p>
               개인정보 관련 문의:{" "}
               <a href="mailto:developerjin0216@gmail.com" className="text-accent underline">

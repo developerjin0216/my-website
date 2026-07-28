@@ -1,6 +1,64 @@
 "use client";
 
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+
 // 계산기 공용 UI 프리미티브 — 모든 계산기 페이지에서 재사용
+
+// URL 쿼리와 동기화되는 입력 상태 — 계산 결과를 링크로 공유·북마크 가능하게 함
+// 주의: useSearchParams를 쓰므로 사용하는 페이지는 <Suspense>로 감싸야 합니다.
+export function useUrlState(
+  key: string,
+  initial: string
+): [string, (v: string) => void] {
+  const searchParams = useSearchParams();
+  const [value, setValue] = useState(() => searchParams.get(key) ?? initial);
+
+  const set = (v: string) => {
+    setValue(v);
+    // 이벤트 핸들러 컨텍스트에서 URL만 조용히 갱신 (리렌더·스크롤 없음)
+    const url = new URL(window.location.href);
+    if (v && v !== initial) url.searchParams.set(key, v);
+    else url.searchParams.delete(key);
+    window.history.replaceState(null, "", url);
+  };
+
+  return [value, set];
+}
+
+// 계산 결과 공유 버튼 — 현재 URL(입력값 쿼리 포함)을 함께 공유
+export function ShareButton({ title, text }: { title: string; text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handle = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text, url });
+      } catch {
+        /* user cancelled */
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${text}\n${url}`);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        /* clipboard unavailable */
+      }
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handle}
+      className="w-full mt-3 py-2.5 rounded-xl bg-[#16213e] border border-[#2a3a5a] text-sm font-semibold text-accent hover:border-accent transition-colors active:scale-[0.98]"
+    >
+      {copied ? "✓ 링크가 복사되었습니다" : "🔗 결과 공유하기"}
+    </button>
+  );
+}
 
 export const inputCls =
   "w-full bg-[#16213e] border border-[#2a3a5a] rounded-xl px-4 py-3 text-base outline-none focus:border-accent transition-colors [color-scheme:dark]";

@@ -1,10 +1,32 @@
 "use client";
 
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { categories } from "@/data/quizData";
 import { saveHighScore, saveDailyStatus } from "@/utils/storage";
+import { BASE_URL } from "@/lib/site";
 import AdBanner from "@/components/AdBanner";
+
+// 퀴즈 카테고리 → 어울리는 계산기 추천 (참여도가 가장 높은 결과 화면에서 교차 유입)
+const CALC_SUGGESTIONS: Record<string, { id: string; label: string }[]> = {
+  economy: [
+    { id: "salary", label: "연봉 실수령액 계산기" },
+    { id: "loan", label: "대출 이자 계산기" },
+  ],
+  science: [
+    { id: "bmi", label: "BMI 계산기" },
+    { id: "calorie", label: "칼로리 계산기" },
+  ],
+  it: [
+    { id: "electricity", label: "전기요금 계산기" },
+    { id: "exchange", label: "환율 계산기" },
+  ],
+};
+const DEFAULT_SUGGESTIONS = [
+  { id: "salary", label: "연봉 실수령액 계산기" },
+  { id: "electricity", label: "전기요금 계산기" },
+];
 
 interface AnswerRecord {
   question: string;
@@ -57,16 +79,20 @@ function ResultContent() {
   }, [mode, categoryId, score, maxScore]);
 
   const handleShare = async () => {
-    const text = `[상식왕 퀴즈] ${mode === "daily" ? "오늘의 퀴즈" : category?.name || "퀴즈"}\n점수: ${score}/${maxScore} (${percent}%)\n등급: ${grade.emoji} ${grade.text}\n${correct}/${total} 정답!\n\nhttps://my-website-nine-fawn-47.vercel.app`;
+    // UTM으로 공유 유입을 GA에서 분리 측정
+    const shareUrl = `${BASE_URL}/?utm_source=share&utm_medium=social`;
+    const text = `[상식왕 퀴즈] ${mode === "daily" ? "오늘의 퀴즈" : category?.name || "퀴즈"}\n점수: ${score}/${maxScore} (${percent}%)\n등급: ${grade.emoji} ${grade.text}\n${correct}/${total} 정답!`;
     if (navigator.share) {
       try {
-        await navigator.share({ text });
+        await navigator.share({ title: "상식왕 퀴즈", text, url: shareUrl });
       } catch { /* user cancelled */ }
     } else {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(`${text}\n\n${shareUrl}`);
       alert("결과가 클립보드에 복사되었습니다!");
     }
   };
+
+  const suggestions = CALC_SUGGESTIONS[categoryId] ?? DEFAULT_SUGGESTIONS;
 
   return (
     <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full px-5 py-8">
@@ -194,8 +220,16 @@ function ResultContent() {
       {/* Actions */}
       <div className="flex flex-col gap-3 w-full">
         <button
-          onClick={handleShare}
+          onClick={() =>
+            router.push(`/quiz?mode=${mode}&category=${categoryId}`)
+          }
           className="w-full py-3.5 rounded-xl bg-accent text-[#1a1a2e] font-bold text-sm active:scale-[0.98] transition-transform"
+        >
+          🔄 다시 도전하기 (새 문제 10개)
+        </button>
+        <button
+          onClick={handleShare}
+          className="w-full py-3.5 rounded-xl border border-accent text-accent font-bold text-sm active:scale-[0.98] transition-transform hover:bg-accent/10"
         >
           결과 공유하기
         </button>
@@ -205,6 +239,24 @@ function ResultContent() {
         >
           홈으로 돌아가기
         </button>
+      </div>
+
+      {/* 계산기 교차 유입 */}
+      <div className="w-full mt-6">
+        <p className="text-xs text-[#606070] mb-2 text-center">
+          쉬어가는 김에, 이런 계산기는 어때요?
+        </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {suggestions.map((s) => (
+            <Link
+              key={s.id}
+              href={`/calculators/${s.id}`}
+              className="text-xs bg-[#16213e] border border-[#2a3a5a] rounded-full px-3 py-1.5 text-[#a0a0b0] hover:text-accent hover:border-accent transition-colors"
+            >
+              {s.label}
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );

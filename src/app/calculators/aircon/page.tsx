@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense } from "react";
 import {
   Card,
   Field,
@@ -9,6 +9,8 @@ import {
   BigResult,
   ResultRow,
   Notice,
+  ShareButton,
+  useUrlState,
   won,
   fmt,
 } from "@/components/calculators/ui";
@@ -16,13 +18,14 @@ import { calcResidentialBill, type Contract } from "@/utils/electricity";
 
 const SUMMER_MONTH = 8; // 하계 요금 기준
 
-export default function AirconCalcPage() {
-  const [watts, setWatts] = useState("1800");
-  const [hours, setHours] = useState("8");
-  const [days, setDays] = useState("30");
-  const [duty, setDuty] = useState("70");
-  const [baseKwh, setBaseKwh] = useState("300");
-  const [contract, setContract] = useState<Contract>("low");
+function AirconCalc() {
+  // URL 쿼리와 동기화 — 계산 결과를 링크로 공유 가능
+  const [watts, setWatts] = useUrlState("watts", "1800");
+  const [hours, setHours] = useUrlState("hours", "8");
+  const [days, setDays] = useUrlState("days", "30");
+  const [duty, setDuty] = useUrlState("duty", "70");
+  const [baseKwh, setBaseKwh] = useUrlState("base", "300");
+  const [contract, setContract] = useUrlState("contract", "low");
 
   const wattsN = Number(watts || 0);
   const hoursN = Number(hours || 0);
@@ -33,8 +36,12 @@ export default function AirconCalcPage() {
   const airconKwh = (wattsN / 1000) * hoursN * daysN * (dutyN / 100);
   const valid = wattsN > 0 && hoursN > 0 && daysN > 0;
 
-  const withAircon = calcResidentialBill(baseN + airconKwh, SUMMER_MONTH, contract);
-  const baseBill = calcResidentialBill(baseN, SUMMER_MONTH, contract);
+  const withAircon = calcResidentialBill(
+    baseN + airconKwh,
+    SUMMER_MONTH,
+    contract as Contract
+  );
+  const baseBill = calcResidentialBill(baseN, SUMMER_MONTH, contract as Contract);
   const extra = withAircon.total - baseBill.total;
   const perHour = hoursN * daysN > 0 ? extra / (hoursN * daysN) : 0;
 
@@ -85,8 +92,8 @@ export default function AirconCalcPage() {
         <Field label="계약 종류">
           <Segmented
             options={[
-              { value: "low" as const, label: "저압 (일반주택)" },
-              { value: "high" as const, label: "고압 (아파트)" },
+              { value: "low", label: "저압 (일반주택)" },
+              { value: "high", label: "고압 (아파트)" },
             ]}
             value={contract}
             onChange={setContract}
@@ -120,6 +127,10 @@ export default function AirconCalcPage() {
               단가로 계산됩니다.
             </p>
           )}
+          <ShareButton
+            title="에어컨 전기세 계산기"
+            text={`에어컨 전기세: 하루 ${hoursN}시간 × ${daysN}일 → 월 추가 약 ${won(extra)} — 모두의 계산기`}
+          />
         </Card>
       )}
 
@@ -128,5 +139,13 @@ export default function AirconCalcPage() {
         온도, 단열 상태에 따라 달라지므로 결과는 참고용으로만 활용하세요.
       </Notice>
     </>
+  );
+}
+
+export default function AirconCalcPage() {
+  return (
+    <Suspense fallback={null}>
+      <AirconCalc />
+    </Suspense>
   );
 }

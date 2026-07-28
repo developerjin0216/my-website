@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { BASE_URL, SITE_NAME } from "@/lib/site";
 
@@ -21,12 +22,15 @@ const NAVER_CODES = [
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "상식왕 퀴즈 - 무료 상식 퀴즈 1,000제 & 생활 계산기 11종",
+    default: "상식왕 퀴즈 - 무료 상식 퀴즈 1,000제 & 생활 계산기 12종",
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "경제·역사·과학 등 10개 카테고리 1,000문제 상식 퀴즈와 실시간 퀴즈 배틀, 그리고 연봉 실수령액·퇴직금·전기요금·환율·BMI 등 생활 계산기 11종을 무료로 이용하세요.",
-  manifest: "/manifest.json",
+    "경제·역사·과학 등 10개 카테고리 1,000문제 상식 퀴즈와 실시간 퀴즈 배틀, 그리고 연봉 실수령액·퇴직금·전기요금·환율·BMI 등 생활 계산기를 무료로 이용하세요.",
+  manifest: "/site.webmanifest",
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
   alternates: { canonical: "/" },
   openGraph: {
     siteName: SITE_NAME,
@@ -78,6 +82,8 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
+      {/* GA4 — hydration 후 로드 (성능 영향 최소) */}
+      <GoogleAnalytics gaId="G-GSBLNMJLNC" />
     </html>
   );
 }
