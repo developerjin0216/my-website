@@ -73,6 +73,14 @@ export function buildGuideMetadata(id: string): Metadata {
       siteName: CALC_SITE_NAME,
       locale: "ko_KR",
       type: "article",
+      // 자식 세그먼트의 openGraph가 부모의 파일 기반 이미지를 대체하므로 명시 지정
+      images: [
+        {
+          url: `${CALC_URL}/guides/opengraph-image`,
+          width: 1200,
+          height: 630,
+        },
+      ],
     },
   };
 }
