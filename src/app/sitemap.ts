@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { calculators } from "@/data/calculators";
+import { guides } from "@/data/guides";
 import { QUIZ_URL, CALC_URL } from "@/lib/site";
 
 // 사이트맵에는 캐노니컬 URL만 등재합니다.
@@ -31,6 +32,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${CALC_URL}/calculators/${calc.id}`,
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    {
+      url: `${CALC_URL}/guides`,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    ...guides.map((guide) => ({
+      url: `${CALC_URL}/guides/${guide.id}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
     })),
     {
       url: `${QUIZ_URL}/about`,

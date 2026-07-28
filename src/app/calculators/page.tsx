@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import { calculators, calcGroups } from "@/data/calculators";
+import { guides } from "@/data/guides";
 import { QUIZ_URL, CALC_URL, SPLIT, CALC_SITE_NAME } from "@/lib/site";
 
 // 서버 컴포넌트 — 계산기 허브. 크롤러가 읽을 수 있는 정적 콘텐츠 포함
@@ -101,6 +102,27 @@ export default function CalculatorsPage() {
             </div>
           </section>
         ))}
+
+        {/* 생활 가이드 — 정보성 콘텐츠 */}
+        <section className="mb-6">
+          <h2 className="text-lg font-bold mb-3">생활 가이드</h2>
+          <div className="space-y-3">
+            {guides.map((g) => (
+              <Link
+                key={g.id}
+                href={`/guides/${g.id}`}
+                className="block bg-card rounded-2xl p-4 transition-transform active:scale-[0.98] hover:brightness-110"
+              >
+                <p className="font-semibold text-sm">
+                  <span aria-hidden="true">{g.icon}</span> {g.title}
+                </p>
+                <p className="text-xs text-[#a0a0b0] mt-1 leading-relaxed">
+                  {g.description}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
       </div>
 
       {/* SEO 콘텐츠 — 크롤러용 정적 텍스트 */}

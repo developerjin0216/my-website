@@ -19,8 +19,12 @@ export function proxy(request: NextRequest) {
 
   const host = request.headers.get("host");
   const { pathname, search } = request.nextUrl;
+  // 계산기 섹션 경로: 계산기 + 생활 가이드(정보성 콘텐츠)
   const isCalcPath =
-    pathname === "/calculators" || pathname.startsWith("/calculators/");
+    pathname === "/calculators" ||
+    pathname.startsWith("/calculators/") ||
+    pathname === "/guides" ||
+    pathname.startsWith("/guides/");
 
   if (host === CALC_HOST) {
     if (pathname === "/") {
@@ -40,6 +44,7 @@ export function proxy(request: NextRequest) {
 
   if (host === QUIZ_HOST) {
     if (isCalcPath) {
+      // 계산기·가이드는 계산기 도메인으로 이관
       return NextResponse.redirect(new URL(pathname + search, CALC_URL), 308);
     }
     return NextResponse.next();
