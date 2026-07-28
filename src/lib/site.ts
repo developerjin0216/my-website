@@ -33,8 +33,8 @@ export const CALC_HOST = calcUrl.host;
 export const SPLIT = QUIZ_HOST !== CALC_HOST;
 
 export const SITE_NAME = "상식왕 퀴즈";
-// 계산기 사이트 브랜드 — 도메인 확정 시 이름만 바꾸면 OG·JSON-LD·푸터에 일괄 반영
-export const CALC_SITE_NAME = SPLIT ? "생활계산기" : SITE_NAME;
+// 계산기 사이트 브랜드 (moducalc.vercel.app) — 이름만 바꾸면 OG·JSON-LD·푸터에 일괄 반영
+export const CALC_SITE_NAME = SPLIT ? "모두의 계산기" : SITE_NAME;
 
 export const CONTACT_EMAIL = "developerjin0216@gmail.com";
 
