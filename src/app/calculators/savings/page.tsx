@@ -16,7 +16,8 @@ import {
 
 const TAX_OPTIONS = [
   { value: "normal", label: "일반 15.4%", rate: 0.154 },
-  { value: "reduced", label: "세금우대 9.5%", rate: 0.095 },
+  { value: "reduced", label: "우대 9.5%", rate: 0.095 },
+  { value: "coop", label: "예탁금 1.4%", rate: 0.014 }, // 상호금융 조합원 (농특세만)
   { value: "free", label: "비과세", rate: 0 },
 ] as const;
 

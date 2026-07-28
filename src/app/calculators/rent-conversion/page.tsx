@@ -98,7 +98,7 @@ function RentConversionCalc() {
         )}
         <Field
           label="전환율 (연)"
-          hint={`법정 상한 ${LEGAL_CONVERSION_CAP.toFixed(2)}% (기준금리 2.75% + 2%p, 갱신계약 기준) — 신규 계약은 시장 전환율(통상 5~6%)`}
+          hint={`법정 상한 ${LEGAL_CONVERSION_CAP.toFixed(2)}% (기준금리 2.75% + 2%p, 기존 계약 내 전환 시) — 신규 계약은 시장 전환율(통상 5~6%)`}
         >
           <NumInput
             value={convRate}
@@ -141,7 +141,8 @@ function RentConversionCalc() {
           {overCap && (
             <p className="text-xs text-[#ff6b6b] mt-3 leading-relaxed">
               ⚠ 입력한 전환율이 법정 상한({LEGAL_CONVERSION_CAP.toFixed(2)}%)을
-              초과합니다 — 계약 갱신 시에는 상한을 넘는 전환이 제한됩니다.
+              초과합니다 — 기존 계약에서 전환(계약 중·갱신)할 때는 상한을 넘는
+              전환이 제한됩니다.
             </p>
           )}
           <ShareButton
