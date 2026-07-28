@@ -36,7 +36,7 @@ export default function AboutPage() {
               <li>
                 <strong className="text-white">생활 계산기</strong> — 연봉 실수령액, 퇴직금,
                 연차, 대출 이자, 청년 버팀목 전세대출, 부동산 복비, 전기요금,
-                에어컨 전기료, 환율, BMI, 칼로리까지 12종의 생활 계산기
+                에어컨 전기료, 환율, BMI, 칼로리까지 15종의 생활 계산기
               </li>
             </ul>
           </section>

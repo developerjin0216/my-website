@@ -44,10 +44,7 @@ export default function QuizLayout({
           <ul className="grid grid-cols-2 gap-x-4 text-sm text-[#a0a0b0] leading-loose">
             {categories.map((cat) => (
               <li key={cat.id}>
-                <Link
-                  href={`/quiz?mode=category&category=${cat.id}`}
-                  className="hover:text-accent"
-                >
+                <Link href={`/quiz/${cat.id}`} className="hover:text-accent">
                   <span aria-hidden="true">{cat.icon}</span> {cat.name} — 100문제
                 </Link>
               </li>

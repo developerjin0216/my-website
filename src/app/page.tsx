@@ -80,7 +80,7 @@ export default function Home() {
         >
           <p className="text-lg font-bold text-white">생활 계산기 모음</p>
           <p className="text-sm text-white/70 mt-1">
-            연봉 실수령액 · 퇴직금 · 전기요금 · 환율 등 12가지
+            연봉 실수령액 · 퇴직금 · 전기요금 · 환율 등 15가지
           </p>
         </Link>
       </div>
@@ -130,7 +130,7 @@ export default function Home() {
             <li>• 퀴즈 배틀 — 최대 10명 실시간 대결</li>
             <li>• 오답 노트 — 틀린 문제 풀이 해설 제공</li>
             <li>• 오늘의 명언 — 365일 매일 새로운 명언</li>
-            <li>• 생활 계산기 — 연봉 실수령액, 퇴직금, 전기요금, 환율 등 12종</li>
+            <li>• 생활 계산기 — 연봉 실수령액, 퇴직금, 전기요금, 환율 등 15종</li>
             <li>• 모바일 최적화 — 언제 어디서든 플레이</li>
           </ul>
 

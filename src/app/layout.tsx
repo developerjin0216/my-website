@@ -22,7 +22,7 @@ const NAVER_CODES = [
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "상식왕 퀴즈 - 무료 상식 퀴즈 1,000제 & 생활 계산기 12종",
+    default: "상식왕 퀴즈 - 무료 상식 퀴즈 1,000제 & 생활 계산기 15종",
     template: `%s | ${SITE_NAME}`,
   },
   description:
