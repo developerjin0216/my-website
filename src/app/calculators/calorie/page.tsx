@@ -40,9 +40,9 @@ export default function CalorieCalcPage() {
   const cutCal = Math.max(tdee - 500, 0);
 
   const goals = [
-    { label: "감량", value: cutCal, desc: "주 0.5kg 감량", color: "#5B86E5" },
+    { label: "감량", value: cutCal, desc: "주 약 0.5kg 감량", color: "#5B86E5" },
     { label: "유지", value: tdee, desc: "현재 체중 유지", color: "#27AE60" },
-    { label: "증량", value: tdee + 500, desc: "주 0.5kg 증량", color: "#F39C12" },
+    { label: "증량", value: tdee + 500, desc: "주 약 0.5kg 증량", color: "#F39C12" },
   ];
 
   return (

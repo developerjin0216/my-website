@@ -88,8 +88,8 @@ export default function SalaryCalcPage() {
           />
           <div className="border-t border-[#2a3a5a] pt-2">
             <ResultRow label="월 세전 급여" value={won(monthlyGross)} />
-            <ResultRow label="국민연금 (4.5%)" value={`−${won(d.np)}`} negative />
-            <ResultRow label="건강보험 (3.545%)" value={`−${won(d.hi)}`} negative />
+            <ResultRow label="국민연금 (4.75%)" value={`−${won(d.np)}`} negative />
+            <ResultRow label="건강보험 (3.595%)" value={`−${won(d.hi)}`} negative />
             <ResultRow label="장기요양보험" value={`−${won(d.ltc)}`} negative />
             <ResultRow label="고용보험 (0.9%)" value={`−${won(d.ei)}`} negative />
             <ResultRow label="소득세" value={`−${won(d.incomeTax)}`} negative />
@@ -101,7 +101,7 @@ export default function SalaryCalcPage() {
       )}
 
       <Notice>
-        2025년 4대보험 요율 기준 예상치입니다. 소득세는 근로소득 간이세액표 대신
+        2026년 4대보험 요율 기준 예상치입니다. 소득세는 근로소득 간이세액표 대신
         약식 산출한 값으로, 실제 원천징수액·연말정산 결과와 차이가 있을 수
         있습니다.
       </Notice>

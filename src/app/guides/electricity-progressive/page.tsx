@@ -37,6 +37,10 @@ export default function ElectricityProgressiveGuide() {
           하계·동계에 1,000kWh를 초과하는 사용량에는{" "}
           <strong className="text-[#e8e8f0]">슈퍼유저 요금(736.2원/kWh)</strong>이 적용됩니다.
         </p>
+        <p className="text-xs text-[#606070]">
+          2026년 7월 한국전력 주택용 요금표 기준이며, 연료비조정단가(분기
+          고시)와 기금 요율은 변경될 수 있습니다.
+        </p>
       </Sec>
 
       <Sec title="청구서에 붙는 항목들">
@@ -60,9 +64,9 @@ export default function ElectricityProgressiveGuide() {
         <p>
           하계 구간 완화 덕분에 같은 사용량이면 여름이 오히려 저렴합니다.
           문제는 <strong className="text-[#e8e8f0]">사용량 자체가 급증</strong>한다는 것.
-          평소 300kWh 쓰던 집이 에어컨으로 600kWh를 쓰면 요금은 약 23,700원에서
-          약 60,000원으로 — 사용량은 2배인데 요금은 2.5배가 됩니다. 늘어난
-          300kWh의 대부분이 2·3구간 단가로 계산되기 때문입니다.
+          평소 300kWh 쓰던 집(월 약 5만 8천원)이 에어컨으로 600kWh를 쓰면 하계
+          요금은 약 14만 6천원으로 — 사용량은 2배인데 요금은 약 2.5배가 됩니다.
+          늘어난 300kWh 전부가 2·3구간 단가로 계산되기 때문입니다.
         </p>
         <p>
           우리 집 상황은{" "}

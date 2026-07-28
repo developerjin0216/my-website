@@ -1,11 +1,13 @@
-// 급여 공제 계산 (2025년 요율 기준 — 변경 시 이 상수만 수정)
+// 급여 공제 계산 (2026년 요율 기준 — 변경 시 이 상수만 수정)
 // 실수령액 계산기 페이지와 서버 렌더링 예시 표(src/data/calculators.ts)에서 공유합니다.
+// 출처: 보건복지부 고시 — 국민연금 총 9.5%(연금개혁, 2033년 13%까지 매년 0.5%p 인상),
+// 건강보험 7.19%, 장기요양 0.9448%(건보료 대비 13.14%)
 
-export const NP_RATE = 0.045; // 국민연금
-export const NP_CAP = 6_370_000; // 기준소득월액 상한
-export const NP_FLOOR = 400_000; // 기준소득월액 하한
-export const HI_RATE = 0.03545; // 건강보험 (근로자 부담)
-export const LTC_RATE = 0.1295; // 장기요양 (건강보험료 대비)
+export const NP_RATE = 0.0475; // 국민연금 (근로자 부담)
+export const NP_CAP = 6_590_000; // 기준소득월액 상한 (2026.7~2027.6)
+export const NP_FLOOR = 410_000; // 기준소득월액 하한
+export const HI_RATE = 0.03595; // 건강보험 (근로자 부담, 총 7.19%)
+export const LTC_RATE = 0.1314; // 장기요양 (건강보험료 대비)
 export const EI_RATE = 0.009; // 고용보험
 
 const floor10 = (n: number) => Math.floor(n / 10) * 10;
