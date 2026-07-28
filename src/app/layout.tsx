@@ -46,6 +46,10 @@ export const metadata: Metadata = {
       other: { "naver-site-verification": NAVER_CODES },
     }),
   },
+  // 애드센스 계정 소유권 확인 (head 스크립트·ads.txt와 함께 3중 확인 수단)
+  other: {
+    "google-adsense-account": "ca-pub-3640943750342373",
+  },
 };
 
 export const viewport: Viewport = {
