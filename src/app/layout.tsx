@@ -13,6 +13,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const NAVER_CODES = [
+  process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION, // 퀴즈(sangsikwang)
+  process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION_CALC, // 계산기(moducalc)
+].filter((v): v is string => !!v);
+
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
@@ -31,15 +36,14 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image" },
   // Search Console·네이버 서치어드바이저 소유 확인 — Vercel env에 코드만 넣으면 됨
+  // 네이버는 사이트(도메인)마다 코드가 달라서 퀴즈/계산기 코드를 모두 렌더링
+  // (각 확인 절차는 자기 코드만 찾으므로 두 태그가 함께 있어도 무방)
   verification: {
     ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION && {
       google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     }),
-    ...(process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION && {
-      other: {
-        "naver-site-verification":
-          process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION,
-      },
+    ...(NAVER_CODES.length > 0 && {
+      other: { "naver-site-verification": NAVER_CODES },
     }),
   },
 };
