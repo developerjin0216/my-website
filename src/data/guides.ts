@@ -39,6 +39,39 @@ export const guides: GuideInfo[] = [
     relatedCalcs: ["electricity", "aircon"],
   },
   {
+    id: "minimum-wage-2027",
+    title: "2027년 최저임금 총정리",
+    metaTitle: "2027 최저임금 10,700원 확정 - 월급·주휴수당·인상률 총정리",
+    description:
+      "2027년 최저임금 시급 10,700원(3.7% 인상) 확정 — 월급 환산 2,236,300원, 주휴수당 포함 실질 시급, 연도별 인상 추이, 수습 감액까지 한 번에 정리했습니다.",
+    icon: "💵",
+    date: "2026-07-29",
+    keywords: ["2027 최저임금", "최저임금 10700", "2027 최저시급 월급", "최저임금 인상률", "주휴수당"],
+    relatedCalcs: ["minimum-wage", "salary", "annual-leave"],
+  },
+  {
+    id: "unemployment-benefits",
+    title: "실업급여 신청 총정리",
+    metaTitle: "실업급여 조건·신청 방법 총정리 - 2026 상한액 68,100원",
+    description:
+      "실업급여(구직급여) 받는 조건, 신청 절차, 지급액과 기간을 정리했습니다. 2026년 상한 68,100원 인상, 반복수급 감액 등 바뀐 제도까지 확인하세요.",
+    icon: "🗂️",
+    date: "2026-07-29",
+    keywords: ["실업급여 조건", "실업급여 신청방법", "구직급여", "실업급여 상한액", "자발적 퇴사 실업급여"],
+    relatedCalcs: ["unemployment", "severance", "annual-leave"],
+  },
+  {
+    id: "pension-reform",
+    title: "2026 연금개혁, 내 월급에서 얼마나 더 나가나",
+    metaTitle: "2026 연금개혁 총정리 - 국민연금 보험료 인상 일정과 월급 영향",
+    description:
+      "국민연금 보험료율이 2026년부터 매년 0.5%p씩 올라 2033년 13%가 됩니다. 연도별 인상 일정, 내 월급 기준 추가 부담액, 소득대체율 43% 변화를 정리했습니다.",
+    icon: "🏛️",
+    date: "2026-07-29",
+    keywords: ["연금개혁", "국민연금 보험료 인상", "국민연금 요율", "소득대체율 43", "국민연금 개혁 내용"],
+    relatedCalcs: ["salary", "severance"],
+  },
+  {
     id: "severance",
     title: "퇴직금 지급 기준·계산·세금 총정리",
     metaTitle: "퇴직금 지급 기준 총정리 - 계산 방법·지급기한·퇴직소득세",
