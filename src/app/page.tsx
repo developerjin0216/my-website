@@ -72,16 +72,18 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Calculators */}
+      {/* Calculators — 별도 사이트 링크라 퀴즈 CTA보다 작게 (컴팩트 배너) */}
       <div className="px-5 pb-4">
         <Link
           href="/calculators"
-          className="block w-full rounded-2xl p-5 text-center transition-transform active:scale-[0.98] bg-gradient-to-r from-[#27AE60] to-[#1ABC9C]"
+          className="flex items-center justify-between rounded-xl px-4 py-3 bg-card border border-[#2a3a5a] hover:border-[#27AE60] transition-colors"
         >
-          <p className="text-lg font-bold text-white">생활 계산기 모음</p>
-          <p className="text-sm text-white/70 mt-1">
-            연봉 실수령액 · 퇴직금 · 전기요금 · 환율 등 15가지
-          </p>
+          <span className="text-sm text-[#a0a0b0]">
+            <span aria-hidden="true">🧮</span>{" "}
+            <span className="font-semibold text-[#e8e8f0]">생활 계산기</span>
+            {" — "}실수령액·전기요금 등 15종
+          </span>
+          <span className="text-[#27AE60] text-sm shrink-0 ml-2">바로가기 →</span>
         </Link>
       </div>
 
