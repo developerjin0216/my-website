@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { calculators } from "@/data/calculators";
 import { guides } from "@/data/guides";
 import { categories } from "@/data/quizData";
+import { bankPath, getBankPageCount } from "@/lib/quizBank";
 import { QUIZ_URL, CALC_URL } from "@/lib/site";
 
 // 사이트맵에는 캐노니컬 URL만 등재합니다.
@@ -30,6 +31,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),
+    // 퀴즈 문제은행 — 허브 + 카테고리별 페이지네이션 (문제·정답·해설 SSR)
+    {
+      url: `${QUIZ_URL}/quiz-bank`,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    ...categories.flatMap((cat) =>
+      Array.from({ length: getBankPageCount(cat.id) }, (_, i) => ({
+        url: `${QUIZ_URL}${bankPath(cat.id, i + 1)}`,
+        changeFrequency: "monthly" as const,
+        priority: i === 0 ? 0.7 : 0.6,
+      }))
+    ),
     {
       url: `${CALC_URL}/calculators`,
       changeFrequency: "weekly",

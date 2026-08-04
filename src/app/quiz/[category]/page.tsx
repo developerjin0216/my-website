@@ -162,6 +162,21 @@ export default async function CategoryLandingPage({
           </p>
         </section>
 
+        {/* 문제은행 — 전체 문제·정답·해설 아카이브 */}
+        <Link
+          href={`/quiz-bank/${category}`}
+          className="flex items-center justify-between rounded-xl px-4 py-3 bg-card border border-[#2a3a5a] hover:border-accent transition-colors"
+        >
+          <span className="text-sm text-[#a0a0b0]">
+            <span aria-hidden="true">📚</span>{" "}
+            <span className="font-semibold text-[#e8e8f0]">
+              {cat.name} 문제은행
+            </span>
+            {" — "}100문제 정답·해설 전체 보기
+          </span>
+          <span className="text-accent text-sm shrink-0 ml-2">→</span>
+        </Link>
+
         {/* 다른 카테고리 */}
         <section>
           <h2 className="text-base font-bold mb-3">다른 카테고리 퀴즈</h2>

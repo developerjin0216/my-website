@@ -115,6 +115,21 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Quiz Bank — 문제은행 (전체 문제·해설 아카이브, SEO 허브) */}
+      <div className="px-5 pb-4">
+        <Link
+          href="/quiz-bank"
+          className="flex items-center justify-between rounded-xl px-4 py-3 bg-card border border-[#2a3a5a] hover:border-accent transition-colors"
+        >
+          <span className="text-sm text-[#a0a0b0]">
+            <span aria-hidden="true">📚</span>{" "}
+            <span className="font-semibold text-[#e8e8f0]">퀴즈 문제은행</span>
+            {" — "}1,000문제 정답·해설 모아보기
+          </span>
+          <span className="text-accent text-sm shrink-0 ml-2">바로가기 →</span>
+        </Link>
+      </div>
+
       {/* SEO 콘텐츠 — 크롤러용 정적 텍스트 */}
       <section className="px-5 pb-6">
         <div className="bg-card rounded-2xl p-5">
@@ -131,6 +146,7 @@ export default function Home() {
             <li>• 오늘의 퀴즈 — 매일 랜덤 10문제 도전</li>
             <li>• 퀴즈 배틀 — 최대 10명 실시간 대결</li>
             <li>• 오답 노트 — 틀린 문제 풀이 해설 제공</li>
+            <li>• 퀴즈 문제은행 — 전체 1,000문제 정답·해설 열람</li>
             <li>• 오늘의 명언 — 365일 매일 새로운 명언</li>
             <li>• 생활 계산기 — 연봉 실수령액, 퇴직금, 전기요금, 환율 등 15종</li>
             <li>• 모바일 최적화 — 언제 어디서든 플레이</li>

@@ -12,7 +12,7 @@ import { QUIZ_URL, CALC_URL, QUIZ_HOST, CALC_HOST, SPLIT } from "@/lib/site";
 // 루프 안전성: SPLIT은 host 비교로 판정되므로(QUIZ_HOST ≠ CALC_HOST 보장)
 // redirect 대상은 항상 요청 host와 다른 호스트입니다.
 
-const QUIZ_ONLY_PATHS = ["/quiz", "/battle", "/result"];
+const QUIZ_ONLY_PATHS = ["/quiz", "/quiz-bank", "/battle", "/result"];
 
 export function proxy(request: NextRequest) {
   if (!SPLIT) return NextResponse.next();
