@@ -22,11 +22,11 @@ const NAVER_CODES = [
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "상식왕 퀴즈 - 무료 상식 퀴즈 1,000제 & 생활 계산기 15종",
+    default: "8282114 - 급할 때 바로 찾는 생활 긴급 안내",
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "경제·역사·과학 등 10개 카테고리 1,000문제 상식 퀴즈와 실시간 퀴즈 배틀, 그리고 연봉 실수령액·퇴직금·전기요금·환율·BMI 등 생활 계산기를 무료로 이용하세요.",
+    "긴급 전화번호, 카드·휴대폰 분실 대처, 보이스피싱 대응, 야간 병원 찾기 — 급할 때 필요한 정보와 생활 계산기 15종, 상식 퀴즈 1,000문제를 무료로 이용하세요.",
   manifest: "/site.webmanifest",
   icons: {
     apple: "/apple-touch-icon.png",

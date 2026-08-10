@@ -2,10 +2,10 @@ import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
-// 루트(급할때 생활안내) 기본 OG 이미지 — 빌드 타임 정적 생성
+// 상식왕 퀴즈 OG 이미지 (quiz 서브도메인 홈)
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "8282114 - 급할 때 바로 찾는 생활 긴급 안내";
+export const alt = "상식왕 퀴즈 - 무료 상식 퀴즈 1,000제 & 실시간 퀴즈 배틀";
 
 export default async function Image() {
   const fontData = await readFile(
@@ -26,16 +26,22 @@ export default async function Image() {
           fontFamily: "Pretendard",
         }}
       >
-        <div style={{ fontSize: 56, marginBottom: 20 }}>📞</div>
-        <div style={{ fontSize: 120, color: "#ffd700", fontWeight: 700 }}>
-          8282114
+        <div style={{ fontSize: 56, marginBottom: 20 }}>🏆</div>
+        <div style={{ fontSize: 108, color: "#ffd700", fontWeight: 700 }}>
+          상식왕 퀴즈
         </div>
         <div style={{ fontSize: 40, color: "#c0c8d8", marginTop: 28 }}>
-          급할 때 바로 찾는 생활 긴급 안내
+          무료 상식 퀴즈 1,000제 · 실시간 퀴즈 배틀
         </div>
-        <div style={{ fontSize: 30, color: "#606070", marginTop: 20 }}>
-          긴급번호 · 분실 대처 · 야간 병원 · 생활 계산기
-        </div>
+        <div
+          style={{
+            marginTop: 48,
+            width: 160,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: "#ffd700",
+          }}
+        />
       </div>
     ),
     {

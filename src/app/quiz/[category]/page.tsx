@@ -42,11 +42,11 @@ export async function generateMetadata({
   return {
     title: `${cat.name} 퀴즈 - 무료 100문제`,
     description: `${DESCRIPTIONS[category] ?? ""} 회원가입 없이 무료, 문제당 15초, 힌트와 해설 제공.`,
-    alternates: { canonical: `/quiz/${category}` },
+    alternates: { canonical: `${QUIZ_URL}/quiz/${category}` },
     openGraph: {
       title: `${cat.name} 퀴즈 - 무료 100문제`,
       description: DESCRIPTIONS[category] ?? "",
-      url: `/quiz/${category}`,
+      url: `${QUIZ_URL}/quiz/${category}`,
       siteName: SITE_NAME,
       locale: "ko_KR",
       type: "website",

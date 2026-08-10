@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { categories } from "@/data/quizData";
+import { QUIZ_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "퀴즈 풀기",
   description:
     "10개 카테고리 1,000문제 중 랜덤 10문제에 도전하세요. 15초 제한 시간, 힌트 기능, 오답 해설까지 제공합니다.",
-  alternates: { canonical: "/quiz" },
+  alternates: { canonical: `${QUIZ_URL}/quiz` },
 };
 
 // 퀴즈 본체는 클라이언트 컴포넌트라 크롤러에 보이지 않으므로,

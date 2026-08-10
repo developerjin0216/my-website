@@ -2,7 +2,7 @@
 // 라우트(/quiz-bank/*)와 sitemap이 공유하는 단일 소스입니다.
 import type { Metadata } from "next";
 import { categories, quizzes, type Quiz } from "@/data/quizData";
-import { SITE_NAME } from "@/lib/site";
+import { SITE_NAME, QUIZ_URL } from "@/lib/site";
 
 export const BANK_PAGE_SIZE = 25;
 
@@ -60,11 +60,11 @@ export function buildBankMetadata(categoryId: string, page: number): Metadata {
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: `${QUIZ_URL}${path}` },
     openGraph: {
       title,
       description,
-      url: path,
+      url: `${QUIZ_URL}${path}`,
       siteName: SITE_NAME,
       locale: "ko_KR",
       type: "website",
