@@ -58,7 +58,18 @@ export const helpTopics: HelpInfo[] = [
     icon: "🏥",
     date: "2026-08-10",
     keywords: ["야간 병원", "휴일 약국", "당번 약국", "응급의료포털", "달빛어린이병원"],
-    related: ["emergency-numbers", "utility-outage"],
+    related: ["medical-cost", "emergency-numbers", "utility-outage"],
+  },
+  {
+    id: "medical-cost",
+    title: "병원비가 없을 때 (의료비 지원제도)",
+    metaTitle: "병원비 없을 때 지원받는 법 - 응급실 대지급·긴급복지 129·재난적의료비",
+    description:
+      "응급실 갈 돈이 없어도 진료받을 수 있습니다 — 응급의료비 대지급제도(원무과 신청), 긴급복지 의료지원(129, 300만원), 재난적의료비 지원(최대 3천만원)까지 상황별로 정리했습니다.",
+    icon: "💊",
+    date: "2026-08-10",
+    keywords: ["병원비 지원", "응급의료비 대지급", "긴급복지 의료지원", "재난적의료비", "129 의료비"],
+    related: ["night-hospital", "emergency-numbers", "voice-phishing"],
   },
   {
     id: "voice-phishing",
