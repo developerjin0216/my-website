@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 const NAVER_CODES = [
-  process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION, // 퀴즈(sangsikwang)
-  process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION_CALC, // 계산기(moducalc)
+  process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION, // 루트(8282114.xyz)
+  process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION_CALC, // 계산기(calc.8282114.xyz)
+  process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION_QUIZ, // 퀴즈(quiz.8282114.xyz)
 ].filter((v): v is string => !!v);
 
 export const metadata: Metadata = {
