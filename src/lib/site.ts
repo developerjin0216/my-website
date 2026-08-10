@@ -8,7 +8,7 @@
 // env가 없거나 잘못된 값이면 단일 도메인으로 동작합니다 (fail-open).
 // env 변경 후에는 재배포해야 반영됩니다 (빌드 타임 상수).
 
-const DEFAULT_URL = "https://my-website-nine-fawn-47.vercel.app";
+const DEFAULT_URL = "https://8282114.xyz"; // 소유 도메인 (2026-07 구입, Porkbun)
 
 // 잘못된 env(스킴 누락 등)는 무시하고 폴백 — 사이트가 죽는 것보다 분리 비활성이 낫다
 function parseUrl(raw: string | undefined, fallback: string): URL {
