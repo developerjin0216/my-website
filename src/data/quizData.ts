@@ -15,6 +15,7 @@ export interface Category {
 
 export const categories: Category[] = [
   { id: 'economy', name: '경제·재테크', icon: '💰', color: '#F39C12' },
+  { id: 'spelling', name: '맞춤법', icon: '✍️', color: '#F1C40F' },
   { id: 'mz', name: 'MZ 트렌드', icon: '🔥', color: '#FF6B6B' },
   { id: 'mudo', name: '무도퀴즈', icon: '📺', color: '#5B86E5' },
   { id: 'it', name: 'IT용어', icon: '💻', color: '#00B894' },
@@ -36,9 +37,11 @@ import { economyQuizzes } from './categories/economy';
 import { mzQuizzes } from './categories/mz';
 import { mudoQuizzes } from './categories/mudo';
 import { itQuizzes } from './categories/it';
+import { spellingQuizzes } from './categories/spelling';
 
 export const quizzes: Record<string, Quiz[]> = {
   economy: economyQuizzes,
+  spelling: spellingQuizzes,
   mz: mzQuizzes,
   mudo: mudoQuizzes,
   it: itQuizzes,

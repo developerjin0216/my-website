@@ -9,6 +9,7 @@ export const BANK_PAGE_SIZE = 25;
 // 카테고리별 핵심 주제어 — 메타 설명·본문 인트로에 사용 (페이지마다 문구가 겹치지 않게)
 export const BANK_TOPICS: Record<string, string> = {
   economy: "금리·주식·부동산·세금",
+  spelling: "되/돼·띄어쓰기·외래어 표기·헷갈리는 맞춤법",
   mz: "신조어·밈·유행어",
   mudo: "무한도전 명장면·명대사",
   it: "AI·클라우드·프로그래밍·네트워크",

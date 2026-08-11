@@ -4,14 +4,15 @@ import { categories } from "@/data/quizData";
 import AdBanner from "@/components/AdBanner";
 import DailyQuote from "@/components/DailyQuote";
 import HomeClient from "@/components/HomeClient";
+import DailyStreak from "@/components/quiz/DailyStreak";
 import { QUIZ_URL, SITE_NAME } from "@/lib/site";
 
 // 상식왕 퀴즈 홈 — quiz 서브도메인의 루트(/)로 rewrite되어 서빙됩니다 (src/proxy.ts)
 
 export const metadata: Metadata = {
-  title: { absolute: "상식왕 퀴즈 - 무료 상식 퀴즈 1,000문제 & 실시간 퀴즈 배틀" },
+  title: { absolute: "상식왕 퀴즈 - 무료 상식 퀴즈 1,100문제 & 실시간 퀴즈 배틀" },
   description:
-    "경제·역사·과학·MZ 등 10개 카테고리 1,000문제 상식 퀴즈, 매일 새로운 오늘의 퀴즈, 최대 10명 실시간 퀴즈 배틀까지 무료로 즐기세요.",
+    "경제·맞춤법·역사·과학·MZ 등 11개 카테고리 1,100문제 상식 퀴즈, 매일 새로운 오늘의 퀴즈, 최대 10명 실시간 퀴즈 배틀까지 무료로 즐기세요.",
   alternates: { canonical: QUIZ_URL },
   openGraph: {
     title: "상식왕 퀴즈 - 무료 상식 퀴즈 1,000문제",
@@ -88,6 +89,9 @@ export default function QuizHome() {
             매일 새로운 10문제에 도전하세요
           </p>
         </Link>
+        <div className="text-center mt-2">
+          <DailyStreak />
+        </div>
       </div>
 
       {/* Calculators — 별도 사이트 링크라 퀴즈 CTA보다 작게 (컴팩트 배너) */}
@@ -153,14 +157,14 @@ export default function QuizHome() {
         <div className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold mb-3 text-accent">상식왕 퀴즈란?</h2>
           <p className="text-sm text-[#a0a0b0] leading-relaxed mb-4">
-            상식왕 퀴즈는 경제·재테크, MZ 트렌드, 무한도전, IT용어, 일반 상식, 과학,
-            역사, 연예, 스포츠, 지리까지 총 10개 카테고리 1,000문제를 제공하는 무료
-            온라인 퀴즈 서비스입니다. 매일 새로운 오늘의 퀴즈에 도전하고,
+            상식왕 퀴즈는 경제·재테크, 맞춤법, MZ 트렌드, 무한도전, IT용어, 일반 상식,
+            과학, 역사, 연예, 스포츠, 지리까지 총 11개 카테고리 1,100여 문제를 제공하는
+            무료 온라인 퀴즈 서비스입니다. 매일 새로운 오늘의 퀴즈에 도전하고,
             친구들과 실시간 퀴즈 배틀로 대결해보세요!
           </p>
           <h3 className="text-sm font-bold mb-2">주요 기능</h3>
           <ul className="text-xs text-[#a0a0b0] leading-relaxed space-y-1.5">
-            <li>• 10개 카테고리, 1,000문제 — 경제, MZ, 무도, IT, 상식, 과학, 역사, 연예, 스포츠, 지리</li>
+            <li>• 11개 카테고리, 1,100여 문제 — 경제, 맞춤법, MZ, 무도, IT, 상식, 과학, 역사, 연예, 스포츠, 지리</li>
             <li>• 오늘의 퀴즈 — 매일 랜덤 10문제 도전</li>
             <li>• 퀴즈 배틀 — 최대 10명 실시간 대결</li>
             <li>• 오답 노트 — 틀린 문제 풀이 해설 제공</li>
