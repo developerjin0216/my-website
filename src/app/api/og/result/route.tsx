@@ -66,7 +66,7 @@ export async function GET(request: Request) {
         }}
       >
         <div style={{ fontSize: 34, color: "#a0a0b0" }}>
-          상식왕 퀴즈 · {quizName}
+          {`상식왕 퀴즈 · ${quizName}`}
         </div>
         <div style={{ fontSize: 72, marginTop: 24 }}>{grade.emoji}</div>
         <div
@@ -83,7 +83,7 @@ export async function GET(request: Request) {
           <span style={{ fontSize: 60, marginLeft: 6 }}>점</span>
         </div>
         <div style={{ fontSize: 44, color: "#e8e8f0", marginTop: 8 }}>
-          {grade.text} — {correct}/{total} 정답
+          {`${grade.text} — ${correct}/${total} 정답`}
         </div>
         <div
           style={{
