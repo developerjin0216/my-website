@@ -1,10 +1,23 @@
 import { ImageResponse } from "next/og";
-import { readFile } from "fs/promises";
-import { join } from "path";
-import { categories } from "@/data/quizData";
 
 // 퀴즈 결과 공유용 동적 OG 카드 — /result의 generateMetadata가 참조합니다.
-export const dynamic = "force-dynamic";
+// edge 런타임: 폰트를 번들 에셋(new URL)로 참조 — 서버리스 파일 누락(500) 방지.
+// quizData(1,100문제)는 edge 번들이 커지므로 import하지 않고 이름 맵만 둡니다.
+export const runtime = "edge";
+
+const CATEGORY_NAMES: Record<string, string> = {
+  economy: "경제·재테크",
+  spelling: "맞춤법",
+  mz: "MZ 트렌드",
+  mudo: "무도퀴즈",
+  it: "IT용어",
+  general: "일반 상식",
+  science: "과학",
+  history: "역사",
+  entertainment: "연예",
+  sports: "스포츠",
+  geography: "지리",
+};
 
 function getGrade(percent: number) {
   if (percent >= 90) return { emoji: "🏆", text: "천재", color: "#FFD700" };
@@ -30,11 +43,11 @@ export async function GET(request: Request) {
   const quizName =
     mode === "daily"
       ? "오늘의 퀴즈"
-      : (categories.find((c) => c.id === categoryId)?.name ?? "상식") + " 퀴즈";
+      : (CATEGORY_NAMES[categoryId] ?? "상식") + " 퀴즈";
 
-  const fontData = await readFile(
-    join(process.cwd(), "src/assets/fonts/Pretendard-Bold.otf")
-  );
+  const fontData = await fetch(
+    new URL("../../../../assets/fonts/Pretendard-Bold.otf", import.meta.url)
+  ).then((r) => r.arrayBuffer());
 
   return new ImageResponse(
     (
