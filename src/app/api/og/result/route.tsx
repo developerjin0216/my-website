@@ -1,9 +1,11 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "fs/promises";
+import { join } from "path";
 
 // 퀴즈 결과 공유용 동적 OG 카드 — /result의 generateMetadata가 참조합니다.
-// edge 런타임: 폰트를 번들 에셋(new URL)로 참조 — 서버리스 파일 누락(500) 방지.
-// quizData(1,100문제)는 edge 번들이 커지므로 import하지 않고 이름 맵만 둡니다.
-export const runtime = "edge";
+// Node 런타임 + next.config outputFileTracingIncludes로 폰트를 번들에 포함
+// (edge 런타임은 1.5MB 폰트가 함수 크기 제한을 초과해 배포 실패했음)
+export const dynamic = "force-dynamic";
 
 const CATEGORY_NAMES: Record<string, string> = {
   economy: "경제·재테크",
@@ -45,9 +47,9 @@ export async function GET(request: Request) {
       ? "오늘의 퀴즈"
       : (CATEGORY_NAMES[categoryId] ?? "상식") + " 퀴즈";
 
-  const fontData = await fetch(
-    new URL("../../../../assets/fonts/Pretendard-Bold.otf", import.meta.url)
-  ).then((r) => r.arrayBuffer());
+  const fontData = await readFile(
+    join(process.cwd(), "src/assets/fonts/Pretendard-Bold.otf")
+  );
 
   return new ImageResponse(
     (
