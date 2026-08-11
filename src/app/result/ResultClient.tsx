@@ -1,0 +1,286 @@
+"use client";
+
+import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { categories } from "@/data/quizData";
+import { saveHighScore, saveDailyStatus } from "@/utils/storage";
+import { QUIZ_URL } from "@/lib/site";
+import AdBanner from "@/components/AdBanner";
+
+// 퀴즈 카테고리 → 어울리는 계산기 추천 (참여도가 가장 높은 결과 화면에서 교차 유입)
+const CALC_SUGGESTIONS: Record<string, { id: string; label: string }[]> = {
+  economy: [
+    { id: "salary", label: "연봉 실수령액 계산기" },
+    { id: "loan", label: "대출 이자 계산기" },
+  ],
+  science: [
+    { id: "bmi", label: "BMI 계산기" },
+    { id: "calorie", label: "칼로리 계산기" },
+  ],
+  it: [
+    { id: "electricity", label: "전기요금 계산기" },
+    { id: "exchange", label: "환율 계산기" },
+  ],
+};
+const DEFAULT_SUGGESTIONS = [
+  { id: "salary", label: "연봉 실수령액 계산기" },
+  { id: "electricity", label: "전기요금 계산기" },
+];
+
+interface AnswerRecord {
+  question: string;
+  options: string[];
+  answer: number;
+  selected: number;
+  correct: boolean;
+  explanation?: string;
+}
+
+function getGrade(percent: number) {
+  if (percent >= 90) return { emoji: "🏆", text: "천재", color: "#FFD700" };
+  if (percent >= 70) return { emoji: "🎉", text: "훌륭해요", color: "#22C55E" };
+  if (percent >= 50) return { emoji: "👍", text: "괜찮아요", color: "#3B82F6" };
+  if (percent >= 30) return { emoji: "💪", text: "조금만 더", color: "#F59E0B" };
+  return { emoji: "📖", text: "공부가 필요해요", color: "#EF4444" };
+}
+
+function ResultContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const score = parseInt(searchParams.get("score") || "0");
+  const correct = parseInt(searchParams.get("correct") || "0");
+  const total = parseInt(searchParams.get("total") || "10");
+  const mode = searchParams.get("mode") || "daily";
+  const categoryId = searchParams.get("category") || "general";
+
+  const maxScore = total * 10;
+  const percent = Math.round((score / maxScore) * 100);
+  const grade = getGrade(percent);
+  const category = categories.find((c) => c.id === categoryId);
+
+  const [wrongAnswers, setWrongAnswers] = useState<AnswerRecord[]>([]);
+
+  useEffect(() => {
+    if (mode === "daily") {
+      saveDailyStatus(score, maxScore);
+    }
+    saveHighScore(mode === "daily" ? "daily" : categoryId, score, maxScore);
+
+    try {
+      const raw = sessionStorage.getItem("quiz_answers");
+      if (raw) {
+        const all: AnswerRecord[] = JSON.parse(raw);
+        setWrongAnswers(all.filter((a) => !a.correct));
+        sessionStorage.removeItem("quiz_answers");
+      }
+    } catch { /* silent */ }
+  }, [mode, categoryId, score, maxScore]);
+
+  const handleShare = async () => {
+    // 점수가 담긴 결과 URL을 공유 — 카톡 등에서 동적 OG 카드(점수 이미지)로 펼쳐짐
+    const q = new URLSearchParams({
+      score: String(score),
+      correct: String(correct),
+      total: String(total),
+      mode,
+      category: categoryId,
+      utm_source: "share",
+      utm_medium: "social",
+    });
+    const shareUrl = `${QUIZ_URL}/result?${q.toString()}`;
+    const text = `[상식왕 퀴즈] ${mode === "daily" ? "오늘의 퀴즈" : category?.name || "퀴즈"}\n점수: ${score}/${maxScore} (${percent}%)\n등급: ${grade.emoji} ${grade.text}\n${correct}/${total} 정답! 너도 도전해봐`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "상식왕 퀴즈", text, url: shareUrl });
+      } catch { /* user cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(`${text}\n\n${shareUrl}`);
+      alert("결과가 클립보드에 복사되었습니다!");
+    }
+  };
+
+  const suggestions = CALC_SUGGESTIONS[categoryId] ?? DEFAULT_SUGGESTIONS;
+
+  return (
+    <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full px-5 py-8">
+      {/* Grade */}
+      <div className="text-center mb-8">
+        <div className="text-7xl mb-4 animate-bounce">{grade.emoji}</div>
+        <h1
+          className="text-3xl font-bold mb-2"
+          style={{ color: grade.color }}
+        >
+          {grade.text}
+        </h1>
+        <p className="text-[#a0a0b0] text-sm">
+          {mode === "daily" ? "오늘의 퀴즈" : category?.name || "퀴즈"} 결과
+        </p>
+      </div>
+
+      {/* Score card */}
+      <div className="bg-card rounded-2xl p-6 w-full mb-6">
+        <div className="text-center mb-4">
+          <p className="text-5xl font-bold text-accent">{percent}%</p>
+          <p className="text-sm text-[#a0a0b0] mt-1">
+            {score}/{maxScore}점
+          </p>
+        </div>
+        <div className="h-3 bg-[#2a3a5a] rounded-full overflow-hidden mb-4">
+          <div
+            className="h-full rounded-full transition-all duration-1000"
+            style={{
+              width: `${percent}%`,
+              backgroundColor: grade.color,
+            }}
+          />
+        </div>
+        <div className="flex justify-around text-center">
+          <div>
+            <p className="text-xl font-bold text-[#22C55E]">{correct}</p>
+            <p className="text-xs text-[#a0a0b0]">정답</p>
+          </div>
+          <div className="w-px bg-[#2a3a5a]" />
+          <div>
+            <p className="text-xl font-bold text-[#EF4444]">
+              {total - correct}
+            </p>
+            <p className="text-xs text-[#a0a0b0]">오답</p>
+          </div>
+          <div className="w-px bg-[#2a3a5a]" />
+          <div>
+            <p className="text-xl font-bold text-accent">{score}</p>
+            <p className="text-xs text-[#a0a0b0]">점수</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Ad */}
+      <div className="w-full mb-6">
+        <AdBanner slot="XXXXXXXXXX" format="rectangle" />
+      </div>
+
+      {/* Wrong Answers Review */}
+      {wrongAnswers.length > 0 && (
+        <div className="w-full mb-6">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+            <span className="text-[#EF4444]">✗</span> 오답 노트
+            <span className="text-sm font-normal text-[#a0a0b0]">
+              ({wrongAnswers.length}문제)
+            </span>
+          </h2>
+          <div className="flex flex-col gap-4">
+            {wrongAnswers.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-card rounded-2xl p-5 border border-[#2a3a5a]"
+              >
+                {/* Question */}
+                <p className="text-sm font-semibold mb-3 leading-relaxed">
+                  Q{idx + 1}. {item.question}
+                </p>
+
+                {/* Options with marks */}
+                <div className="flex flex-col gap-1.5 mb-3">
+                  {item.options.map((opt, oi) => {
+                    let style = "text-[#8090b0]";
+                    let mark = "";
+                    if (oi === item.answer) {
+                      style = "text-[#22C55E] font-semibold";
+                      mark = " ✓";
+                    } else if (oi === item.selected) {
+                      style = "text-[#EF4444] line-through";
+                      mark = " ✗";
+                    }
+                    return (
+                      <p key={oi} className={`text-xs ${style}`}>
+                        {oi + 1}) {opt}{mark}
+                      </p>
+                    );
+                  })}
+                </div>
+
+                {/* Your answer vs correct */}
+                <div className="flex gap-3 text-xs mb-3">
+                  <span className="text-[#EF4444]">
+                    내 답: {item.selected === -1 ? "시간 초과" : item.options[item.selected]}
+                  </span>
+                  <span className="text-[#22C55E]">
+                    정답: {item.options[item.answer]}
+                  </span>
+                </div>
+
+                {/* Explanation */}
+                {item.explanation && (
+                  <div className="bg-[#162040] rounded-xl p-3 border border-[#2a3a5a]/50">
+                    <p className="text-xs text-accent font-bold mb-1">풀이</p>
+                    <p className="text-xs text-[#c0c8d8] leading-relaxed break-keep">
+                      {item.explanation}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="flex flex-col gap-3 w-full">
+        <button
+          onClick={() =>
+            router.push(`/quiz?mode=${mode}&category=${categoryId}`)
+          }
+          className="w-full py-3.5 rounded-xl bg-accent text-[#1a1a2e] font-bold text-sm active:scale-[0.98] transition-transform"
+        >
+          🔄 다시 도전하기 (새 문제 10개)
+        </button>
+        <button
+          onClick={handleShare}
+          className="w-full py-3.5 rounded-xl border border-accent text-accent font-bold text-sm active:scale-[0.98] transition-transform hover:bg-accent/10"
+        >
+          결과 공유하기
+        </button>
+        <button
+          onClick={() => router.push("/")}
+          className="w-full py-3.5 rounded-xl border border-[#2a3a5a] text-[#a0a0b0] font-medium text-sm active:scale-[0.98] transition-transform hover:bg-[#2a3a5a]/50"
+        >
+          홈으로 돌아가기
+        </button>
+      </div>
+
+      {/* 계산기 교차 유입 */}
+      <div className="w-full mt-6">
+        <p className="text-xs text-[#606070] mb-2 text-center">
+          쉬어가는 김에, 이런 계산기는 어때요?
+        </p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {suggestions.map((s) => (
+            <Link
+              key={s.id}
+              href={`/calculators/${s.id}`}
+              className="text-xs bg-[#16213e] border border-[#2a3a5a] rounded-full px-3 py-1.5 text-[#a0a0b0] hover:text-accent hover:border-accent transition-colors"
+            >
+              {s.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function ResultClient() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-xl text-accent animate-pulse">결과 로딩 중...</div>
+        </div>
+      }
+    >
+      <ResultContent />
+    </Suspense>
+  );
+}

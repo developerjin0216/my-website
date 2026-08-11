@@ -25,6 +25,8 @@ const DESCRIPTIONS: Record<string, string> = {
     "축구, 야구, 올림픽, e스포츠까지 — 스포츠 팬이라면 놓칠 수 없는 스포츠 상식 100문제에 도전해보세요.",
   geography:
     "수도, 국기, 지형, 세계 각국의 문화까지 — 지도 위를 여행하는 지리 상식 100문제. 여행 좋아하는 분들께 추천합니다.",
+  spelling:
+    "되/돼, 안/않, 금세/금새, 띄어쓰기, 외래어 표기까지 — 국립국어원 규정 기준으로 검증한 헷갈리는 맞춤법 168문제. 당신의 맞춤법 실력은 몇 점인가요?",
 };
 
 export function generateStaticParams() {
@@ -39,12 +41,13 @@ export async function generateMetadata({
   const { category } = await params;
   const cat = categories.find((c) => c.id === category);
   if (!cat) return {};
+  const count = quizzes[category]?.length ?? 100;
   return {
-    title: `${cat.name} 퀴즈 - 무료 100문제`,
+    title: `${cat.name} 퀴즈 - 무료 ${count}문제`,
     description: `${DESCRIPTIONS[category] ?? ""} 회원가입 없이 무료, 문제당 15초, 힌트와 해설 제공.`,
     alternates: { canonical: `${QUIZ_URL}/quiz/${category}` },
     openGraph: {
-      title: `${cat.name} 퀴즈 - 무료 100문제`,
+      title: `${cat.name} 퀴즈 - 무료 ${count}문제`,
       description: DESCRIPTIONS[category] ?? "",
       url: `${QUIZ_URL}/quiz/${category}`,
       siteName: SITE_NAME,
@@ -97,7 +100,8 @@ export default async function CategoryLandingPage({
           <span aria-hidden="true">{cat.icon}</span> {cat.name} 퀴즈
         </h1>
         <p className="text-sm text-[#a0a0b0] mt-1">
-          무료 100문제 · 문제당 15초 · 힌트와 해설 제공
+          무료 {(quizzes[category] ?? []).length}문제 · 문제당 15초 · 힌트와 해설
+          제공
         </p>
       </header>
 
