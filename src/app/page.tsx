@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import { helpTopics } from "@/data/help";
-import { ROOT_URL, QUIZ_URL, CALC_URL, INFO_SITE_NAME } from "@/lib/site";
+import { ROOT_URL, QUIZ_URL, CALC_URL, TOOLS_URL, INFO_SITE_NAME } from "@/lib/site";
 
 // 루트(8282114.xyz) 홈 — 급할때 생활안내 허브
 // 도메인 자체가 브랜드: 8282(빨리빨리) + 114(안내)
@@ -116,9 +116,20 @@ export default function InfoHome() {
           <span className="text-sm text-[#a0a0b0]">
             <span aria-hidden="true">🧮</span>{" "}
             <span className="font-semibold text-[#e8e8f0]">모두의 계산기</span>
-            {" — "}실수령액·전기요금·실업급여 등 15종
+            {" — "}실수령액·자동차세·실업급여 등 19종
           </span>
           <span className="text-[#27AE60] text-sm shrink-0 ml-2">→</span>
+        </a>
+        <a
+          href={`${TOOLS_URL}/tools`}
+          className="flex items-center justify-between rounded-xl px-4 py-3 bg-card border border-[#2a3a5a] hover:border-[#E1306C] transition-colors"
+        >
+          <span className="text-sm text-[#a0a0b0]">
+            <span aria-hidden="true">🧰</span>{" "}
+            <span className="font-semibold text-[#e8e8f0]">모두의 도구</span>
+            {" — "}인스타 언팔 확인 (로그인 없이)
+          </span>
+          <span className="text-[#E1306C] text-sm shrink-0 ml-2">→</span>
         </a>
         <a
           href={QUIZ_URL}
@@ -127,7 +138,7 @@ export default function InfoHome() {
           <span className="text-sm text-[#a0a0b0]">
             <span aria-hidden="true">🏆</span>{" "}
             <span className="font-semibold text-[#e8e8f0]">상식왕 퀴즈</span>
-            {" — "}10개 카테고리 1,000문제·실시간 배틀
+            {" — "}11개 카테고리 1,100여 문제·실시간 배틀
           </span>
           <span className="text-accent text-sm shrink-0 ml-2">→</span>
         </a>

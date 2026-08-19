@@ -3,11 +3,14 @@ import {
   ROOT_URL,
   QUIZ_URL,
   CALC_URL,
+  TOOLS_URL,
   ROOT_HOST,
   QUIZ_HOST,
   CALC_HOST,
+  TOOLS_HOST,
   QUIZ_SPLIT,
   CALC_SPLIT,
+  TOOLS_SPLIT,
 } from "@/lib/site";
 
 // 3분할 프록시 (Next.js 16: middleware → proxy)
@@ -20,6 +23,7 @@ import {
 const QUIZ_PATHS = ["/quiz", "/quiz-home", "/quiz-bank", "/battle", "/result"];
 const CALC_PATHS = ["/calculators", "/guides"];
 const HELP_PATHS = ["/help"];
+const TOOLS_PATHS = ["/tools"];
 
 function matches(pathname: string, prefixes: string[]): boolean {
   return prefixes.some(
@@ -28,7 +32,7 @@ function matches(pathname: string, prefixes: string[]): boolean {
 }
 
 export function proxy(request: NextRequest) {
-  if (!QUIZ_SPLIT && !CALC_SPLIT) return NextResponse.next();
+  if (!QUIZ_SPLIT && !CALC_SPLIT && !TOOLS_SPLIT) return NextResponse.next();
 
   const host = request.headers.get("host");
   const { pathname, search } = request.nextUrl;
@@ -36,19 +40,25 @@ export function proxy(request: NextRequest) {
   const isQuizPath = matches(pathname, QUIZ_PATHS);
   const isCalcPath = matches(pathname, CALC_PATHS);
   const isHelpPath = matches(pathname, HELP_PATHS);
+  const isToolsPath = matches(pathname, TOOLS_PATHS);
 
   // 경로가 속한 정식 도메인
   const targetUrl = isCalcPath
     ? CALC_URL
     : isQuizPath
       ? QUIZ_URL
-      : ROOT_URL; // help 및 기타 공용 경로의 기준은 루트
+      : isToolsPath
+        ? TOOLS_URL
+        : ROOT_URL; // help 및 기타 공용 경로의 기준은 루트
 
   if (host === CALC_HOST && CALC_SPLIT) {
     if (pathname === "/") {
       return NextResponse.rewrite(new URL(`/calculators${search}`, request.url));
     }
-    if ((isQuizPath || isHelpPath) && new URL(targetUrl).host !== host) {
+    if (
+      (isQuizPath || isHelpPath || isToolsPath) &&
+      new URL(targetUrl).host !== host
+    ) {
       return NextResponse.redirect(new URL(pathname + search, targetUrl), 308);
     }
     return NextResponse.next();
@@ -58,14 +68,33 @@ export function proxy(request: NextRequest) {
     if (pathname === "/") {
       return NextResponse.rewrite(new URL(`/quiz-home${search}`, request.url));
     }
-    if ((isCalcPath || isHelpPath) && new URL(targetUrl).host !== host) {
+    if (
+      (isCalcPath || isHelpPath || isToolsPath) &&
+      new URL(targetUrl).host !== host
+    ) {
+      return NextResponse.redirect(new URL(pathname + search, targetUrl), 308);
+    }
+    return NextResponse.next();
+  }
+
+  if (host === TOOLS_HOST && TOOLS_SPLIT) {
+    if (pathname === "/") {
+      return NextResponse.rewrite(new URL(`/tools${search}`, request.url));
+    }
+    if (
+      (isQuizPath || isCalcPath || isHelpPath) &&
+      new URL(targetUrl).host !== host
+    ) {
       return NextResponse.redirect(new URL(pathname + search, targetUrl), 308);
     }
     return NextResponse.next();
   }
 
   if (host === ROOT_HOST) {
-    if ((isQuizPath || isCalcPath) && new URL(targetUrl).host !== host) {
+    if (
+      (isQuizPath || isCalcPath || isToolsPath) &&
+      new URL(targetUrl).host !== host
+    ) {
       return NextResponse.redirect(new URL(pathname + search, targetUrl), 308);
     }
     return NextResponse.next();

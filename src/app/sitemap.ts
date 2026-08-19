@@ -4,7 +4,8 @@ import { guides } from "@/data/guides";
 import { categories } from "@/data/quizData";
 import { bankPath, getBankPageCount } from "@/lib/quizBank";
 import { helpTopics } from "@/data/help";
-import { ROOT_URL, QUIZ_URL, CALC_URL } from "@/lib/site";
+import { tools } from "@/data/tools";
+import { ROOT_URL, QUIZ_URL, CALC_URL, TOOLS_URL } from "@/lib/site";
 
 // 사이트맵에는 캐노니컬 URL만 등재합니다.
 // 도메인 분리 시 계산기 URL은 CALC_URL 기준으로 생성됩니다 — 두 도메인 모두
@@ -19,8 +20,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...helpTopics.map((topic) => ({
       url: `${ROOT_URL}/help/${topic.id}`,
+      lastModified: topic.date,
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    // 도구 (tools 서브도메인)
+    {
+      url: TOOLS_URL,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    },
+    ...tools.map((tool) => ({
+      url: `${TOOLS_URL}/tools/${tool.id}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.9,
     })),
     // 퀴즈 (quiz 서브도메인)
     {

@@ -2,10 +2,13 @@ import type { NextRequest } from "next/server";
 import {
   QUIZ_HOST,
   CALC_HOST,
+  TOOLS_HOST,
   QUIZ_SPLIT,
   CALC_SPLIT,
+  TOOLS_SPLIT,
   SITE_NAME,
   CALC_SITE_NAME,
+  TOOLS_SITE_NAME,
   INFO_SITE_NAME,
 } from "@/lib/site";
 
@@ -22,6 +25,16 @@ export function GET(request: NextRequest) {
       icons: [
         { src: "/calc-icon-192.png", sizes: "192x192", type: "image/png" },
         { src: "/calc-icon-512.png", sizes: "512x512", type: "image/png" },
+      ],
+    };
+  } else if (TOOLS_SPLIT && host === TOOLS_HOST) {
+    manifest = {
+      name: TOOLS_SITE_NAME,
+      short_name: "모두의도구",
+      description: "인스타 언팔 확인 등 로그인 없이 쓰는 무료 웹 도구",
+      icons: [
+        { src: "/info-icon-192.png", sizes: "192x192", type: "image/png" },
+        { src: "/info-icon-512.png", sizes: "512x512", type: "image/png" },
       ],
     };
   } else if (QUIZ_SPLIT && host === QUIZ_HOST) {
