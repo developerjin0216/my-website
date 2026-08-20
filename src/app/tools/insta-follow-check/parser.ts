@@ -15,7 +15,8 @@ export interface ParseResult {
 }
 
 // string_list_data 항목을 재귀적으로 수집 — 내보내기 포맷의 소소한 변형에 견디게
-function collectPeople(node: unknown, out: Person[]): void {
+// (insta-hidden 등 같은 ZIP을 쓰는 다른 도구에서도 재사용)
+export function collectPeople(node: unknown, out: Person[]): void {
   if (Array.isArray(node)) {
     for (const item of node) collectPeople(item, out);
     return;
