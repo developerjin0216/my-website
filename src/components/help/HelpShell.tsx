@@ -62,7 +62,9 @@ export default function HelpShell({
 
       <main className="px-5 py-5 flex-1 space-y-4">{children}</main>
 
+      {/* 본문 다 읽은 직후 — 노출·클릭 최적 지점 */}
       <div className="px-5 pb-4">
+        <CoupangBanner className="mb-3" />
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
       </div>
 
@@ -90,7 +92,6 @@ export default function HelpShell({
 
       <div className="px-5 pb-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
-        <CoupangBanner className="mt-4" />
       </div>
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">

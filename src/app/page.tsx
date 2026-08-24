@@ -102,8 +102,9 @@ export default function InfoHome() {
         </div>
       </div>
 
-      {/* Ad */}
+      {/* Ad — 안내 카드 훑은 직후 */}
       <div className="px-5 pb-4">
+        <CoupangBanner className="mb-3" />
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
       </div>
 
@@ -169,7 +170,6 @@ export default function InfoHome() {
       {/* Ad - bottom */}
       <div className="px-5 pb-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
-        <CoupangBanner className="mt-4" />
       </div>
 
       {/* Footer */}

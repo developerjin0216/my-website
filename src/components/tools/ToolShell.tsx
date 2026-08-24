@@ -74,6 +74,9 @@ export default function ToolShell({
         {/* 도구 본체 (클라이언트) */}
         {children}
 
+        {/* 도구 사용 직후 — 노출·클릭 최적 지점 */}
+        <CoupangBanner />
+
         <AdBanner slot="XXXXXXXXXX" format="rectangle" />
 
         {/* 소개 */}
@@ -121,8 +124,6 @@ export default function ToolShell({
         </section>
 
         <AdBanner slot="XXXXXXXXXX" format="auto" />
-
-        <CoupangBanner />
 
         {/* 푸터 */}
         <footer className="text-center text-xs text-[#606070] pb-8 space-y-2">

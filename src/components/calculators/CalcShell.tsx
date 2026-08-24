@@ -91,7 +91,9 @@ export default function CalcShell({
 
       <main className="px-5 py-5">{children}</main>
 
+      {/* 계산 결과 확인 직후 — 노출·클릭 최적 지점 */}
       <div className="px-5 pb-2">
+        <CoupangBanner className="mb-3" />
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
       </div>
 
@@ -209,7 +211,6 @@ export default function CalcShell({
 
       <div className="px-5 pb-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
-        <CoupangBanner className="mt-4" />
       </div>
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
