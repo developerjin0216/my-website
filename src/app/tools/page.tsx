@@ -9,6 +9,7 @@ import {
   CALC_URL,
 } from "@/lib/site";
 import AdBanner from "@/components/AdBanner";
+import CoupangBanner from "@/components/CoupangBanner";
 
 // 모두의 도구 허브 — tools 서브도메인의 루트(/)로 rewrite되어 서빙됩니다 (src/proxy.ts)
 
@@ -71,6 +72,8 @@ export default function ToolsHubPage() {
         </div>
 
         <AdBanner slot="XXXXXXXXXX" format="auto" />
+
+        <CoupangBanner />
 
         {/* SEO 소개 */}
         <section className="bg-card rounded-2xl p-5">

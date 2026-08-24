@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
+import CoupangBanner from "@/components/CoupangBanner";
 import { helpTopics } from "@/data/help";
 import { ROOT_URL, QUIZ_URL, CALC_URL, TOOLS_URL, INFO_SITE_NAME } from "@/lib/site";
 
@@ -168,6 +169,7 @@ export default function InfoHome() {
       {/* Ad - bottom */}
       <div className="px-5 pb-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
+        <CoupangBanner className="mt-4" />
       </div>
 
       {/* Footer */}

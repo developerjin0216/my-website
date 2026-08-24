@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
+import CoupangBanner from "@/components/CoupangBanner";
 import { getHelp } from "@/data/help";
 import { ROOT_URL, INFO_SITE_NAME } from "@/lib/site";
 
@@ -89,6 +90,7 @@ export default function HelpShell({
 
       <div className="px-5 pb-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
+        <CoupangBanner className="mt-4" />
       </div>
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">

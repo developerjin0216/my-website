@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getTool } from "@/data/tools";
 import { TOOLS_URL, TOOLS_SITE_NAME, ROOT_URL, QUIZ_URL, CALC_URL, CONTACT_EMAIL } from "@/lib/site";
 import AdBanner from "@/components/AdBanner";
+import CoupangBanner from "@/components/CoupangBanner";
 
 // 도구 페이지 공용 셸 — JSON-LD·가이드·FAQ·광고·푸터를 서버 렌더링하고
 // children(클라이언트 도구 UI)을 상단에 배치합니다. CalcShell과 같은 패턴.
@@ -120,6 +121,8 @@ export default function ToolShell({
         </section>
 
         <AdBanner slot="XXXXXXXXXX" format="auto" />
+
+        <CoupangBanner />
 
         {/* 푸터 */}
         <footer className="text-center text-xs text-[#606070] pb-8 space-y-2">

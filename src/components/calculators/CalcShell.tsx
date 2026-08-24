@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
+import CoupangBanner from "@/components/CoupangBanner";
 import { getCalc } from "@/data/calculators";
 import {
   QUIZ_URL,
@@ -208,6 +209,7 @@ export default function CalcShell({
 
       <div className="px-5 pb-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
+        <CoupangBanner className="mt-4" />
       </div>
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
