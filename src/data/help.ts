@@ -91,7 +91,7 @@ export const helpTopics: HelpInfo[] = [
     icon: "🔌",
     date: "2026-08-10",
     keywords: ["정전 신고", "한전 123", "단수 신고", "가스 냄새 신고", "도시가스 고장"],
-    related: ["locked-out", "emergency-numbers", "night-hospital"],
+    related: ["moving-checklist", "locked-out", "emergency-numbers"],
   },
   {
     id: "locked-out",
@@ -169,6 +169,17 @@ export const helpTopics: HelpInfo[] = [
     date: "2026-08-11",
     keywords: ["긴급여권", "여권 당일 발급", "인천공항 여권", "여권 빨리 발급", "긴급여권 미국"],
     related: ["lost-card", "lost-phone"],
+  },
+  {
+    id: "moving-checklist",
+    title: "이사 체크리스트 (준비·당일·이후)",
+    metaTitle: "이사 체크리스트 - 준비물·당일 챙길 것·이사 후 할 일 총정리",
+    description:
+      "이사 2주 전 예약할 것부터 당일 챙길 돈(장기수선충당금), 이사 후 14일 안에 끝낼 전입신고·확정일자까지 — 무료 지원 서비스(폐가전 수거·우편물 전송)와 함께 순서대로 정리했습니다.",
+    icon: "📦",
+    date: "2026-08-25",
+    keywords: ["이사 체크리스트", "이사 준비물", "이사 후 할일", "전입신고 확정일자", "이사업체 고르는 법"],
+    related: ["utility-outage", "locked-out", "noise-complaint"],
   },
   {
     id: "missing-person",
