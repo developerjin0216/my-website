@@ -1,4 +1,5 @@
 import HelpShell from "@/components/help/HelpShell";
+import DecisionFlow from "@/components/help/DecisionFlow";
 import { Sec, GuideTable } from "@/components/guides/GuideShell";
 import { buildHelpMetadata } from "@/data/help";
 
@@ -7,6 +8,45 @@ export const metadata = buildHelpMetadata("car-accident");
 export default function CarAccidentPage() {
   return (
     <HelpShell id="car-accident">
+      <DecisionFlow
+        question="지금 어떤 사고인가요?"
+        branches={[
+          {
+            label: "사람이 다쳤다",
+            steps: [
+              "즉시 정차 → <b>119</b>(구급) → <b>112</b>(경찰) — 인명피해 신고는 법적 의무이고, 구호 없이 떠나면 뺑소니입니다",
+              "부상자를 함부로 옮기지 말고(2차 손상 위험) 구급대 안내를 따르세요 — 단, 차량 화재 등 급박한 위험이 있으면 예외",
+              "현장 사진(전경·접촉부위·번호판)을 찍고 상대 인적사항 확인",
+              "내 보험사 접수 + 아프면 상대 보험사에 <b>대인접수</b> 요청",
+            ],
+          },
+          {
+            label: "차만 부딪혔다 (부상 없음)",
+            steps: [
+              "비상등 → 사진 4장(전경·접촉부위·상대 번호판·노면 흔적) → <b>차를 갓길로</b>",
+              "상대 이름·연락처·보험사 직접 확인 — 명함만 받고 보내지 마세요",
+              "각자 보험사에 접수 — 상대가 접수를 미루면 경찰에 사고 접수로 기록 확보",
+              "그 자리 현금 합의는 신중히 — 통증은 며칠 뒤 나타날 수 있습니다",
+            ],
+          },
+          {
+            label: "고속도로다",
+            steps: [
+              "비상등 → 트렁크 개방 → <b>탑승자 전원 가드레일 밖으로 대피</b> — 사진보다 사람이 먼저입니다",
+              "대피 후 112·보험사 신고, 차량 이동 불가면 한국도로공사 <b>1588-2504</b> 무료 견인(안전지대까지)",
+              "차 안·차 뒤에서 기다리는 것이 2차사고 최다 패턴 — 절대 금지",
+            ],
+          },
+          {
+            label: "주차장 접촉 (문콕)",
+            steps: [
+              "내가 긁혔다면: 112 신고 + 관리사무소에 <b>CCTV 보존 요청</b>(수일 내 삭제되는 곳 많음) + 내 블랙박스 주차녹화 확인",
+              "내가 긁었다면: 상대에게 <b>인적사항 제공</b>이 의무 — 안 하면 물피도주로 벌금·범칙금(승용 12만원)·벌점 대상입니다(주차장 포함)",
+              "메모만 남기지 말고 전화 연결까지 — 메모는 분실되면 미조치로 판단될 수 있습니다",
+            ],
+          },
+        ]}
+      />
       <Sec title="1분 요약 — 사고 직후 순서">
         <p>1. <strong className="text-[#e8e8f0]">즉시 정차 + 비상등</strong> — 다친 사람이 있으면 119, 그리고 112. 인명피해 사고의 경찰 신고는 법적 의무이고, 구호 없이 자리를 뜨면 뺑소니입니다.</p>
         <p>2. <strong className="text-[#e8e8f0]">사진 4장 찍고 차를 갓길로</strong> — 전경(멀리서), 접촉 부위, 상대 번호판·바퀴, 노면 흔적. 도로 한복판 정차가 2차사고를 부릅니다.</p>

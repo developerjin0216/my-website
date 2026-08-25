@@ -91,22 +91,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     })),
     {
-      url: `${QUIZ_URL}/about`,
+      url: `${ROOT_URL}/about`,
       changeFrequency: "yearly",
       priority: 0.4,
     },
     {
-      url: `${QUIZ_URL}/contact`,
+      url: `${ROOT_URL}/contact`,
       changeFrequency: "yearly",
       priority: 0.4,
     },
     {
-      url: `${QUIZ_URL}/privacy`,
+      url: `${ROOT_URL}/privacy`,
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
-      url: `${QUIZ_URL}/terms`,
+      url: `${ROOT_URL}/terms`,
       changeFrequency: "yearly",
       priority: 0.3,
     },

@@ -3,7 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "이용약관",
-  description: "상식왕 퀴즈 서비스 이용약관 안내 페이지입니다.",
+  description:
+    "8282114 생활안내·모두의 계산기·모두의 도구·상식왕 퀴즈 공통 이용약관입니다.",
   alternates: { canonical: "/terms" },
 };
 
@@ -22,22 +23,28 @@ export default function TermsPage() {
           <section>
             <h2 className="text-base font-bold text-white mb-2">제1조 (목적)</h2>
             <p>
-              본 약관은 상식왕 퀴즈(이하 &ldquo;서비스&rdquo;)의 이용과 관련하여
-              서비스 제공자와 이용자 간의 권리, 의무 및 기타 필요한 사항을 규정함을
-              목적으로 합니다.
+              본 약관은 8282114 생활안내(8282114.xyz), 모두의
+              계산기(calc.8282114.xyz), 모두의 도구(tools.8282114.xyz), 상식왕
+              퀴즈(quiz.8282114.xyz) — 이하 통칭 &ldquo;서비스&rdquo; — 의 이용과
+              관련하여 서비스 제공자와 이용자 간의 권리, 의무 및 기타 필요한
+              사항을 규정함을 목적으로 합니다.
             </p>
           </section>
 
           <section>
             <h2 className="text-base font-bold text-white mb-2">제2조 (서비스 내용)</h2>
-            <p>서비스는 다음과 같은 기능을 무료로 제공합니다.</p>
+            <p>서비스는 다음 기능을 무료로 제공합니다.</p>
             <ul className="list-disc pl-5 mt-2 space-y-1 text-[#a0a0b0]">
-              <li>10개 카테고리, 1,000문제의 상식 퀴즈</li>
-              <li>매일 새로운 오늘의 퀴즈</li>
-              <li>실시간 퀴즈 배틀 (최대 10명)</li>
-              <li>오답 노트 및 풀이 해설</li>
-              <li>오늘의 명언</li>
+              <li>긴급상황·생활 대처 안내 콘텐츠 (생활안내)</li>
+              <li>연봉·세금·요금 등 생활 계산기 (모두의 계산기)</li>
+              <li>브라우저에서 동작하는 파일·SNS 분석 도구 (모두의 도구)</li>
+              <li>상식 퀴즈, 오늘의 퀴즈, 실시간 퀴즈 배틀 (상식왕 퀴즈)</li>
             </ul>
+            <p className="mt-2 text-[#a0a0b0]">
+              안내 콘텐츠와 계산 결과는 참고용 정보 제공이며 법률·의료·세무
+              자문이 아닙니다. 중요한 결정은 관련 기관·전문가의 확인을
+              거치시기 바랍니다.
+            </p>
           </section>
 
           <section>

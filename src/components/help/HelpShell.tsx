@@ -31,6 +31,19 @@ export default function HelpShell({
         publisher: { "@type": "Organization", name: INFO_SITE_NAME },
         mainEntityOfPage: url,
       },
+      // FAQ가 있는 페이지는 FAQPage 구조화 데이터 함께 출력
+      ...(topic.faq && topic.faq.length > 0
+        ? [
+            {
+              "@type": "FAQPage",
+              mainEntity: topic.faq.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            },
+          ]
+        : []),
       {
         "@type": "BreadcrumbList",
         itemListElement: [
@@ -58,13 +71,64 @@ export default function HelpShell({
           <span aria-hidden="true">{topic.icon}</span> {topic.title}
         </h1>
         <p className="text-sm text-[#a0a0b0] mt-1">{topic.description}</p>
+        <p className="text-xs text-[#606070] mt-2">
+          최종 확인·업데이트: {topic.date} · 공식기관 안내 기준
+        </p>
       </header>
 
       <main className="px-5 py-5 flex-1 space-y-4">{children}</main>
 
-      {/* 본문 다 읽은 직후 — 노출·클릭 최적 지점 */}
+      {/* FAQ — 실제로 많이 묻는 질문 (FAQPage 구조화 데이터와 1:1) */}
+      {topic.faq && topic.faq.length > 0 && (
+        <section className="px-5 pb-4">
+          <div className="bg-card rounded-2xl p-5">
+            <h2 className="text-base font-bold text-accent mb-4">
+              🙋 자주 묻는 질문
+            </h2>
+            <div className="space-y-4">
+              {topic.faq.map((f) => (
+                <div key={f.q}>
+                  <p className="text-sm font-semibold mb-1 break-keep">
+                    Q. {f.q}
+                  </p>
+                  <p className="text-xs text-[#a0a0b0] leading-relaxed break-keep">
+                    {f.a}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 공식 출처 — 본문 근거 (E-E-A-T) */}
+      {topic.sources && topic.sources.length > 0 && (
+        <section className="px-5 pb-4">
+          <div className="bg-[#16213e] rounded-2xl px-5 py-4">
+            <h2 className="text-sm font-bold mb-2">🏛 공식 출처·참고</h2>
+            <ul className="space-y-1">
+              {topic.sources.map((s) => (
+                <li key={s.url}>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-[#8fa8d0] hover:text-accent underline break-all"
+                  >
+                    {s.name} ↗
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs text-[#606070] mt-2">
+              본문 내용은 위 공식 자료를 기준으로 작성했으며, 제도 변경 시
+              업데이트합니다.
+            </p>
+          </div>
+        </section>
+      )}
+
       <div className="px-5 pb-4">
-        <CoupangBanner className="mb-3" />
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
       </div>
 
@@ -90,8 +154,10 @@ export default function HelpShell({
         </div>
       </section>
 
+      {/* 광고·제휴는 콘텐츠가 끝난 뒤에 — 애드센스 심사 대비 배치 */}
       <div className="px-5 pb-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
+        <CoupangBanner className="mt-4" />
       </div>
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">

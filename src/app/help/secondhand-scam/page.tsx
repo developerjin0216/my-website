@@ -1,4 +1,5 @@
 import HelpShell from "@/components/help/HelpShell";
+import DecisionFlow from "@/components/help/DecisionFlow";
 import { Sec, GuideTable } from "@/components/guides/GuideShell";
 import { buildHelpMetadata } from "@/data/help";
 
@@ -7,6 +8,45 @@ export const metadata = buildHelpMetadata("secondhand-scam");
 export default function SecondhandScamPage() {
   return (
     <HelpShell id="secondhand-scam">
+      <DecisionFlow
+        question="지금 어떤 단계인가요?"
+        branches={[
+          {
+            label: "아직 안 보냈다 (의심 중)",
+            steps: [
+              "<b>더치트(thecheat.co.kr)</b>에서 계좌번호·연락처 조회 — 피해 이력이 있으면 즉시 중단",
+              "시세보다 지나치게 싸다 + 계좌이체 유도 + 급하게 재촉 = 3종 세트면 거르세요",
+              "가능하면 직거래, 택배거래는 플랫폼 공식 안전결제만 (외부 링크 결제창은 100% 가짜)",
+            ],
+          },
+          {
+            label: "보냈는데 물건이 안 온다",
+            steps: [
+              "판매글·대화·이체내역 전체 <b>캡처</b> (삭제 전에)",
+              "더치트에 피해 등록 → <b>ECRM(ecrm.police.go.kr)</b>에 온라인 신고",
+              "은행에 지급정지를 요청해보되, 물품 사기는 즉시 정지가 안 되는 게 원칙이라 기대치는 낮추기",
+              "검거 후 <b>배상명령 신청</b>으로 민사소송 없이 배상 판결까지",
+            ],
+          },
+          {
+            label: "가짜 안전결제에 카드번호를 입력했다",
+            steps: [
+              "카드사에 즉시 전화 — <b>정지 + 재발급</b>",
+              "결제가 이미 발생했다면 <b>이의제기</b> 접수",
+              "함께 입력한 정보(주민번호 등)가 있다면 pd.fss.or.kr 등록 등 개인정보 유출 대처 병행",
+              "그 링크는 신고하고 지인에게 공유 금지",
+            ],
+          },
+          {
+            label: "내 계좌가 지급정지 당했다",
+            steps: [
+              "은행에 사유 확인 — 내 계좌가 <b>사기 이용 계좌로 신고</b>된 상황입니다",
+              "실제 정상 거래였다면 거래 증빙(판매 대화·택배 송장)으로 <b>이의제기·소명</b>",
+              "누군가에게 계좌·통장을 빌려준 적이 있다면 전자금융거래법 위반 소지 — 즉시 법률 상담(132)",
+            ],
+          },
+        ]}
+      />
       <Sec title="1분 요약 — 돈만 보내고 물건이 안 온다면">
         <p>1. <strong className="text-[#e8e8f0]">증거부터 캡처</strong> — 판매글, 대화 내용 전체, 입금 내역, 상대 계좌·연락처. 상대가 글을 지우기 전에 지금 바로 저장하세요.</p>
         <p>2. <strong className="text-[#e8e8f0]">더치트(thecheat.co.kr)에서 상대 계좌·연락처 조회 + 피해 등록</strong> — 다른 피해자가 있는지 확인되고, 다음 피해자를 막습니다.</p>
