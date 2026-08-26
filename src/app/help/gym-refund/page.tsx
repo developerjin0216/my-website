@@ -25,8 +25,11 @@ export default function GymRefundPage() {
             ["③ 위약금 (총액의 10% 이내)", "− 30,000원"],
             ["→ 환불액", "170,000원"],
           ]}
-          note="내가 실제 결제한 금액(할인가) 기준입니다 — '정상가로 재계산' 요구는 부당 정산 꼼수입니다."
         />
+        <p className="text-xs text-[#606070]">
+          내가 실제 결제한 금액(할인가) 기준입니다 — &lsquo;정상가로
+          재계산&rsquo; 요구는 부당 정산 꼼수입니다.
+        </p>
       </Sec>
 
       <DecisionFlow
