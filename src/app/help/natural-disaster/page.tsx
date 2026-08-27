@@ -50,6 +50,102 @@ export default function NaturalDisasterPage() {
         ]}
       />
 
+      <Sec title="실제 상황으로 보는 판단 — 이 순간, 뭐가 정답인가">
+        <div className="space-y-4">
+          <div className="bg-[#16213e] rounded-xl p-4">
+            <p className="text-sm font-semibold text-accent mb-1.5">
+              상황 ① 새벽 2시, 반지하 — 창틀로 물이 새어 들어온다
+            </p>
+            <p className="text-xs text-[#c0c8d8] leading-relaxed break-keep">
+              &ldquo;걸레로 막고 물을 퍼내면 버틸 수 있지 않을까?&rdquo; —
+              <strong className="text-[#e8e8f0]"> 아닙니다.</strong> 반지하는
+              바깥 수위가 창틀을 넘는 순간부터 분 단위로 차오릅니다. 물이
+              발목에 오기 전에 귀중품 말고 <strong className="text-[#e8e8f0]">몸만
+              들고 나가는 것</strong>이 정답입니다. 시간이 있다면 나가는 길에
+              차단기만 내리세요. 수심이 무릎을 넘으면 바깥 수압 때문에 문이
+              열리지 않아 그때는 나가고 싶어도 못 나갑니다.
+            </p>
+          </div>
+
+          <div className="bg-[#16213e] rounded-xl p-4">
+            <p className="text-sm font-semibold text-accent mb-1.5">
+              상황 ② 아파트 방송 — &ldquo;지하주차장 침수 우려, 차량을 이동해 주세요&rdquo;
+            </p>
+            <p className="text-xs text-[#c0c8d8] leading-relaxed break-keep">
+              이미 물이 유입되기 시작했다면{" "}
+              <strong className="text-[#e8e8f0]">내려가지 않는 것</strong>이
+              정답입니다. 지하주차장은 경사로를 타고 물이 폭포처럼 쏟아지면
+              1~2분 만에 사람 키를 넘기고, 어둡고 출구가 멀어 지상보다 훨씬
+              위험합니다. 차는 자차보험으로 보상받을 수 있지만, &lsquo;차
+              빼러 갔다가&rsquo;는 폭우 인명사고의 가장 흔한 패턴입니다.
+              방송이 나왔다면 이미 늦은 겁니다.
+            </p>
+          </div>
+
+          <div className="bg-[#16213e] rounded-xl p-4">
+            <p className="text-sm font-semibold text-accent mb-1.5">
+              상황 ③ 퇴근길 지하차도 — 물이 좀 고였지만 앞차가 지나갔다
+            </p>
+            <p className="text-xs text-[#c0c8d8] leading-relaxed break-keep">
+              &ldquo;앞차도 갔으니까&rdquo;가 가장 위험한 판단입니다. 지하차도
+              수위는 <strong className="text-[#e8e8f0]">수십 초 만에</strong>{" "}
+              범퍼에서 지붕까지 올라올 수 있고, 중간에 시동이 꺼지면 뒤차에
+              막혀 후진도 못 합니다. 통제선이 없어도 물이 보이면{" "}
+              <strong className="text-[#e8e8f0]">우회</strong>가 정답 — 10분
+              돌아가는 것과 차 안에 갇히는 것의 선택입니다. 만약 이미 물속에서
+              시동이 꺼졌다면: 안전벨트 풀기 → 창문 열기(안 열리면 헤드레스트
+              철심으로 모서리 타격) → 지붕 위 또는 높은 곳으로.
+            </p>
+          </div>
+
+          <div className="bg-[#16213e] rounded-xl p-4">
+            <p className="text-sm font-semibold text-accent mb-1.5">
+              상황 ④ 계곡 펜션 1박 — 밤새 폭우, 새벽에 &lsquo;우르릉&rsquo; 소리
+            </p>
+            <p className="text-xs text-[#c0c8d8] leading-relaxed break-keep">
+              천둥이 아니라 땅에서 나는 울림이면{" "}
+              <strong className="text-[#e8e8f0]">산사태가 이미 시작된
+              것</strong>일 수 있습니다. 창밖 확인하러 가지 말고 일행을 깨워
+              즉시 건물을 벗어나 <strong className="text-[#e8e8f0]">계곡
+              반대쪽·옆 방향의 높은 곳</strong>으로 뛰세요(산사태는 계곡을 따라
+              내려옵니다). 애초에 폭우 예보가 있는 날 계곡·산기슭 숙소라면,
+              어두워지기 전에 미리 자리를 옮기는 것이 유일하게 안전한
+              선택입니다 — 새벽 대피는 몇 배 위험합니다.
+            </p>
+          </div>
+
+          <div className="bg-[#16213e] rounded-xl p-4">
+            <p className="text-sm font-semibold text-accent mb-1.5">
+              상황 ⑤ 동해안 해변 — 발밑이 흔들리더니 바닷물이 쭉 빠진다
+            </p>
+            <p className="text-xs text-[#c0c8d8] leading-relaxed break-keep">
+              드러난 바닥을 구경하러 내려가는 사람들이 보여도 따라가면 안
+              됩니다. <strong className="text-[#e8e8f0]">물 빠짐은 해일이 오기
+              직전의 전조</strong>이고, 되돌아오는 파도는 걷는 속도보다
+              빠릅니다. 사진 찍을 시간에 해안과 직각 방향으로 뛰어{" "}
+              <strong className="text-[#e8e8f0]">언덕이나 3층 이상 콘크리트
+              건물</strong>로 올라가세요. 그리고 첫 파도가 지나가도 내려오지
+              마세요 — 두 번째, 세 번째 파도가 더 큰 경우가 많습니다.
+            </p>
+          </div>
+
+          <div className="bg-[#16213e] rounded-xl p-4">
+            <p className="text-sm font-semibold text-accent mb-1.5">
+              상황 ⑥ 물이 빠진 다음 날 — 집이 엉망이라 빨리 치우고 싶다
+            </p>
+            <p className="text-xs text-[#c0c8d8] leading-relaxed break-keep">
+              마음은 급하지만 순서를 지키면 수백만 원이 달라집니다. ①
+              들어가기 전 가스 밸브·차단기 확인(감전·폭발 위험) ②{" "}
+              <strong className="text-[#e8e8f0]">벽의 침수 흔적(물때 선)과 망가진
+              가전·가구를 전부 사진으로</strong> — 실사 나온 공무원이 보는 건
+              이 기록입니다 ③ 10일 안에 주민센터에 피해 신고 ④ 그다음에
+              청소. 침수차는 &lsquo;시동 한 번만&rsquo;이 엔진을 완전히
+              망가뜨립니다 — 그대로 보험사에 견인 요청하세요.
+            </p>
+          </div>
+        </div>
+      </Sec>
+
       <Sec title="재난 정보는 여기서 — 미리 깔아두세요">
         <GuideTable
           headers={["채널", "역할"]}
