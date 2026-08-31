@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
+import CoupangGoldbox from "@/components/CoupangGoldbox";
 import { calculators, calcGroups } from "@/data/calculators";
 import { guides } from "@/data/guides";
 import { QUIZ_URL, CALC_URL, SPLIT, CALC_SITE_NAME } from "@/lib/site";
@@ -71,6 +72,7 @@ export default function CalculatorsPage() {
 
       <div className="px-5 pt-4 pb-2">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
+        <CoupangGoldbox className="mt-3" />
       </div>
 
       {/* 계산기 그리드 — 서버 렌더링 */}

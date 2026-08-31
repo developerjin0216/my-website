@@ -10,6 +10,7 @@ import {
 } from "@/lib/site";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
+import CoupangGoldbox from "@/components/CoupangGoldbox";
 
 // 모두의 도구 허브 — tools 서브도메인의 루트(/)로 rewrite되어 서빙됩니다 (src/proxy.ts)
 
@@ -72,6 +73,8 @@ export default function ToolsHubPage() {
         </div>
 
         <AdBanner slot="XXXXXXXXXX" format="auto" />
+
+        <CoupangGoldbox />
 
         <CoupangBanner />
 

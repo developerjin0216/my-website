@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
+import CoupangGoldbox from "@/components/CoupangGoldbox";
 import { helpTopics } from "@/data/help";
 import { ROOT_URL, QUIZ_URL, CALC_URL, TOOLS_URL, INFO_SITE_NAME } from "@/lib/site";
 
@@ -105,6 +106,7 @@ export default function InfoHome() {
       {/* Ad */}
       <div className="px-5 pb-4">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
+        <CoupangGoldbox className="mt-3" />
       </div>
 
       {/* 자매 서비스 */}
