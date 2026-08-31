@@ -5,7 +5,7 @@
 // 발급받은 link.coupang.com 단축링크를 넣으면 배너가 활성화됩니다.
 // (빈 문자열이면 아무것도 렌더링하지 않음 — 안전 배포용)
 
-const GOLDBOX_URL = "";
+const GOLDBOX_URL = "https://link.coupang.com/a/gE3FnczeLc";
 
 export default function CoupangGoldbox({ className = "" }: { className?: string }) {
   if (!GOLDBOX_URL) return null;
@@ -16,6 +16,7 @@ export default function CoupangGoldbox({ className = "" }: { className?: string 
         href={GOLDBOX_URL}
         target="_blank"
         rel="nofollow sponsored noopener"
+        referrerPolicy="unsafe-url"
         className="block rounded-2xl p-4 bg-gradient-to-r from-[#3d2e00] to-[#5a4500] border border-[#ffd700]/40 hover:border-[#ffd700] transition-colors active:scale-[0.99]"
       >
         <div className="flex items-center justify-between gap-3">
