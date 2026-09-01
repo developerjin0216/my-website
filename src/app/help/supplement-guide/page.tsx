@@ -1,24 +1,12 @@
 import HelpShell from "@/components/help/HelpShell";
 import DecisionFlow from "@/components/help/DecisionFlow";
+import CoupangProducts from "@/components/CoupangProducts";
 import { Sec, GuideTable } from "@/components/guides/GuideShell";
 import { buildHelpMetadata } from "@/data/help";
 
 export const metadata = buildHelpMetadata("supplement-guide");
 
-// 쿠팡파트너스 성분별 상품 링크 — 파트너스에서 발급한 link.coupang.com
-// 단축링크를 넣으면 해당 성분 옆에 '최저가 보기' 버튼이 켜집니다 (빈 값 = 숨김)
-const PARTNER_LINKS: { label: string; url: string }[] = [
-  { label: "종합비타민", url: "" },
-  { label: "오메가3", url: "" },
-  { label: "유산균", url: "" },
-  { label: "마그네슘", url: "" },
-  { label: "비타민D", url: "" },
-  { label: "루테인", url: "" },
-];
-
 export default function SupplementGuidePage() {
-  const activeLinks = PARTNER_LINKS.filter((l) => l.url);
-
   return (
     <HelpShell id="supplement-guide">
       <Sec title="시간대별 복용표 — 이대로만 나눠도 절반은 성공">
@@ -124,28 +112,11 @@ export default function SupplementGuidePage() {
         <p>❌ <strong className="text-[#e8e8f0]">영양제로 식사·치료 대체</strong> — 건강기능식품은 보조 수단입니다. 증상이 있다면 진료가 먼저이고, 임산부·수유부·만성질환자는 복용 전 상담이 필수입니다.</p>
       </Sec>
 
-      {activeLinks.length > 0 && (
-        <Sec title="성분별 최저가 확인">
-          <div className="flex flex-wrap gap-2">
-            {activeLinks.map((l) => (
-              <a
-                key={l.label}
-                href={l.url}
-                target="_blank"
-                rel="nofollow sponsored noopener"
-                referrerPolicy="unsafe-url"
-                className="text-sm font-semibold bg-[#16213e] border border-[#2a3a5a] rounded-full px-4 py-2 text-accent hover:border-accent transition-colors"
-              >
-                {l.label} 최저가 →
-              </a>
-            ))}
-          </div>
-          <p className="text-xs text-[#606070] mt-2">
-            이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의
-            수수료를 제공받습니다.
-          </p>
-        </Sec>
-      )}
+      {/* 쿠팡 API 상품 카드 — 키워드별 자동 로드 (API 키 미설정 시 자동 숨김) */}
+      <CoupangProducts
+        keywords={["종합비타민", "오메가3", "유산균", "마그네슘", "비타민D", "루테인"]}
+        title="🛒 성분별 최저가 비교 (쿠팡)"
+      />
     </HelpShell>
   );
 }
