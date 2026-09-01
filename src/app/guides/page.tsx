@@ -5,7 +5,7 @@ import { guides } from "@/data/guides";
 import { CALC_URL, QUIZ_URL, SPLIT } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "생활 가이드",
+  title: { absolute: "생활 가이드 - 모두의 계산기" },
   description:
     "4대보험 요율, 전기요금 누진제, 퇴직금 지급 기준까지 — 생활 계산기와 함께 보는 알기 쉬운 생활 정보 가이드입니다.",
   alternates: { canonical: `${CALC_URL}/guides` },

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { CALC_URL, CALC_SITE_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "생활 계산기 모음",
+  title: { absolute: "생활 계산기 모음 - 모두의 계산기" },
   description:
-    "연봉 실수령액, 퇴직금, 연차, 대출 이자, 청년 버팀목 전세대출, 복비, 전기요금, 에어컨 전기료, 환율, BMI, 칼로리까지 일상에 필요한 무료 계산기 15종을 한 곳에서 이용하세요.",
+    "연봉 실수령액, 퇴직금, 연차, 대출 이자, 청년 버팀목 전세대출, 복비, 전기요금, 에어컨 전기료, 환율, BMI, 칼로리까지 일상에 필요한 무료 계산기 19종을 한 곳에서 이용하세요.",
   keywords: [
     "계산기 모음",
     "실수령액 계산기",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "생활 계산기 모음",
     description:
-      "연봉 실수령액·퇴직금·전기요금·환율·BMI 등 무료 생활 계산기 15종",
+      "연봉 실수령액·퇴직금·전기요금·환율·BMI 등 무료 생활 계산기 19종",
     url: `${CALC_URL}/calculators`,
     siteName: CALC_SITE_NAME,
     locale: "ko_KR",

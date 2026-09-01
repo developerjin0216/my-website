@@ -12,7 +12,7 @@ import { ROOT_URL, QUIZ_URL, CALC_URL, TOOLS_URL, INFO_SITE_NAME } from "@/lib/s
 export const metadata: Metadata = {
   title: { absolute: "8282114 - 급할 때 바로 찾는 생활 긴급 안내" },
   description:
-    "카드 분실, 보이스피싱, 야간 병원·약국, 정전·가스 신고까지 — 급할 때 필요한 전화번호와 대처법을 한 곳에 모았습니다. 생활 계산기 15종과 상식 퀴즈도 함께 이용하세요.",
+    "카드 분실, 보이스피싱, 야간 병원·약국, 정전·가스 신고까지 — 급할 때 필요한 전화번호와 대처법을 한 곳에 모았습니다. 생활 계산기 19종과 상식 퀴즈도 함께 이용하세요.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "8282114 - 급할 때 바로 찾는 생활 긴급 안내",
@@ -162,8 +162,8 @@ export default function InfoHome() {
           <ul className="text-xs text-[#a0a0b0] leading-relaxed space-y-1.5">
             <li>• 긴급 전화번호 총정리 — 신고·상담·민원 번호 한 페이지에</li>
             <li>• 상황별 대처 안내 — 분실·사기·응급·시설 고장 시 행동 순서</li>
-            <li>• 생활 계산기 15종 — 연봉 실수령액부터 전기요금까지</li>
-            <li>• 상식왕 퀴즈 — 1,000문제 무료 상식 퀴즈</li>
+            <li>• 생활 계산기 19종 — 연봉 실수령액부터 전기요금까지</li>
+            <li>• 상식왕 퀴즈 — 1,100여 문제 무료 상식 퀴즈</li>
           </ul>
         </div>
       </section>

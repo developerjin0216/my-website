@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CONTACT_EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "문의하기",
+  title: { absolute: "문의하기 - 8282114" },
   description:
     "상식왕 퀴즈·생활 계산기 문의 페이지 — 오류 제보, 광고·제휴 문의를 받습니다.",
   alternates: { canonical: "/contact" },

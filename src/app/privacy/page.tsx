@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CONTACT_EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "개인정보처리방침",
+  title: { absolute: "개인정보처리방침 - 8282114" },
   description:
     "8282114 생활안내·모두의 계산기·모두의 도구·상식왕 퀴즈 공통 개인정보처리방침입니다.",
   alternates: { canonical: "/privacy" },

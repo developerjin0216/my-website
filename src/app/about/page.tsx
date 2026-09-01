@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CONTACT_EMAIL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "사이트 소개",
+  title: { absolute: "사이트 소개 - 8282114" },
   description:
     "8282114 생활안내·모두의 계산기·모두의 도구·상식왕 퀴즈 소개 — 운영 목적, 콘텐츠 작성 기준, 정보 출처와 갱신 원칙을 안내합니다.",
   alternates: { canonical: "/about" },

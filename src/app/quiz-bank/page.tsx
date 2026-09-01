@@ -14,15 +14,22 @@ const TOTAL_QUESTIONS = Object.values(quizzes).reduce(
 
 export const metadata: Metadata = {
   title: `퀴즈 문제은행 - 상식 퀴즈 ${TOTAL_QUESTIONS.toLocaleString()}문제 정답·해설`,
-  description: `경제·MZ 트렌드·무한도전·IT·일반 상식·과학·역사·연예·스포츠·지리 — 10개 카테고리 ${TOTAL_QUESTIONS.toLocaleString()}문제의 정답과 해설을 무료로 열람하세요. 원하는 카테고리를 골라 실전 퀴즈에도 도전할 수 있습니다.`,
+  description: `경제·맞춤법·MZ 트렌드·무한도전·IT·일반 상식·과학·역사·연예·스포츠·지리 — 11개 카테고리 ${TOTAL_QUESTIONS.toLocaleString()}문제의 정답과 해설을 무료로 열람하세요. 원하는 카테고리를 골라 실전 퀴즈에도 도전할 수 있습니다.`,
   alternates: { canonical: `${QUIZ_URL}/quiz-bank` },
   openGraph: {
     title: `퀴즈 문제은행 - 상식 퀴즈 ${TOTAL_QUESTIONS.toLocaleString()}문제 정답·해설`,
-    description: `10개 카테고리 ${TOTAL_QUESTIONS.toLocaleString()}문제의 정답과 해설을 무료로 열람하세요.`,
+    description: `11개 카테고리 ${TOTAL_QUESTIONS.toLocaleString()}문제의 정답과 해설을 무료로 열람하세요.`,
     url: `${QUIZ_URL}/quiz-bank`,
     siteName: SITE_NAME,
     locale: "ko_KR",
     type: "website",
+    images: [
+      {
+        url: `${QUIZ_URL}/quiz-home/opengraph-image`,
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
 };
 

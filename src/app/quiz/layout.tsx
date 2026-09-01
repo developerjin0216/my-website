@@ -6,7 +6,7 @@ import { QUIZ_URL } from "@/lib/site";
 export const metadata: Metadata = {
   title: "퀴즈 풀기",
   description:
-    "10개 카테고리 1,000문제 중 랜덤 10문제에 도전하세요. 15초 제한 시간, 힌트 기능, 오답 해설까지 제공합니다.",
+    "11개 카테고리 1,100여 문제 중 랜덤 10문제에 도전하세요. 15초 제한 시간, 힌트 기능, 오답 해설까지 제공합니다.",
   alternates: { canonical: `${QUIZ_URL}/quiz` },
 };
 
@@ -40,7 +40,7 @@ export default function QuizLayout({
         </div>
         <div className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold mb-3 text-accent">
-            퀴즈 카테고리 (총 1,000문제)
+            퀴즈 카테고리 (총 1,100여 문제)
           </h2>
           <ul className="grid grid-cols-2 gap-x-4 text-sm text-[#a0a0b0] leading-loose">
             {categories.map((cat) => (

@@ -652,6 +652,10 @@ export function buildHelpMetadata(id: string): Metadata {
       siteName: INFO_SITE_NAME,
       locale: "ko_KR",
       type: "article",
+      // 자식 openGraph가 부모 파일 기반 이미지를 대체하므로 명시 (shallow merge)
+      images: [
+        { url: `${ROOT_URL}/opengraph-image`, width: 1200, height: 630 },
+      ],
     },
   };
 }

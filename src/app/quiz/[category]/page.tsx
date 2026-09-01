@@ -53,6 +53,13 @@ export async function generateMetadata({
       siteName: SITE_NAME,
       locale: "ko_KR",
       type: "website",
+      images: [
+        {
+          url: `${QUIZ_URL}/quiz-home/opengraph-image`,
+          width: 1200,
+          height: 630,
+        },
+      ],
     },
   };
 }

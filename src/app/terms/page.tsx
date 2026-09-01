@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "이용약관",
+  title: { absolute: "이용약관 - 8282114" },
   description:
     "8282114 생활안내·모두의 계산기·모두의 도구·상식왕 퀴즈 공통 이용약관입니다.",
   alternates: { canonical: "/terms" },
@@ -108,7 +108,7 @@ export default function TermsPage() {
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
         <p className="text-xs text-[#606070]">
-          © 2026 상식왕 퀴즈
+          © 2026 8282114
         </p>
       </footer>
     </div>
