@@ -5,7 +5,7 @@ import AdBanner from "@/components/AdBanner";
 import DailyQuote from "@/components/DailyQuote";
 import HomeClient from "@/components/HomeClient";
 import DailyStreak from "@/components/quiz/DailyStreak";
-import { QUIZ_URL, SITE_NAME } from "@/lib/site";
+import { QUIZ_URL, CALC_URL, SITE_NAME } from "@/lib/site";
 
 // 상식왕 퀴즈 홈 — quiz 서브도메인의 루트(/)로 rewrite되어 서빙됩니다 (src/proxy.ts)
 
@@ -94,19 +94,20 @@ export default function QuizHome() {
         </div>
       </div>
 
-      {/* Calculators — 별도 사이트 링크라 퀴즈 CTA보다 작게 (컴팩트 배너) */}
+      {/* Calculators — 별도 사이트 링크라 퀴즈 CTA보다 작게 (컴팩트 배너)
+          절대주소 사용: 상대경로면 quiz 호스트에서 308을 거쳐 크롤 낭비 */}
       <div className="px-5 pb-4">
-        <Link
-          href="/calculators"
+        <a
+          href={`${CALC_URL}/calculators`}
           className="flex items-center justify-between rounded-xl px-4 py-3 bg-card border border-[#2a3a5a] hover:border-[#27AE60] transition-colors"
         >
           <span className="text-sm text-[#a0a0b0]">
             <span aria-hidden="true">🧮</span>{" "}
             <span className="font-semibold text-[#e8e8f0]">생활 계산기</span>
-            {" — "}실수령액·전기요금 등 15종
+            {" — "}실수령액·전기요금 등 19종
           </span>
           <span className="text-[#27AE60] text-sm shrink-0 ml-2">바로가기 →</span>
-        </Link>
+        </a>
       </div>
 
       {/* Ad */}
@@ -177,13 +178,13 @@ export default function QuizHome() {
           <h3 className="text-sm font-bold mb-2 mt-4">인기 계산기 바로가기</h3>
           <div className="flex flex-wrap gap-2">
             {POPULAR_CALCS.map((c) => (
-              <Link
+              <a
                 key={c.id}
-                href={`/calculators/${c.id}`}
+                href={`${CALC_URL}/calculators/${c.id}`}
                 className="text-xs bg-[#16213e] border border-[#2a3a5a] rounded-full px-3 py-1.5 text-[#a0a0b0] hover:text-accent hover:border-accent transition-colors"
               >
                 {c.label}
-              </Link>
+              </a>
             ))}
           </div>
         </div>

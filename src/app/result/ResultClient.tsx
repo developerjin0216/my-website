@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { categories } from "@/data/quizData";
 import { saveHighScore, saveDailyStatus } from "@/utils/storage";
-import { QUIZ_URL } from "@/lib/site";
+import { QUIZ_URL, CALC_URL } from "@/lib/site";
 import AdBanner from "@/components/AdBanner";
 
 // 퀴즈 카테고리 → 어울리는 계산기 추천 (참여도가 가장 높은 결과 화면에서 교차 유입)
@@ -257,13 +256,13 @@ function ResultContent() {
         </p>
         <div className="flex flex-wrap justify-center gap-2">
           {suggestions.map((s) => (
-            <Link
+            <a
               key={s.id}
-              href={`/calculators/${s.id}`}
+              href={`${CALC_URL}/calculators/${s.id}`}
               className="text-xs bg-[#16213e] border border-[#2a3a5a] rounded-full px-3 py-1.5 text-[#a0a0b0] hover:text-accent hover:border-accent transition-colors"
             >
               {s.label}
-            </Link>
+            </a>
           ))}
         </div>
       </div>

@@ -1,7 +1,7 @@
-import Link from "next/link";
 import HelpShell from "@/components/help/HelpShell";
 import { Sec, GuideTable } from "@/components/guides/GuideShell";
 import { buildHelpMetadata } from "@/data/help";
+import { CALC_URL } from "@/lib/site";
 
 export const metadata = buildHelpMetadata("utility-outage");
 
@@ -14,9 +14,12 @@ export default function UtilityOutagePage() {
         <p>3. 여름철 정전 대비로 냉장고는 문을 열지 않으면 2~3시간은 버팁니다.</p>
         <p className="text-xs text-[#606070]">
           전기요금이 궁금하다면{" "}
-          <Link href="/calculators/electricity" className="text-accent underline">
+          <a
+            href={`${CALC_URL}/calculators/electricity`}
+            className="text-accent underline"
+          >
             전기요금 계산기
-          </Link>
+          </a>
           에서 확인할 수 있습니다.
         </p>
       </Sec>
