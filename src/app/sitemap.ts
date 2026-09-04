@@ -5,6 +5,8 @@ import { categories } from "@/data/quizData";
 import { bankPath, getBankPageCount } from "@/lib/quizBank";
 import { helpTopics } from "@/data/help";
 import { tools } from "@/data/tools";
+import { mbtiTypes } from "@/data/mbti";
+import { memes } from "@/data/memes";
 import { ROOT_URL, QUIZ_URL, CALC_URL, TOOLS_URL } from "@/lib/site";
 
 // 사이트맵에는 캐노니컬 URL만 등재합니다.
@@ -70,6 +72,33 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: i === 0 ? 0.7 : 0.6,
       }))
     ),
+    // MBTI 백과 (quiz 서브도메인)
+    {
+      url: `${QUIZ_URL}/mbti`,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${QUIZ_URL}/mbti/test`,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    ...mbtiTypes.map((t) => ({
+      url: `${QUIZ_URL}/mbti/${t.code.toLowerCase()}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+    // 밈·신조어 사전 (quiz 서브도메인)
+    {
+      url: `${QUIZ_URL}/meme`,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    ...memes.map((m) => ({
+      url: `${QUIZ_URL}/meme/${m.id}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     {
       url: `${CALC_URL}/calculators`,
       changeFrequency: "weekly",

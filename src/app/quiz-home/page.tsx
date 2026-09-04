@@ -94,6 +94,28 @@ export default function QuizHome() {
         </div>
       </div>
 
+      {/* MBTI 백과 & 밈 사전 — 바이럴·SEO 콘텐츠 */}
+      <div className="px-5 pb-4 grid grid-cols-2 gap-3">
+        <Link
+          href="/mbti"
+          className="rounded-2xl p-4 text-center transition-transform active:scale-[0.97] bg-gradient-to-br from-[#9B59B6] to-[#5B86E5]"
+        >
+          <p className="text-base font-bold text-white">🔮 MBTI 백과</p>
+          <p className="text-[11px] text-white/70 mt-1">
+            16유형 특징·궁합 + 3분 테스트
+          </p>
+        </Link>
+        <Link
+          href="/meme"
+          className="rounded-2xl p-4 text-center transition-transform active:scale-[0.97] bg-gradient-to-br from-[#E67E22] to-[#E74C3C]"
+        >
+          <p className="text-base font-bold text-white">😂 밈·신조어 사전</p>
+          <p className="text-[11px] text-white/70 mt-1">
+            요즘 말 뜻·유래 총정리
+          </p>
+        </Link>
+      </div>
+
       {/* Calculators — 별도 사이트 링크라 퀴즈 CTA보다 작게 (컴팩트 배너)
           절대주소 사용: 상대경로면 quiz 호스트에서 308을 거쳐 크롤 낭비 */}
       <div className="px-5 pb-4">
@@ -170,8 +192,10 @@ export default function QuizHome() {
             <li>• 퀴즈 배틀 — 최대 10명 실시간 대결</li>
             <li>• 오답 노트 — 틀린 문제 풀이 해설 제공</li>
             <li>• 퀴즈 문제은행 — 전체 1,000문제 정답·해설 열람</li>
+            <li>• MBTI 백과 — 16가지 성격유형 특징·연애·궁합·직업 + 무료 간이 테스트</li>
+            <li>• 밈·신조어 사전 — 요즘 유행어 뜻·유래·사용 예시 정리</li>
             <li>• 오늘의 명언 — 365일 매일 새로운 명언</li>
-            <li>• 생활 계산기 — 연봉 실수령액, 퇴직금, 전기요금, 환율 등 15종</li>
+            <li>• 생활 계산기 — 연봉 실수령액, 퇴직금, 전기요금, 환율 등 19종</li>
             <li>• 모바일 최적화 — 언제 어디서든 플레이</li>
           </ul>
 

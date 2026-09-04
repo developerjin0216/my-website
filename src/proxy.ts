@@ -20,7 +20,7 @@ import {
 // - /about, /contact, /privacy, /terms 는 모든 도메인에서 서빙 (AdSense 필수 페이지)
 // - 같은 호스트로의 redirect는 절대 발생하지 않도록 host 비교 후에만 308 (루프 방지)
 
-const QUIZ_PATHS = ["/quiz", "/quiz-home", "/quiz-bank", "/battle", "/result"];
+const QUIZ_PATHS = ["/quiz", "/quiz-home", "/quiz-bank", "/battle", "/result", "/mbti", "/meme"];
 const CALC_PATHS = ["/calculators", "/guides"];
 const HELP_PATHS = ["/help"];
 const TOOLS_PATHS = ["/tools"];

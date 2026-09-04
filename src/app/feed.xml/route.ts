@@ -3,6 +3,8 @@ import { helpTopics } from "@/data/help";
 import { guides } from "@/data/guides";
 import { tools } from "@/data/tools";
 import { categories } from "@/data/quizData";
+import { mbtiTypes } from "@/data/mbti";
+import { memes } from "@/data/memes";
 import {
   ROOT_URL,
   CALC_URL,
@@ -102,15 +104,27 @@ export function GET(request: NextRequest) {
   } else if (host === QUIZ_HOST) {
     xml = renderFeed(
       {
-        title: `${SITE_NAME} - 카테고리별 퀴즈`,
+        title: `${SITE_NAME} - 퀴즈·MBTI·밈 사전`,
         link: QUIZ_URL,
-        description: "11개 카테고리 1,100여 문제 무료 상식 퀴즈",
+        description: "11개 카테고리 상식 퀴즈, MBTI 16유형 백과, 밈·신조어 사전",
       },
-      categories.map((c) => ({
-        title: `${c.name} 퀴즈`,
-        link: `${QUIZ_URL}/quiz/${c.id}`,
-        description: `${c.name} 카테고리 무료 상식 퀴즈 — 문제은행 해설 포함`,
-      }))
+      [
+        ...mbtiTypes.map((t) => ({
+          title: `${t.code} 특징 총정리 - ${t.name}`,
+          link: `${QUIZ_URL}/mbti/${t.code.toLowerCase()}`,
+          description: `${t.code}의 성격·연애·궁합·직업 — ${t.tagline}`,
+        })),
+        ...memes.map((m) => ({
+          title: `${m.term} 뜻`,
+          link: `${QUIZ_URL}/meme/${m.id}`,
+          description: m.meaning,
+        })),
+        ...categories.map((c) => ({
+          title: `${c.name} 퀴즈`,
+          link: `${QUIZ_URL}/quiz/${c.id}`,
+          description: `${c.name} 카테고리 무료 상식 퀴즈 — 문제은행 해설 포함`,
+        })),
+      ]
     );
   } else {
     // 루트(기본): 급할때 생활안내
