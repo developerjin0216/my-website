@@ -113,7 +113,8 @@ export default function MemeHubPage() {
         <p className="text-xs text-[#a0a0b0] leading-relaxed mb-2">
           유행어는 태어나고 사라지는 속도가 빠릅니다. 이 사전은 일상 대화, 방송
           자막, 커뮤니티와 SNS에서 실제로 자주 쓰이는 말을 골라 뜻과 유래, 실제
-          사용 예시까지 직접 정리합니다. 새 유행어는 계속 추가됩니다.
+          사용 예시에 더해 어떤 상황에서 어떻게 쓰는지(사용 팁)까지 직접
+          정리합니다. 새 유행어는 계속 추가됩니다.
         </p>
         <p className="text-xs text-[#606070] leading-relaxed">
           유래가 불확실한 항목은 단정하지 않고 널리 알려진 설을 기준으로

@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   // (미지정 시 Vercel 함수에 파일이 누락되어 readFile이 ENOENT → 500)
   outputFileTracingIncludes: {
     "/api/og/result": ["./src/assets/fonts/*"],
+    "/api/og/meme": ["./src/assets/fonts/*"],
   },
 };
 

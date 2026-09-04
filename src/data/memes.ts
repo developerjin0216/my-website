@@ -15,15 +15,15 @@ export type MemeCategoryId =
 
 export const memeCategories: Record<
   MemeCategoryId,
-  { name: string; emoji: string; desc: string }
+  { name: string; emoji: string; color: string; desc: string }
 > = {
-  recent: { name: "요즘 뜨는 말", emoji: "🔥", desc: "2024~2026 최신 유행어와 밈" },
-  abbr: { name: "줄임말·신조어", emoji: "✂️", desc: "일상 대화와 SNS에서 쓰는 줄임말" },
-  reaction: { name: "리액션·감탄사", emoji: "💬", desc: "채팅과 댓글에서 쓰는 반응 표현" },
-  yamin: { name: "야민정음", emoji: "🔤", desc: "글자 모양이 비슷한 것끼리 바꿔 쓰는 표기 놀이" },
-  broadcast: { name: "방송·인터넷 밈", emoji: "📺", desc: "예능·영화·인터넷 방송에서 태어난 밈" },
-  game: { name: "게임에서 온 말", emoji: "🎮", desc: "게임 용어에서 일상어가 된 말" },
-  fandom: { name: "덕질·연애 용어", emoji: "💘", desc: "팬 활동과 연애 관계에서 쓰는 말" },
+  recent: { name: "요즘 뜨는 말", emoji: "🔥", color: "#E74C3C", desc: "2024~2026 최신 유행어와 밈" },
+  abbr: { name: "줄임말·신조어", emoji: "✂️", color: "#3498DB", desc: "일상 대화와 SNS에서 쓰는 줄임말" },
+  reaction: { name: "리액션·감탄사", emoji: "💬", color: "#F59E0B", desc: "채팅과 댓글에서 쓰는 반응 표현" },
+  yamin: { name: "야민정음", emoji: "🔤", color: "#9B59B6", desc: "글자 모양이 비슷한 것끼리 바꿔 쓰는 표기 놀이" },
+  broadcast: { name: "방송·인터넷 밈", emoji: "📺", color: "#E67E22", desc: "예능·영화·인터넷 방송에서 태어난 밈" },
+  game: { name: "게임에서 온 말", emoji: "🎮", color: "#22C55E", desc: "게임 용어에서 일상어가 된 말" },
+  fandom: { name: "덕질·연애 용어", emoji: "💘", color: "#E91E63", desc: "팬 활동과 연애 관계에서 쓰는 말" },
 };
 
 export interface MemeEntry {

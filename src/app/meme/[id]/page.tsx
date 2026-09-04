@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import AdBanner from "@/components/AdBanner";
 import { memeCategories, memes, memesByCategory, getMeme } from "@/data/memes";
+import { memeUsage } from "@/data/memeUsage";
 import { QUIZ_URL, SITE_NAME } from "@/lib/site";
 
 // 밈·신조어 상세 — "○○ 뜻" 검색 수요 대응 SSR 랜딩
@@ -33,7 +34,11 @@ export async function generateMetadata({
       locale: "ko_KR",
       type: "article",
       images: [
-        { url: `${QUIZ_URL}/quiz-home/opengraph-image`, width: 1200, height: 630 },
+        {
+          url: `${QUIZ_URL}/api/og/meme?id=${m.id}`,
+          width: 1200,
+          height: 630,
+        },
       ],
     },
   };
@@ -98,18 +103,59 @@ export default async function MemeDetailPage({
         </Link>
       </nav>
 
-      {/* Header */}
-      <header className="mb-5">
-        <h1 className="text-2xl font-bold text-accent break-keep">{m.term}</h1>
-        <p className="text-xs text-[#606070] mt-1.5">
+      {/* 짤카드 — 자체 제작 비주얼 카드 (공유 시 OG 이미지도 동일 컨셉) */}
+      <header
+        className="rounded-2xl p-6 mb-5 text-center border"
+        style={{
+          background: `linear-gradient(135deg, ${cat.color}26, #16213e 70%)`,
+          borderColor: `${cat.color}55`,
+        }}
+      >
+        <p className="text-xs mb-3" style={{ color: cat.color }}>
           {cat.emoji} {cat.name} · 밈·신조어 사전
         </p>
+        <h1 className="text-3xl font-bold text-accent break-keep">{m.term}</h1>
+        <div className="mt-4 bg-[#1a1a2e]/70 rounded-xl px-4 py-3 border border-[#2a3a5a] text-left">
+          <p className="text-sm text-[#c0c8d8] leading-relaxed break-keep">
+            💬 {m.examples[0]}
+          </p>
+        </div>
       </header>
 
       <section className="bg-card rounded-2xl p-5 mb-4">
         <h2 className="text-base font-bold text-accent mb-2">뜻</h2>
         <p className="text-sm text-[#c0c8d8] leading-relaxed break-keep">{m.meaning}</p>
       </section>
+
+      {memeUsage[m.id] && (
+        <section className="bg-card rounded-2xl p-5 mb-4">
+          <h2 className="text-base font-bold text-accent mb-3">
+            이런 상황에서 씁니다
+          </h2>
+          <ul className="flex flex-col gap-2 mb-4">
+            {memeUsage[m.id].when.map((w, i) => (
+              <li
+                key={i}
+                className="text-sm text-[#c0c8d8] leading-relaxed break-keep flex gap-2"
+              >
+                <span className="shrink-0 text-accent">📌</span>
+                <span>{w}</span>
+              </li>
+            ))}
+          </ul>
+          <div
+            className="rounded-xl px-4 py-3 border"
+            style={{ backgroundColor: `${cat.color}14`, borderColor: `${cat.color}44` }}
+          >
+            <p className="text-xs font-bold mb-1" style={{ color: cat.color }}>
+              💡 사용 팁
+            </p>
+            <p className="text-xs text-[#c0c8d8] leading-relaxed break-keep">
+              {memeUsage[m.id].tip}
+            </p>
+          </div>
+        </section>
+      )}
 
       <section className="bg-card rounded-2xl p-5 mb-4">
         <h2 className="text-base font-bold text-accent mb-2">유래</h2>
