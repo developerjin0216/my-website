@@ -113,11 +113,13 @@ export function GET(request: NextRequest) {
           title: `${t.code} 특징 총정리 - ${t.name}`,
           link: `${QUIZ_URL}/mbti/${t.code.toLowerCase()}`,
           description: `${t.code}의 성격·연애·궁합·직업 — ${t.tagline}`,
+          date: "2026-09-08",
         })),
         ...memes.map((m) => ({
           title: `${m.term} 뜻`,
           link: `${QUIZ_URL}/meme/${m.id}`,
           description: m.meaning,
+          date: "2026-09-08",
         })),
         ...categories.map((c) => ({
           title: `${c.name} 퀴즈`,
