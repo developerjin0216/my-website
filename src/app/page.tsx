@@ -192,6 +192,10 @@ export default function InfoHome() {
           <Link href="/terms" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
             이용약관
           </Link>
+          <span className="text-xs text-[#606070]">|</span>
+          <Link href="/en" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
+            🌐 English
+          </Link>
         </div>
         <p className="text-xs text-[#606070]">
           © 2026 8282114 — 기관 번호·제도는 변경될 수 있으니 참고용으로

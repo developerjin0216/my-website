@@ -22,7 +22,7 @@ import {
 
 const QUIZ_PATHS = ["/quiz", "/quiz-home", "/quiz-bank", "/battle", "/result", "/mbti", "/meme"];
 const CALC_PATHS = ["/calculators", "/guides"];
-const HELP_PATHS = ["/help"];
+const HELP_PATHS = ["/help", "/en"]; // /en(외국인용 영문 가이드)도 루트 도메인 소속
 const TOOLS_PATHS = ["/tools"];
 
 function matches(pathname: string, prefixes: string[]): boolean {

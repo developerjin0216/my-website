@@ -23,6 +23,7 @@ export interface HelpInfo {
   date: string; // 최종 업데이트일 — HelpShell에 가시 표시 + JSON-LD dateModified
   keywords: string[];
   related: string[]; // 관련 help id
+  enId?: string; // 짝이 되는 영문 가이드 id (/en/<enId>) — hreflang 쌍방 연결
   faq?: HelpFaq[]; // 있으면 FAQ 섹션 + FAQPage 구조화 데이터 출력
   sources?: HelpSource[]; // 있으면 '공식 출처' 섹션 출력 (E-E-A-T)
 }
@@ -53,6 +54,7 @@ export const helpTopics: HelpInfo[] = [
   },
   {
     id: "emergency-numbers",
+    enId: "emergency-numbers",
     title: "긴급 전화번호 총정리",
     metaTitle: "긴급 전화번호 총정리 - 112·119부터 상황별 신고·상담 번호까지",
     description:
@@ -77,6 +79,7 @@ export const helpTopics: HelpInfo[] = [
   },
   {
     id: "lost-card",
+    enId: "lost-card",
     title: "카드·지갑 분실했을 때",
     metaTitle: "카드 분실 신고 방법 - 일괄신고·부정사용 보상·신분증 재발급",
     description:
@@ -101,6 +104,7 @@ export const helpTopics: HelpInfo[] = [
   },
   {
     id: "lost-phone",
+    enId: "lost-phone",
     title: "휴대폰 분실했을 때",
     metaTitle: "휴대폰 분실 대처법 - 위치찾기·회선정지·명의도용 차단",
     description:
@@ -126,6 +130,7 @@ export const helpTopics: HelpInfo[] = [
   },
   {
     id: "night-hospital",
+    enId: "night-hospital",
     title: "야간·휴일에 아플 때 (병원·약국 찾기)",
     metaTitle: "야간·휴일 병원 약국 찾는 법 - 응급의료포털·달빛어린이병원",
     description:
@@ -173,6 +178,7 @@ export const helpTopics: HelpInfo[] = [
   },
   {
     id: "voice-phishing",
+    enId: "scam-calls",
     title: "보이스피싱 당했을 때",
     metaTitle: "보이스피싱 대처법 - 지급정지 신청·112 신고·피해금 환급",
     description:
@@ -479,6 +485,7 @@ export const helpTopics: HelpInfo[] = [
   },
   {
     id: "jeonse-check",
+    enId: "jeonse-scam",
     title: "전세사기 예방 체크리스트",
     metaTitle: "전세사기 예방 - 등기부등본 보는 법·계약 특약·보증보험 체크리스트",
     description:
@@ -690,7 +697,19 @@ export function buildHelpMetadata(id: string): Metadata {
     title: { absolute: topic.metaTitle },
     description: topic.description,
     keywords: topic.keywords,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      // 영문판이 있는 주제는 hreflang 쌍방 선언 (EN 쪽은 buildEnMetadata)
+      ...(topic.enId
+        ? {
+            languages: {
+              ko: url,
+              en: `${ROOT_URL}/en/${topic.enId}`,
+              "x-default": `${ROOT_URL}/en/${topic.enId}`,
+            },
+          }
+        : {}),
+    },
     openGraph: {
       title: topic.metaTitle,
       description: topic.description,

@@ -7,6 +7,7 @@ import { helpTopics } from "@/data/help";
 import { tools } from "@/data/tools";
 import { mbtiTypes } from "@/data/mbti";
 import { memes } from "@/data/memes";
+import { enGuides } from "@/data/guidesEn";
 import {
   ROOT_URL,
   QUIZ_URL,
@@ -39,6 +40,14 @@ function rootEntries(): Entry[] {
       lastmod: t.date,
       changefreq: "monthly" as const,
       priority: 0.8,
+    })),
+    // 외국인용 영문 가이드
+    { url: `${ROOT_URL}/en`, changefreq: "weekly", priority: 0.8 },
+    ...enGuides.map((g) => ({
+      url: `${ROOT_URL}/en/${g.id}`,
+      lastmod: g.date,
+      changefreq: "monthly" as const,
+      priority: 0.7,
     })),
     { url: `${ROOT_URL}/about`, changefreq: "yearly", priority: 0.4 },
     { url: `${ROOT_URL}/contact`, changefreq: "yearly", priority: 0.4 },
