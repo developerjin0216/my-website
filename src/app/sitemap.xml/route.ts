@@ -8,6 +8,7 @@ import { tools } from "@/data/tools";
 import { mbtiTypes } from "@/data/mbti";
 import { memes } from "@/data/memes";
 import { enGuides } from "@/data/guidesEn";
+import { slangEntries } from "@/data/slangEn";
 import {
   ROOT_URL,
   QUIZ_URL,
@@ -49,6 +50,18 @@ function rootEntries(): Entry[] {
       changefreq: "monthly" as const,
       priority: 0.7,
     })),
+    // K-슬랭 사전 (영문)
+    ...(slangEntries.length > 0
+      ? [
+          { url: `${ROOT_URL}/en/slang`, changefreq: "weekly" as const, priority: 0.8 },
+          ...slangEntries.map((e) => ({
+            url: `${ROOT_URL}/en/slang/${e.id}`,
+            lastmod: "2026-09-09",
+            changefreq: "monthly" as const,
+            priority: 0.7,
+          })),
+        ]
+      : []),
     { url: `${ROOT_URL}/about`, changefreq: "yearly", priority: 0.4 },
     { url: `${ROOT_URL}/contact`, changefreq: "yearly", priority: 0.4 },
     { url: `${ROOT_URL}/privacy`, changefreq: "yearly", priority: 0.3 },

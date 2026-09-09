@@ -233,6 +233,234 @@ export const enGuides: EnGuide[] = [
       { name: "HiKorea — verify immigration matters (1345)", url: "https://www.hikorea.go.kr" },
     ],
   },
+  {
+    "id": "medical-cost",
+    "title": "Hospital Bills You Cannot Pay in Korea",
+    "metaTitle": "Can't Pay Your Hospital Bill in Korea? Emergency Medical Costs Guide for Foreigners",
+    "description": "No money for an ER or hospital bill in Korea? How foreigners can use deferred payment, 129 emergency welfare, NHIS rules, and travel insurance claims.",
+    "icon": "💸",
+    "date": "2026-09-09",
+    "koId": "medical-cost",
+    "related": [
+      "night-hospital",
+      "emergency-numbers"
+    ],
+    "faq": [
+      {
+        "q": "How much does an emergency room visit cost in Korea without insurance?",
+        "a": "There is no single fixed price — without NHIS coverage you pay the full charge, which varies widely by hospital and treatment, from tens of thousands of won for a simple consultation to millions of won for surgery or an ICU stay. Ask the billing office (원무과) for an itemized estimate, and remember that in a genuine emergency the hospital must treat you first regardless of payment."
+      },
+      {
+        "q": "Can foreigners use the emergency medical cost deferred payment system (응급의료비 대지급)?",
+        "a": "Yes. The program applies to emergency patients regardless of nationality or health insurance status — Korean government guidance confirms foreigners and the uninsured can use it, as long as the treatment was for genuine emergency symptoms and you truly cannot pay at the time. You sign the unpaid-bill form at the hospital before discharge, HIRA pays the hospital, and you repay later — in installments over up to 48 months if needed."
+      },
+      {
+        "q": "Do I have to join Korean national health insurance (NHIS) as a foreigner?",
+        "a": "Yes, if you stay 6 months or more you are automatically and mandatorily enrolled as a local subscriber under Article 109 of the National Health Insurance Act (rule in force since July 16, 2019). Employees at Korean workplaces are enrolled from their first day of work regardless of the 6-month rule. Unpaid premiums can hurt future visa extensions, so check your status at any NHIS branch or via 1577-1000."
+      },
+      {
+        "q": "What if my unpaid hospital bill has already gone to collections?",
+        "a": "If it is a HIRA deferred-payment balance, contact HIRA at 1644-2000 immediately — you can request installment payment over up to 48 months, while ignoring notices can lead to lawsuits or compulsory collection if you have income or assets. If the hospital itself is pursuing the debt, negotiate directly with its billing office and ask the hospital's social work team about installment plans or charity programs; paying something and documenting hardship is far better than silence."
+      },
+      {
+        "q": "I don't qualify for any of these programs. Is there anything else?",
+        "a": "Ask the hospital's social work team (사회사업팀) — they know local charity funds and the Medical Support Program for Foreign Workers and similar groups (외국인근로자 등 의료지원사업), which helps certain foreigners excluded from NHIS and Medical Aid with hospitalization and surgery costs at participating hospitals. Marriage migrants and multicultural families can also call the 24-hour Danuri helpline (1577-1366, 13 languages) for guidance in their own language."
+      }
+    ],
+    "sources": [
+      {
+        "name": "Easylaw (Ministry of Government Legislation) — Emergency Medical Cost Deferred Payment System",
+        "url": "https://easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=906&ccfNo=2&cciNo=4&cnpClsNo=2"
+      },
+      {
+        "name": "HIRA (Health Insurance Review & Assessment Service) — Emergency Deferred Payment Program",
+        "url": "https://www.hira.or.kr/dummy.do?pgmid=HIRAA020020000005"
+      },
+      {
+        "name": "129 Health & Welfare Call Center (Ministry of Health and Welfare)",
+        "url": "https://www.129.go.kr/"
+      },
+      {
+        "name": "NHIS — Catastrophic Medical Expense Support Program",
+        "url": "https://www.nhis.or.kr/static/html/wbma/c/wbmac0222.html"
+      },
+      {
+        "name": "Ministry of Justice — Immigration Contact Center 1345",
+        "url": "https://www.moj.go.kr/moj/196/subview.do"
+      }
+    ]
+  },
+  {
+    "id": "unpaid-wages",
+    "title": "Unpaid Wages in Korea",
+    "metaTitle": "Unpaid Wages in Korea: How Foreign Workers Get Paid (2026 Guide)",
+    "description": "Employer not paying you in Korea? How foreign workers — including E-9 and part-timers — file a labor complaint, get free help, and recover unpaid wages.",
+    "icon": "💼",
+    "date": "2026-09-09",
+    "koId": "unpaid-wages",
+    "related": [
+      "scam-calls",
+      "medical-cost"
+    ],
+    "faq": [
+      {
+        "q": "Can undocumented workers really file a complaint and get their money?",
+        "a": "Yes. The Labor Standards Act protects anyone who actually worked, and labor offices accept and process petitions from undocumented workers. Since November 6, 2025, officials handling wage-theft complaints are formally exempt from the duty to report undocumented status to immigration, so the complaint itself is not supposed to trigger deportation proceedings — though it is still smart to consult a migrant worker support center before filing if your status is irregular."
+      },
+      {
+        "q": "How long does the whole process take?",
+        "a": "The labor office aims to process a petition within 25 working days, extendable for complex cases, so straightforward cases often resolve in one to three months when the employer pays after the inspector's order. If the employer refuses, add time for the government arrears payment application or a civil suit. Attending every inspector appointment and bringing complete evidence is the best way to keep it fast."
+      },
+      {
+        "q": "I worked more than a year — do I get severance pay too?",
+        "a": "Yes. Any worker — foreign or Korean, full-time or part-time — who worked one year or more, averaging 15 or more hours per week, is entitled to severance pay, due within 14 days of leaving the job. For E-9 workers, the departure guarantee insurance payout counts toward this, but if it is less than the legal severance amount (calculated on your full average wage including overtime), the employer must pay the shortfall."
+      },
+      {
+        "q": "My employer threatens to report me to immigration or cancel my visa if I complain. What should I do?",
+        "a": "The wage debt does not disappear because of threats — your right to be paid is separate from your visa status, and an employer cannot 'cancel' your right to file. Save the threatening messages as evidence, then call 1577-0071 or 1350. For E-9 workers, unpaid wages are recognized grounds to transfer to a new workplace through the job center, so you do not have to stay with a non-paying employer to keep your visa."
+      },
+      {
+        "q": "I never signed a written contract. Can I still claim unpaid wages?",
+        "a": "Yes. The employment relationship can be proven with bank deposit records, KakaoTalk messages about shifts and pay, work schedules, and coworker statements. Note that failing to issue a written contract is itself a violation by the employer — it weakens their position, not yours."
+      }
+    ],
+    "sources": [
+      {
+        "name": "Ministry of Employment and Labor — How to Resolve Unpaid Wages (노동포털)",
+        "url": "https://labor.moel.go.kr/minwonSysInfo/wagesolway.do"
+      },
+      {
+        "name": "Easy Law (법제처 찾기쉬운 생활법령정보) — Wage Arrears Payment (대지급금)",
+        "url": "https://easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=1694&ccfNo=3&cciNo=3&cnpClsNo=1"
+      },
+      {
+        "name": "Korea Policy Briefing (korea.kr) — Reporting-Duty Exemption for Wage-Theft Victim Foreigners (effective Nov 6, 2025)",
+        "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148954167"
+      },
+      {
+        "name": "HRD Korea — Foreign Workforce Counseling Center (1577-0071)",
+        "url": "https://www.hrdkorea.or.kr/1/3/3/4"
+      },
+      {
+        "name": "Gov24 — Free Legal Aid for Workers with Unpaid Wages (대한법률구조공단 132)",
+        "url": "https://www.gov.kr/portal/service/serviceInfo/PTR000051328"
+      }
+    ]
+  },
+  {
+    "id": "car-accident",
+    "title": "Car Accident in Korea",
+    "metaTitle": "Car Accident in Korea: What to Do — Step-by-Step Guide for Foreigners",
+    "description": "What to do after a car accident in Korea: 112/119 calls, insurer dispatch, dashcam evidence, Jeju rental cars, fault ratios, and hit-and-run compensation.",
+    "icon": "🚗",
+    "date": "2026-09-09",
+    "koId": "car-accident",
+    "related": [
+      "emergency-numbers",
+      "natural-disaster"
+    ],
+    "faq": [
+      {
+        "q": "Is my international driving permit (IDP) valid in Korea?",
+        "a": "Yes, if it was issued under the 1949 Geneva Convention (IDPs from Vienna Convention countries are also accepted) and you carry it together with your home-country license and passport. It is valid for a maximum of one year from your date of entry into Korea and cannot be renewed locally, and rental companies will check all three documents. Note that Korea does not accept ordinary licenses from China alone, and online \"international driving license\" cards that are not official IDPs are rejected."
+      },
+      {
+        "q": "What if I have no Korean car insurance?",
+        "a": "If you are driving a rental, the compulsory liability insurance is already included in the rental price — but coverage for damage to the rental car itself depends on the waiver (자차) you selected. If you borrow a friend's car, confirm that the owner's policy covers additional drivers; many Korean policies restrict coverage to named family members, and driving outside the policy leaves you personally liable. If you are the victim, the at-fault driver's insurance pays you regardless of whether you have any Korean insurance."
+      },
+      {
+        "q": "I was hit by a car as a pedestrian. What should I do?",
+        "a": "Call 119 if you are hurt and 112 to report the accident, get the driver's name, plate number and insurance company, and see a doctor the same day for a medical certificate (진단서). The driver's compulsory liability insurance covers injured pedestrians regardless of your nationality or visa status. If the driver flees or turns out to be uninsured, file a police report and claim through the government compensation scheme (call center 1544-0049) within 3 years."
+      },
+      {
+        "q": "How strict is drunk driving in Korea?",
+        "a": "Very strict: the legal limit is a blood alcohol concentration of 0.03% under the Road Traffic Act, low enough that a single drink can put you over. Penalties include criminal fines or imprisonment and license suspension or revocation, police run random checkpoints, and a DUI accident removes the usual insurance protection against criminal prosecution. Morning-after driving is a common way to fail, so allow generous recovery time."
+      },
+      {
+        "q": "Will reporting an accident affect my visa status?",
+        "a": "Simply reporting an accident or making an insurance claim has no effect on your immigration status — police and emergency services respond regardless of visa type, and tourists can claim against insurers just like residents. Criminal convictions arising from an accident (for example drunk driving or hit-and-run) are a different matter and can affect your stay, which is one more reason to remain at the scene and follow the legal steps."
+      }
+    ],
+    "sources": [
+      {
+        "name": "Easy to Find, Practical Law (Korea Legislation Research Institute) — Traffic and Driving (English)",
+        "url": "https://m.easylaw.go.kr/MOM/SubCsmOvRetrieve.laf?langCd=700101&csmSeq=740&ccfNo=4&cciNo=1&cnpClsNo=1"
+      },
+      {
+        "name": "Ministry of Land, Infrastructure and Transport — Guarantee of Automobile Accident Compensation program (정부보장사업)",
+        "url": "https://www.molit.go.kr/USR/policyData/m_34681/dtl?id=370"
+      },
+      {
+        "name": "Korea Legislation Research Institute — Road Traffic Act (English translation)",
+        "url": "https://elaw.klri.re.kr/eng_mobile/viewer.do?hseq=64085&type=part&key=11"
+      },
+      {
+        "name": "General Insurance Association of Korea — Fault Ratio Information Portal (과실비율정보포털)",
+        "url": "https://accident.knia.or.kr/"
+      },
+      {
+        "name": "Korea Tourism Organization — 1330 Korea Travel Helpline",
+        "url": "https://english.visitkorea.or.kr/svc/contents/contentsView.do?vcontsId=140632"
+      }
+    ]
+  },
+  {
+    "id": "natural-disaster",
+    "title": "Typhoons, Floods & Earthquakes in Korea",
+    "metaTitle": "Korea Emergency Alerts in English: Typhoon, Flood & Earthquake Guide for Foreigners",
+    "description": "How to get Korea's emergency alerts in English, what the alert levels mean, and exactly what to do in a typhoon, flood, or earthquake as a foreigner.",
+    "icon": "🌊",
+    "date": "2026-09-09",
+    "koId": "natural-disaster",
+    "related": [
+      "emergency-numbers",
+      "night-hospital"
+    ],
+    "faq": [
+      {
+        "q": "Why is my phone suddenly blaring a siren with a message in Korean?",
+        "a": "Korea broadcasts disaster alerts to every phone in an affected area via cell broadcast, so any device on a Korean network receives them automatically. The loudest, unblockable tier (위급재난문자) is for the most severe events; the urgent tier (긴급재난문자) covers evacuation-level situations like typhoons and floods; the quieter safety advisories (안전안내문자) cover things like heat waves. Install the free Emergency Ready App from the Ministry of the Interior and Safety to receive translated alerts in English."
+      },
+      {
+        "q": "Are typhoons dangerous in Seoul, or mostly on the south coast?",
+        "a": "Typhoons usually hit Jeju and the southern and southeastern coasts hardest — Typhoon Hinnamnor in 2022 did its worst damage around Pohang — and often weaken before reaching Seoul. But Seoul's biggest killer is intense rainfall rather than wind: the record August 2022 downpours flooded semi-basement homes and roads in the capital with deadly results. So in Seoul, treat heavy-rain alerts as seriously as typhoon alerts, and stay out of underground spaces."
+      },
+      {
+        "q": "Does travel insurance cover typhoons and earthquakes in Korea?",
+        "a": "It depends entirely on your policy — many travel policies cover medical treatment and trip disruption caused by natural disasters, but some exclude natural catastrophes or require you to have bought the policy before the storm was named or forecast. Check your policy's natural disaster clause and keep documentation (alert messages, airline notices, receipts) if you make a claim. Korea's government relief payments are aimed at residents with verified property damage, not at travelers."
+      },
+      {
+        "q": "Is there tsunami risk on Korea's east coast?",
+        "a": "It is rare but real. A 1983 earthquake off Japan sent a tsunami into Korea's east coast that left three people dead or missing around Imwon and Donghae, and a 1993 event damaged boats along the same coast, which is why the Korea Meteorological Administration runs a dedicated tsunami warning system. If you are on the east coast and feel strong shaking or receive a 지진해일 (tsunami) alert, move to high ground immediately and stay there until the all-clear."
+      },
+      {
+        "q": "Can I call someone in English during a disaster?",
+        "a": "Yes. For life-threatening emergencies call 119 and say \"English\" first — an interpreter will be conferenced in, so do not hang up during the brief silence. For non-emergency help in Seoul, call 02-120 then 9 then 1 for the Dasan Call Center's English line (weekdays 09:00–18:00), and the 24-hour 1330 Korea Travel Hotline can interpret or contact 119 on your behalf."
+      }
+    ],
+    "sources": [
+      {
+        "name": "National Disaster and Safety Portal (국민재난안전포털) — Ministry of the Interior and Safety",
+        "url": "https://www.safekorea.go.kr"
+      },
+      {
+        "name": "Ministry of the Interior and Safety (행정안전부) — Safety Stepping Stone / Emergency Ready App",
+        "url": "https://www.mois.go.kr/frt/sub/a06/b11/safetyStep/screen.do"
+      },
+      {
+        "name": "Seoul Metropolitan Government — Emergency Ready App guide (English)",
+        "url": "https://english.seoul.go.kr/service/living/disaster-evacuation-tips-citizens/emergency-ready-app/"
+      },
+      {
+        "name": "Korea Meteorological Administration (기상청) — English portal (earthquake and tsunami information)",
+        "url": "https://www.kma.go.kr/neng/index.do"
+      },
+      {
+        "name": "GOV.KR — Services for Foreigners (emergency support eligibility)",
+        "url": "https://www.gov.kr/portal/foreigner/en/m030303"
+      }
+    ]
+  }
 ];
 
 export function getEnGuide(id: string): EnGuide {

@@ -155,6 +155,7 @@ export const helpTopics: HelpInfo[] = [
   },
   {
     id: "medical-cost",
+    enId: "medical-cost",
     title: "병원비가 없을 때 (의료비 지원제도)",
     metaTitle: "병원비 없을 때 지원받는 법 - 응급실 대지급·긴급복지 129·재난적의료비",
     description:
@@ -272,6 +273,7 @@ export const helpTopics: HelpInfo[] = [
   },
   {
     id: "car-accident",
+    enId: "car-accident",
     title: "교통사고 났을 때 (1분 체크리스트)",
     metaTitle: "교통사고 났을 때 대처 순서 - 사고 직후 체크리스트·대인접수·무료 견인",
     description:
@@ -296,6 +298,7 @@ export const helpTopics: HelpInfo[] = [
   },
   {
     id: "unpaid-wages",
+    enId: "unpaid-wages",
     title: "월급을 못 받았을 때 (임금체불)",
     metaTitle: "임금체불 신고 방법 - 노동청 온라인 진정·대지급금·상담 1350",
     description:
@@ -511,6 +514,7 @@ export const helpTopics: HelpInfo[] = [
   },
   {
     id: "natural-disaster",
+    enId: "natural-disaster",
     title: "홍수·산사태·지진해일 대처",
     metaTitle: "홍수·산사태·지진해일 대처법 - 대피 요령과 재난지원금 받는 법",
     description:
