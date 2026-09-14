@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
+import EscapeArt from "@/components/escape/EscapeArt";
 import {
   clues,
   ending,
@@ -230,6 +231,11 @@ export default function PlayClient() {
           </p>
           <h2 className="text-lg font-bold text-accent mb-3">{current.title}</h2>
           <p className="text-sm text-[#e8e8f0] leading-relaxed mb-4">{current.prompt}</p>
+
+          {/* 관찰 대상 — 정답에 필요한 정보는 그림 쪽에 있습니다 */}
+          <div className="mb-3">
+            <EscapeArt art={current.art} />
+          </div>
 
           <div className="rounded-xl bg-[#16213e] border border-[#2a3a5a] p-4 mb-4">
             {current.body.map((line, i) => (

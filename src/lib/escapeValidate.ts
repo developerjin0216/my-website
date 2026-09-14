@@ -27,6 +27,13 @@ import {
 const ACT_SEQUENCE: Act[] = ["기", "승", "전", "결"];
 const MIN_FINAL_PAYOFFS = 4;
 
+// ── 난이도 규칙 ──
+// 초판은 12개 중 7개가 "그 화면만 보면 풀리는" 단독 완결 퍼즐이었고, 난이도 곡선이
+// 뒤로 갈수록 낮아져 클라이맥스인 5방이 가장 쉬웠습니다. 사람의 주의력으로는 또
+// 놓치므로 구조로 막습니다.
+const MAX_STANDALONE_RATIO = 0.4; // 단독 완결 퍼즐 비율 상한
+const LATE_SCENE_COUNT = 3; // 후반 몇 개 장면을 '연결 필수'로 볼 것인가
+
 function fail(errors: string[]): never {
   throw new Error(
     `[escape] 스토리 정합성 검증 실패 (${errors.length}건)\n` +
@@ -198,6 +205,26 @@ export function validateEscapeStory(): void {
       }
 
       errors.push(`퍼즐 ${p.id}: needs에 존재하지 않는 id (${need})`);
+    }
+  }
+
+  // ── 난이도 구조 ──
+  const standalone = puzzles.filter((p) => p.needs.length === 0);
+  const ratio = puzzles.length > 0 ? standalone.length / puzzles.length : 0;
+  if (ratio > MAX_STANDALONE_RATIO) {
+    errors.push(
+      `단독 완결 퍼즐이 ${standalone.length}/${puzzles.length}개(${Math.round(ratio * 100)}%)로 상한 ${Math.round(MAX_STANDALONE_RATIO * 100)}%를 넘음 — ` +
+        `그 화면만 보면 풀리는 퍼즐이 많으면 너무 쉬워집니다 (${standalone.map((p) => p.id).join(", ")})`
+    );
+  }
+
+  // 후반 장면은 난이도가 올라가야 하므로 다른 방의 정보를 반드시 요구할 것
+  const lateScenes = orderedScenes.slice(-LATE_SCENE_COUNT).map((s) => s.id);
+  for (const p of puzzles) {
+    if (lateScenes.includes(p.scene) && p.needs.length === 0) {
+      errors.push(
+        `퍼즐 ${p.id}(${p.scene})는 후반 장면인데 단독 완결 — 후반부는 앞선 방의 정보를 요구해야 난이도 곡선이 유지됩니다`
+      );
     }
   }
 
