@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { trackAffiliateClick } from "@/utils/analytics";
 
 // 토스쇼핑 쉐어링크 상품 카드 — 베스트/하루특가 탭.
 // API 키 미설정·호출 실패 시 아무것도 렌더링하지 않습니다 (안전 배포).
@@ -90,6 +91,13 @@ export default function TossProducts({
               href={p.url}
               target="_blank"
               rel="nofollow sponsored noopener"
+              onClick={() =>
+                trackAffiliateClick({
+                  network: "toss",
+                  placement: "toss_products",
+                  label: `${TABS[selected].type} / ${p.name}`,
+                })
+              }
               className="block bg-[#16213e] rounded-xl overflow-hidden border border-[#2a3a5a] hover:border-[#3182F6] transition-colors"
             >
               {p.image && (

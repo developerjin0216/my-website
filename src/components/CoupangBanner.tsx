@@ -6,6 +6,10 @@ import { useEffect, useRef, useState } from "react";
 // iframe을 직접 렌더합니다. SPA 라우팅에서도 안정적이고 SSR과 충돌하지 않으며,
 // 컨테이너 폭에 맞춰 위젯 폭을 결정합니다(최대 680px).
 // 대가성 문구는 공정위 심사지침상 필수라 컴포넌트에 고정 포함.
+//
+// 클릭 추적(utils/analytics)은 붙일 수 없습니다 — 쿠팡이 만드는 iframe 내부의
+// 클릭은 동일 출처가 아니라 감지 자체가 불가능합니다. 배치별 성과를 비교하려면
+// 추적이 되는 CoupangProducts·CoupangGoldbox 쪽 수치를 기준으로 보세요.
 
 const PARTNER_ID = 1021406;
 const TRACKING_CODE = "AF1870954";

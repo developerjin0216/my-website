@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { trackAffiliateClick } from "@/utils/analytics";
 
 // 쿠팡파트너스 API 상품 카드 — 키워드 탭 선택 시 자동으로 상품 4개 표시.
 // API 키 미설정·호출 실패 시 아무것도 렌더링하지 않습니다 (안전 배포).
@@ -87,6 +88,13 @@ export default function CoupangProducts({
               target="_blank"
               rel="nofollow sponsored noopener"
               referrerPolicy="unsafe-url"
+              onClick={() =>
+                trackAffiliateClick({
+                  network: "coupang",
+                  placement: "coupang_products",
+                  label: `${keywords[selected]} / ${p.name}`,
+                })
+              }
               className="block bg-[#16213e] rounded-xl overflow-hidden border border-[#2a3a5a] hover:border-accent transition-colors"
             >
               {p.image && (
