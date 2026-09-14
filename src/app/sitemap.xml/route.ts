@@ -27,6 +27,7 @@ import {
 // 구글은 GSC 속성별로 자기 호스트 사이트맵을 제출하면 되므로 손해가 없습니다.
 
 const MBTI_MEME_LAUNCH = "2026-09-08"; // MBTI 백과·밈 사전 공개일 (실제 lastmod)
+const ESCAPE_LAUNCH = "2026-09-14"; // 웹 방탈출 1편 공개일
 
 interface Entry {
   url: string;
@@ -97,6 +98,8 @@ function quizEntries(): Entry[] {
       changefreq: "monthly" as const,
       priority: 0.8,
     })),
+    // 방탈출 — 플레이 화면(/escape/play)은 정답·결말이 노출되므로 색인 제외(noindex)
+    { url: `${QUIZ_URL}/escape`, lastmod: ESCAPE_LAUNCH, changefreq: "monthly", priority: 0.9 },
     { url: `${QUIZ_URL}/meme`, lastmod: MBTI_MEME_LAUNCH, changefreq: "weekly", priority: 0.9 },
     ...memes.map((m) => ({
       url: `${QUIZ_URL}/meme/${m.id}`,

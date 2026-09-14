@@ -116,6 +116,19 @@ export default function QuizHome() {
         </Link>
       </div>
 
+      {/* 웹 방탈출 — 체류·공유형 콘텐츠 (검색 유입보다 바이럴을 노린 자리) */}
+      <div className="px-5 pb-4">
+        <Link
+          href="/escape"
+          className="block rounded-2xl p-4 transition-transform active:scale-[0.99] bg-gradient-to-br from-[#2C3E50] to-[#4A6572] border border-[#5a6a7a]"
+        >
+          <p className="text-base font-bold text-white">🔦 웹 방탈출 · 한빛사진관</p>
+          <p className="text-[11px] text-white/70 mt-1">
+            방 6개, 떡밥 8개를 회수하는 추리 방탈출 — 설치 없이 바로 시작
+          </p>
+        </Link>
+      </div>
+
       {/* Calculators — 별도 사이트 링크라 퀴즈 CTA보다 작게 (컴팩트 배너)
           절대주소 사용: 상대경로면 quiz 호스트에서 308을 거쳐 크롤 낭비 */}
       <div className="px-5 pb-4">
