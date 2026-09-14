@@ -44,6 +44,11 @@ export const TOOLS_SPLIT = TOOLS_HOST !== ROOT_HOST;
 // 기존 코드 호환: 계산기 분리 여부
 export const SPLIT = CALC_SPLIT;
 
+// 분리가 하나라도 활성인지 — proxy·sitemap·robots가 공유 (env 없으면 false = 단일 도메인)
+export const SPLIT_ACTIVE = QUIZ_SPLIT || CALC_SPLIT || TOOLS_SPLIT;
+// 우리가 서빙하는 정식 호스트 — www·*.vercel.app 등 그 외 호스트는 루트로 이관
+export const KNOWN_HOSTS = new Set([ROOT_HOST, QUIZ_HOST, CALC_HOST, TOOLS_HOST]);
+
 // 브랜드명 — 바꾸면 OG·JSON-LD·manifest·푸터에 일괄 반영
 export const INFO_SITE_NAME = "8282114 생활안내";
 export const SITE_NAME = "상식왕 퀴즈";

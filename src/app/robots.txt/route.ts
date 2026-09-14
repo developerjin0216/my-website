@@ -1,4 +1,4 @@
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import {
   ROOT_URL,
   QUIZ_URL,
@@ -7,6 +7,8 @@ import {
   QUIZ_HOST,
   CALC_HOST,
   TOOLS_HOST,
+  KNOWN_HOSTS,
+  SPLIT_ACTIVE,
 } from "@/lib/site";
 
 // 호스트별 robots.txt — 각 도메인이 자기 사이트맵을 가리키도록 분리.
@@ -17,6 +19,12 @@ import {
 
 export async function GET(request: NextRequest) {
   const host = request.headers.get("host");
+
+  // 정식 호스트가 아니면(www, *.vercel.app 등) 루트 robots로 308 — sitemap.xml과 동일 규칙
+  if (SPLIT_ACTIVE && host && !KNOWN_HOSTS.has(host)) {
+    return NextResponse.redirect(new URL("/robots.txt", ROOT_URL), 308);
+  }
+
   const base =
     host === QUIZ_HOST
       ? QUIZ_URL

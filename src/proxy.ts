@@ -11,6 +11,7 @@ import {
   QUIZ_SPLIT,
   CALC_SPLIT,
   TOOLS_SPLIT,
+  SPLIT_ACTIVE,
 } from "@/lib/site";
 
 // 3분할 프록시 (Next.js 16: middleware → proxy)
@@ -32,7 +33,7 @@ function matches(pathname: string, prefixes: string[]): boolean {
 }
 
 export function proxy(request: NextRequest) {
-  if (!QUIZ_SPLIT && !CALC_SPLIT && !TOOLS_SPLIT) return NextResponse.next();
+  if (!SPLIT_ACTIVE) return NextResponse.next();
 
   const host = request.headers.get("host");
   const { pathname, search } = request.nextUrl;

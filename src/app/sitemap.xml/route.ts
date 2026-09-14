@@ -1,4 +1,4 @@
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { calculators } from "@/data/calculators";
 import { guides } from "@/data/guides";
 import { categories } from "@/data/quizData";
@@ -17,6 +17,8 @@ import {
   QUIZ_HOST,
   CALC_HOST,
   TOOLS_HOST,
+  KNOWN_HOSTS,
+  SPLIT_ACTIVE,
 } from "@/lib/site";
 
 // 호스트별 사이트맵 — 접속한 도메인의 URL만 내보냅니다 (feed.xml과 동일 원칙).
@@ -149,6 +151,13 @@ function render(entries: Entry[]): string {
 
 export async function GET(request: NextRequest) {
   const host = request.headers.get("host");
+
+  // 정식 호스트가 아니면(www, *.vercel.app 등) 루트 사이트맵으로 308.
+  // 그냥 200으로 서빙하면 같은 사이트맵이 여러 호스트에 노출된다.
+  // proxy.ts와 동일하게 분리 비활성(로컬 dev)일 때는 그대로 서빙.
+  if (SPLIT_ACTIVE && host && !KNOWN_HOSTS.has(host)) {
+    return NextResponse.redirect(new URL("/sitemap.xml", ROOT_URL), 308);
+  }
 
   let entries: Entry[];
   if (host === QUIZ_HOST) entries = quizEntries();
