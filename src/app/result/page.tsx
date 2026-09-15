@@ -35,7 +35,9 @@ export async function generateMetadata({
     title: { absolute: title },
     description,
     robots: { index: false, follow: true },
-    alternates: { canonical: QUIZ_URL },
+    // 자기 자신을 가리킵니다. noindex 페이지가 다른 URL을 canonical로 지정하면
+    // 구글이 noindex를 그 대상(여기서는 퀴즈 홈)에 적용할 수 있습니다.
+    alternates: { canonical: `${QUIZ_URL}/result` },
     openGraph: {
       title,
       description,
