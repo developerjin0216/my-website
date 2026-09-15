@@ -53,7 +53,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const live = products.length > 0;
 
   return {
-    title: "오늘의 특가 - 토스쇼핑 할인 상품 모아보기",
+    // absolute로 고정 — 기본 title 템플릿이 `%s | 상식왕 퀴즈`라, 그냥 문자열로 두면
+    // 루트 도메인 페이지인데 퀴즈 사이트 이름이 붙습니다. 토스 심사에 제출하는
+    // 화면이라 신청서의 서비스명과 탭 제목이 어긋나면 안 됩니다.
+    title: {
+      absolute: `오늘의 특가 - 토스쇼핑 할인 상품 모아보기 | ${INFO_SITE_NAME}`,
+    },
     description:
       "토스쇼핑에서 오늘 할인 중인 상품을 한 화면에 모았습니다. 할인율과 리뷰 평점을 비교해 보세요. 매일 갱신됩니다.",
     alternates: { canonical: `${ROOT_URL}/deals` },
@@ -147,7 +152,11 @@ export default async function DealsPage() {
   return (
     <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
       <header className="px-5 pt-8 pb-4">
-        <p className="text-xs text-[#606070] mb-2">토스쇼핑 · 매일 갱신</p>
+        {/* 브랜드명 노출 — 심사자가 신청서의 서비스명과 화면을 대조할 수 있어야 합니다 */}
+        <Link href="/" className="text-xs font-bold text-accent">
+          {INFO_SITE_NAME}
+        </Link>
+        <p className="text-xs text-[#606070] mt-2 mb-2">토스쇼핑 · 매일 갱신</p>
         <h1 className="text-2xl font-bold leading-snug">
           오늘의 <span className="text-accent">특가</span>
         </h1>
