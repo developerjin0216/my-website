@@ -23,7 +23,8 @@ import {
 
 const QUIZ_PATHS = ["/quiz", "/quiz-home", "/quiz-bank", "/battle", "/result", "/mbti", "/meme", "/escape"];
 const CALC_PATHS = ["/calculators", "/guides"];
-const HELP_PATHS = ["/help", "/en"]; // /en(외국인용 영문 가이드)도 루트 도메인 소속
+// 루트 도메인(8282114.xyz) 소속 경로 — /en(외국인용 영문 가이드), /deals(토스 특가)
+const HELP_PATHS = ["/help", "/en", "/deals"];
 const TOOLS_PATHS = ["/tools"];
 
 function matches(pathname: string, prefixes: string[]): boolean {

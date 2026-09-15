@@ -65,6 +65,10 @@ function rootEntries(): Entry[] {
           })),
         ]
       : []),
+    // TODO: 토스쇼핑 쉐어링크 연동이 켜지면 `${ROOT_URL}/deals` 추가.
+    // 지금은 예시 카드만 있어 페이지가 noindex 상태이므로 사이트맵에 넣지 않습니다.
+    // (사이트맵 생성이 토스 API 응답을 기다리게 만들면 GSC 수집이 느려질 수 있어
+    //  일부러 자동 판정하지 않고 수동 한 줄로 남겨둡니다)
     { url: `${ROOT_URL}/about`, changefreq: "yearly", priority: 0.4 },
     { url: `${ROOT_URL}/contact`, changefreq: "yearly", priority: 0.4 },
     { url: `${ROOT_URL}/privacy`, changefreq: "yearly", priority: 0.3 },
