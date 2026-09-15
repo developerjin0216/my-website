@@ -1,4 +1,5 @@
 import {
+  ending,
   scenes,
   clues,
   puzzles,
@@ -33,6 +34,18 @@ const MIN_FINAL_PAYOFFS = 4;
 // 놓치므로 구조로 막습니다.
 const MAX_STANDALONE_RATIO = 0.4; // 단독 완결 퍼즐 비율 상한
 const LATE_SCENE_COUNT = 3; // 후반 몇 개 장면을 '연결 필수'로 볼 것인가
+
+// ── 서사 밀도 규칙 ──
+// 초판은 방마다 서술이 8줄뿐이고 퍼즐 화면에는 이야기가 한 줄도 없어서 "스토리 없이
+// 퀴즈만 푸는" 느낌이 났습니다. 전체 서사가 2천 자가 채 안 됐습니다. 분량은 쓰다 보면
+// 줄어들기 마련이라 바닥을 정해둡니다.
+const MIN_OBJECTS_PER_SCENE = 3; // 방마다 살펴볼 사물
+const MIN_SCENE_PROSE = 700; // 장면당 서사 최소 글자수 (intro+사물+outro+회상)
+const MIN_PUZZLE_LEAD = 60; // 퍼즐 진입 서술 최소 글자수
+const MIN_TOTAL_PROSE = 8000; // 전체 서사 최소 글자수
+
+const chars = (lines: string[]): number =>
+  lines.join("").replace(/\s/g, "").length;
 
 function fail(errors: string[]): never {
   throw new Error(
@@ -226,6 +239,78 @@ export function validateEscapeStory(): void {
         `퍼즐 ${p.id}(${p.scene})는 후반 장면인데 단독 완결 — 후반부는 앞선 방의 정보를 요구해야 난이도 곡선이 유지됩니다`
       );
     }
+  }
+
+  // ── 서사 밀도 ──
+  let totalProse = 0;
+  for (const s of scenes) {
+    if (s.objects.length < MIN_OBJECTS_PER_SCENE) {
+      errors.push(
+        `장면 ${s.id}: 살펴볼 사물이 ${s.objects.length}개 — 최소 ${MIN_OBJECTS_PER_SCENE}개 필요 (방이 아니라 문제지가 됩니다)`
+      );
+    }
+    const objIds = new Set<string>();
+    for (const o of s.objects) {
+      if (objIds.has(o.id)) errors.push(`장면 ${s.id}: 사물 id 중복 (${o.id})`);
+      objIds.add(o.id);
+      if (o.text.length === 0) errors.push(`사물 ${s.id}/${o.id}: 서술이 비어 있음`);
+    }
+
+    const prose =
+      chars(s.intro) +
+      chars(s.outro) +
+      chars(s.memory.text) +
+      s.objects.reduce((a, o) => a + chars(o.text), 0);
+    totalProse += prose;
+    if (prose < MIN_SCENE_PROSE) {
+      errors.push(
+        `장면 ${s.id}: 서사가 ${prose}자 — 최소 ${MIN_SCENE_PROSE}자 필요 (퍼즐만 남고 이야기가 사라집니다)`
+      );
+    }
+    if (s.memory.text.length === 0) {
+      errors.push(`장면 ${s.id}: 회상(memory)이 비어 있음 — 감정선이 끊깁니다`);
+    }
+  }
+
+  // 모든 떡밥은 그 장면의 사물을 통해 심겨야 합니다 (서술로만 흘리지 않기)
+  for (const c of clues) {
+    const scene = scenes.find((s) => s.id === c.plantedIn);
+    if (!scene) continue;
+    if (!scene.objects.some((o) => o.clue === c.id)) {
+      errors.push(
+        `떡밥 ${c.id}: ${c.plantedIn}의 어떤 사물도 이 떡밥을 심지 않음 — 플레이어가 직접 발견할 수 없습니다`
+      );
+    }
+  }
+  // 반대 방향 — 사물이 가리키는 떡밥이 실재하고 같은 장면에서 심기는가
+  for (const s of scenes) {
+    for (const o of s.objects) {
+      if (!o.clue) continue;
+      const c = clues.find((x) => x.id === o.clue);
+      if (!c) {
+        errors.push(`사물 ${s.id}/${o.id}: 없는 떡밥 id (${o.clue})`);
+      } else if (c.plantedIn !== s.id) {
+        errors.push(
+          `사물 ${s.id}/${o.id}가 ${o.clue}을 심는다고 하나 떡밥의 plantedIn은 ${c.plantedIn}`
+        );
+      }
+    }
+  }
+
+  for (const p of puzzles) {
+    totalProse += chars(p.lead) + chars(p.solved);
+    if (chars(p.lead) < MIN_PUZZLE_LEAD) {
+      errors.push(
+        `퍼즐 ${p.id}: 진입 서술이 ${chars(p.lead)}자 — 최소 ${MIN_PUZZLE_LEAD}자 필요 (지시문만 있으면 퀴즈가 됩니다)`
+      );
+    }
+  }
+
+  totalProse += chars(ending.lines);
+  if (totalProse < MIN_TOTAL_PROSE) {
+    errors.push(
+      `전체 서사가 ${totalProse}자 — 최소 ${MIN_TOTAL_PROSE}자 필요 (30분짜리 게임의 이야기로는 부족합니다)`
+    );
   }
 
   if (errors.length > 0) fail(errors);

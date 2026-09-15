@@ -15,7 +15,7 @@ const stats = escapeStats();
 export const metadata: Metadata = {
   title: "웹 방탈출 게임 한빛사진관 - 무료 추리 방탈출 '현상되지 않은 필름'",
   description:
-    "설치 없이 브라우저에서 바로 하는 무료 웹 방탈출. 폐업을 앞둔 동네 사진관에서 20년 전 사건의 단서를 찾는 추리 게임입니다. 방 6개, 퍼즐 12개, 회수되는 떡밥 8개.",
+    `설치 없이 브라우저에서 바로 하는 무료 웹 방탈출. 폐업을 앞둔 동네 사진관을 정리하며 20년 전 흔적을 따라가는 추리 게임입니다. 방 ${stats.scenes}개, 퍼즐 ${stats.puzzles}개, 회수되는 떡밥 ${stats.clues}개.`,
   alternates: { canonical: `${QUIZ_URL}/escape` },
   openGraph: {
     title: "웹 방탈출 '현상되지 않은 필름' - 한빛사진관",
@@ -104,10 +104,10 @@ export default function EscapeHubPage() {
         <div className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold mb-3 text-accent">어떤 게임인가요?</h2>
           <p className="text-sm text-[#c8c8d8] leading-relaxed mb-3">
-            방을 순서대로 지나며 관찰하고, 단서를 조합해 답을 입력하는 1인용 추리
-            방탈출입니다. 전투나 반응 속도를 요구하는 요소는 없고, 제시된 정보만으로
-            논리적으로 풀리도록 설계했습니다. 밖에서 찾아와야 하는 지식은 필요하지
-            않습니다.
+            방마다 물건을 하나씩 살펴보며 이야기를 읽고, 거기서 얻은 단서를 조합해
+            답을 입력하는 1인용 추리 방탈출입니다. 전투나 반응 속도를 요구하는 요소는
+            없고, 제시된 정보만으로 논리적으로 풀리도록 설계했습니다. 밖에서 찾아와야
+            하는 지식은 필요하지 않습니다.
           </p>
           <p className="text-sm text-[#c8c8d8] leading-relaxed">
             이 게임의 중심은 <strong className="text-[#e8e8f0]">떡밥 회수</strong>입니다.

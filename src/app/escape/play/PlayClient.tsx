@@ -25,7 +25,7 @@ import { QUIZ_URL } from "@/lib/site";
 // 광고는 장면이 바뀌는 시점(outro)에만 넣습니다. 퍼즐 화면에 붙이면 몰입이
 // 끊기고 오조작 클릭(무효 트래픽) 위험도 있습니다.
 
-type View = "intro" | "puzzle" | "solved" | "outro" | "ending";
+type View = "intro" | "explore" | "puzzle" | "solved" | "outro" | "memory" | "ending";
 
 export default function PlayClient() {
   const [loaded, setLoaded] = useState(false);
@@ -38,6 +38,8 @@ export default function PlayClient() {
   const [checking, setChecking] = useState(false);
   const [journalOpen, setJournalOpen] = useState(false);
   const [justSolved, setJustSolved] = useState<Puzzle | null>(null);
+  const [seen, setSeen] = useState<string[]>([]); // 이번 방에서 살펴본 사물
+  const [openObj, setOpenObj] = useState<string | null>(null);
 
   // 저장된 진행 상황 복원 (effect 내 동기 setState를 피하려고 태스크로 지연)
   useEffect(() => {
@@ -132,7 +134,11 @@ export default function PlayClient() {
     setView(remaining ? "puzzle" : "outro");
   };
 
+  const toMemory = () => setView("memory");
+
   const nextScene = () => {
+    setSeen([]);
+    setOpenObj(null);
     if (sceneIdx + 1 >= orderedScenes.length) {
       persist(solved, hints, true);
       setView("ending");
@@ -150,10 +156,13 @@ export default function PlayClient() {
     setView("intro");
     setInput("");
     setJustSolved(null);
+    setSeen([]);
+    setOpenObj(null);
   };
 
   const share = async () => {
-    const text = `[방탈출] 한빛사진관 — "현상되지 않은 필름"\n20년 전 사진관에 남은 떡밥 8개, 전부 회수했습니다.\n당신도 풀어보세요.`;
+    // 떡밥 수는 데이터에서 — 늘릴 때마다 문구를 고치는 걸 잊게 됩니다
+    const text = `[방탈출] 한빛사진관 — "현상되지 않은 필름"\n폐업 앞둔 사진관에 남은 떡밥 ${clues.length}개, 전부 회수했습니다.\n당신도 풀어보세요.`;
     const url = `${QUIZ_URL}/escape`;
     if (navigator.share) {
       try {
@@ -215,10 +224,70 @@ export default function PlayClient() {
           ))}
           <button
             type="button"
-            onClick={() => setView("puzzle")}
+            onClick={() => setView("explore")}
             className="w-full mt-5 rounded-xl bg-accent text-[#1a1a2e] font-bold py-3 active:scale-[0.99] transition-transform"
           >
             둘러보기
+          </button>
+        </section>
+      )}
+
+      {/* ── 둘러보기 ── */}
+      {view === "explore" && (
+        <section className="space-y-3">
+          <div className="bg-card rounded-2xl p-5">
+            <p className="text-[11px] text-[#606070] mb-1">{scene.place}</p>
+            <h2 className="text-lg font-bold text-accent">{scene.title}을 둘러본다</h2>
+            <p className="text-xs text-[#606070] mt-1">
+              살펴본 것 {seen.length}/{scene.objects.length}
+            </p>
+          </div>
+
+          {scene.objects.map((o) => {
+            const open = openObj === o.id;
+            const read = seen.includes(o.id);
+            return (
+              <div key={o.id} className="bg-card rounded-2xl overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpenObj(open ? null : o.id);
+                    if (!read) setSeen([...seen, o.id]);
+                  }}
+                  className="w-full text-left px-5 py-4 flex items-center justify-between gap-3"
+                >
+                  <span
+                    className={`text-sm font-semibold ${read ? "text-[#8a8a9a]" : "text-[#e8e8f0]"}`}
+                  >
+                    {read ? "· " : "› "}
+                    {o.name}
+                  </span>
+                  <span className="text-[#606070] text-xs shrink-0">{open ? "▲" : "▼"}</span>
+                </button>
+                {open && (
+                  <div className="px-5 pb-5">
+                    {o.text.map((line, i) => (
+                      <p key={i} className="text-sm leading-relaxed text-[#c8c8d8] mb-2">
+                        {line}
+                      </p>
+                    ))}
+                    {o.clue && (
+                      <p className="text-[11px] text-accent mt-3">🔖 단서 수첩에 적어둔다</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          <button
+            type="button"
+            onClick={() => setView("puzzle")}
+            className="w-full rounded-xl bg-accent text-[#1a1a2e] font-bold py-3.5 active:scale-[0.99] transition-transform"
+          >
+            {seen.length < scene.objects.length
+              ? `그만 보고 손을 대본다 (${scene.objects.length - seen.length}개 안 봄)`
+              : "손을 대본다"}
           </button>
         </section>
       )}
@@ -230,7 +299,17 @@ export default function PlayClient() {
             {scene.title} · {current.order}/{scenePuzzles.length}
           </p>
           <h2 className="text-lg font-bold text-accent mb-3">{current.title}</h2>
-          <p className="text-sm text-[#e8e8f0] leading-relaxed mb-4">{current.prompt}</p>
+
+          {/* 진입 서술 — 왜 지금 이걸 보고 있는가 */}
+          {current.lead.map((line, i) => (
+            <p key={i} className="text-sm leading-relaxed text-[#c8c8d8] mb-2">
+              {line || " "}
+            </p>
+          ))}
+
+          <p className="text-sm text-[#e8e8f0] leading-relaxed mt-4 mb-4 border-l-2 border-accent pl-3">
+            {current.prompt}
+          </p>
 
           {/* 관찰 대상 — 정답에 필요한 정보는 그림 쪽에 있습니다 */}
           <div className="mb-3">
@@ -358,10 +437,36 @@ export default function PlayClient() {
 
           <button
             type="button"
-            onClick={nextScene}
+            onClick={toMemory}
             className="w-full rounded-xl bg-accent text-[#1a1a2e] font-bold py-3.5 active:scale-[0.99] transition-transform"
           >
-            {sceneIdx + 1 >= orderedScenes.length ? "마지막 봉투를 본다" : "다음 장소로"}
+            {sceneIdx + 1 >= orderedScenes.length ? "가게를 나선다" : "다음 장소로"}
+          </button>
+        </section>
+      )}
+
+      {/* ── 회상 ── */}
+      {view === "memory" && (
+        <section className="space-y-4">
+          <div className="rounded-2xl border border-[#3a4a6a] bg-[#0f1626] p-6">
+            <p className="text-[11px] tracking-wider text-[#6b7a90] mb-4">
+              {scene.memory.title}
+            </p>
+            {scene.memory.text.map((line, i) => (
+              <p
+                key={i}
+                className="text-sm leading-relaxed text-[#9aa8c0] italic mb-2.5"
+              >
+                {line}
+              </p>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={nextScene}
+            className="w-full rounded-xl bg-[#16213e] border border-[#2a3a5a] text-[#c8c8d8] font-semibold py-3.5"
+          >
+            계속
           </button>
         </section>
       )}
@@ -425,7 +530,7 @@ export default function PlayClient() {
       )}
 
       {/* ── 단서 수첩 ── */}
-      {view !== "ending" && collected.length > 0 && (
+      {view !== "ending" && view !== "memory" && collected.length > 0 && (
         <div className="mt-5">
           <button
             type="button"
