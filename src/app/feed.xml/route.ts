@@ -4,7 +4,7 @@ import { guides } from "@/data/guides";
 import { tools } from "@/data/tools";
 import { categories } from "@/data/quizData";
 import { mbtiTypes } from "@/data/mbti";
-import { memes } from "@/data/memes";
+import { memeCategories } from "@/data/memes";
 import {
   ROOT_URL,
   CALC_URL,
@@ -124,10 +124,12 @@ export function GET(request: NextRequest) {
           description: `${t.code}의 성격·연애·궁합·직업 — ${t.tagline}`,
           date: "2026-09-08",
         })),
-        ...memes.map((m) => ({
-          title: `${m.term} 뜻`,
-          link: `${QUIZ_URL}/meme/${m.id}`,
-          description: m.meaning,
+        // 용어별이 아니라 카테고리 문서 단위 — 얇은 항목 95개가 피드를 채우면
+        // 네이버가 사이트 전체를 저품질로 보기 쉽습니다
+        ...Object.entries(memeCategories).map(([cid, c]) => ({
+          title: `${c.name} 뜻 총정리`,
+          link: `${QUIZ_URL}/meme/${cid}`,
+          description: c.desc,
           date: "2026-09-08",
         })),
         ...categories.map((c) => ({

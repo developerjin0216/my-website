@@ -1,12 +1,48 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CONTACT_EMAIL } from "@/lib/site";
+import { CONTACT_EMAIL, INFO_SITE_NAME, ROOT_URL } from "@/lib/site";
+import { publisher } from "@/lib/trust";
 
 export const metadata: Metadata = {
   title: { absolute: "사이트 소개 - 8282114" },
   description:
     "8282114 생활안내·모두의 계산기·모두의 도구·상식왕 퀴즈 소개 — 운영 목적, 콘텐츠 작성 기준, 정보 출처와 갱신 원칙을 안내합니다.",
   alternates: { canonical: "/about" },
+};
+
+// 사이트 소개는 E-E-A-T의 뿌리입니다. 누가 어떤 기준으로 만드는지가
+// 구조화 데이터로도 드러나야 합니다 (기존에는 스키마가 전혀 없었습니다).
+const OPERATOR = "뚱피바라";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "AboutPage",
+      "@id": `${ROOT_URL}/about#page`,
+      url: `${ROOT_URL}/about`,
+      name: `${INFO_SITE_NAME} 사이트 소개`,
+      inLanguage: "ko-KR",
+      about: { "@id": `${ROOT_URL}/#organization` },
+    },
+    {
+      ...publisher,
+      "@id": `${ROOT_URL}/#organization`,
+      founder: {
+        "@type": "Person",
+        name: OPERATOR,
+        jobTitle: "개발자",
+        email: CONTACT_EMAIL,
+      },
+      foundingDate: "2026",
+      knowsAbout: [
+        "생활 긴급 대처",
+        "4대보험·급여 계산",
+        "전기요금",
+        "한국 생활 정보",
+      ],
+    },
+  ],
 };
 
 export default function AboutPage() {
@@ -16,6 +52,12 @@ export default function AboutPage() {
         <Link href="/" className="text-sm text-[#a0a0b0] mb-1 block">
           ← 홈으로
         </Link>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, "\u003c"),
+          }}
+        />
         <h1 className="text-2xl font-bold text-accent">사이트 소개</h1>
       </header>
 
@@ -84,8 +126,9 @@ export default function AboutPage() {
           <section>
             <h2 className="text-base font-bold text-white mb-2">운영자</h2>
             <p>
-              현직 개발자(developerjin)가 2026년부터 직접 만들고 운영하고
-              있습니다. 급한 상황에서 검색하다 광고성 글에 시간을 뺏겨본 경험이
+              <strong className="text-white">뚱피바라</strong>(개발자, 필명)가
+              2026년부터 혼자 만들고 운영합니다. 기획·집필·개발·검수를 모두 직접
+              합니다. 급한 상황에서 검색하다 광고성 글에 시간을 뺏겨본 경험이
               이 사이트의 출발점입니다 — 그래서 &ldquo;공식 출처, 행동 순서,
               군더더기 없이&rdquo;를 원칙으로 삼습니다. 콘텐츠 오류 제보, 제휴
               문의는{" "}

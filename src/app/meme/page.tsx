@@ -75,7 +75,9 @@ export default function MemeHubPage() {
           return (
             <section key={cid} id={cid} className="mb-6 scroll-mt-4">
               <h2 className="text-base font-bold text-accent mb-1">
-                {c.emoji} {c.name}
+                <Link href={`/meme/${cid}`} className="hover:underline">
+                  {c.emoji} {c.name}
+                </Link>
                 <span className="text-xs font-normal text-[#606070] ml-2">
                   {list.length}개
                 </span>
@@ -85,7 +87,7 @@ export default function MemeHubPage() {
                 {list.map((m) => (
                   <Link
                     key={m.id}
-                    href={`/meme/${m.id}`}
+                    href={`/meme/${cid}#${m.id}`}
                     className="bg-card rounded-xl p-3.5 border border-[#2a3a5a] hover:border-accent transition-colors"
                   >
                     <p className="text-sm font-bold text-[#e8e8f0] break-keep">
@@ -97,6 +99,12 @@ export default function MemeHubPage() {
                   </Link>
                 ))}
               </div>
+              <Link
+                href={`/meme/${cid}`}
+                className="inline-block text-xs text-[#a0a0b0] hover:text-accent mt-3 underline underline-offset-2"
+              >
+                {c.name} {list.length}개 자세히 보기 →
+              </Link>
               {gi === 2 && (
                 <div className="mt-5">
                   <AdBanner slot="XXXXXXXXXX" format="horizontal" />

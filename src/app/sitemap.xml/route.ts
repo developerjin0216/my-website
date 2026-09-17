@@ -6,7 +6,7 @@ import { bankPath, getBankPageCount } from "@/lib/quizBank";
 import { helpTopics } from "@/data/help";
 import { tools } from "@/data/tools";
 import { mbtiTypes } from "@/data/mbti";
-import { memes } from "@/data/memes";
+import { memeCategories } from "@/data/memes";
 import { enGuides } from "@/data/guidesEn";
 import { slangEntries } from "@/data/slangEn";
 import {
@@ -27,6 +27,7 @@ import {
 // 구글은 GSC 속성별로 자기 호스트 사이트맵을 제출하면 되므로 손해가 없습니다.
 
 const MBTI_MEME_LAUNCH = "2026-09-08"; // MBTI 백과·밈 사전 공개일 (실제 lastmod)
+const memeCategoryIds = Object.keys(memeCategories);
 const ESCAPE_LAUNCH = "2026-09-14"; // 웹 방탈출 1편 공개일
 
 interface Entry {
@@ -105,11 +106,13 @@ function quizEntries(): Entry[] {
     // 방탈출 — 플레이 화면(/escape/play)은 정답·결말이 노출되므로 색인 제외(noindex)
     { url: `${QUIZ_URL}/escape`, lastmod: ESCAPE_LAUNCH, changefreq: "monthly", priority: 0.9 },
     { url: `${QUIZ_URL}/meme`, lastmod: MBTI_MEME_LAUNCH, changefreq: "weekly", priority: 0.9 },
-    ...memes.map((m) => ({
-      url: `${QUIZ_URL}/meme/${m.id}`,
+    // 용어별 페이지는 카테고리 문서로 통합했습니다(각 540자로 얇아 색인되지 않았음).
+    // 옛 용어 URL은 308로 카테고리 앵커에 넘기므로 사이트맵에는 싣지 않습니다.
+    ...memeCategoryIds.map((cid) => ({
+      url: `${QUIZ_URL}/meme/${cid}`,
       lastmod: MBTI_MEME_LAUNCH,
       changefreq: "monthly" as const,
-      priority: 0.7,
+      priority: 0.8,
     })),
   ];
 }
