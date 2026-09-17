@@ -134,6 +134,9 @@ export default function GuideShell({
           <span aria-hidden="true">{guide.icon}</span> {guide.title}
         </h1>
         <p className="text-sm text-[#a0a0b0] mt-1">{guide.description}</p>
+        <p className="text-[11px] text-[#707080] mt-2">
+          최종 확인·업데이트 {guide.date}
+        </p>
       </header>
 
       <main className="px-5 py-5 flex-1 space-y-4">{children}</main>

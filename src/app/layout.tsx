@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { BASE_URL, SITE_NAME } from "@/lib/site";
+import { siteJsonLd } from "@/lib/trust";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -77,6 +78,15 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full`}
     >
       <head>
+        {/* 발행 주체·사이트 정보 — 전 페이지 공통.
+            개별 페이지의 Article·WebApplication 스키마가 publisher를 @id로
+            참조하므로, 사이트 전체가 하나의 발행 주체로 묶입니다. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(siteJsonLd()).replace(/</g, "\\u003c"),
+          }}
+        />
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3640943750342373"

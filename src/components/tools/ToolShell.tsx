@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTool } from "@/data/tools";
 import { TOOLS_URL, TOOLS_SITE_NAME, ROOT_URL, QUIZ_URL, CALC_URL, CONTACT_EMAIL } from "@/lib/site";
+import { authorship, REVIEWED } from "@/lib/trust";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
 
@@ -26,6 +27,8 @@ export default function ToolShell({
         applicationCategory: "UtilityApplication",
         operatingSystem: "Web",
         offers: { "@type": "Offer", price: "0", priceCurrency: "KRW" },
+        // 발행 주체와 최종 점검일 — 도구 페이지도 누가 만들었는지 밝힙니다
+        ...authorship(REVIEWED.tools),
         description: tool.metaDescription,
       },
       {
@@ -68,6 +71,10 @@ export default function ToolShell({
           <span aria-hidden="true">{tool.icon}</span> {tool.name}
         </h1>
         <p className="text-sm text-[#a0a0b0] mt-1">{tool.card}</p>
+        <p className="text-[11px] text-[#707080] mt-2">
+          최종 점검 {REVIEWED.tools} · 파일은 브라우저 안에서만 처리되며 서버로
+          전송되지 않습니다
+        </p>
       </header>
 
       <div className="px-5 py-5 space-y-5">

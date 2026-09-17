@@ -9,6 +9,7 @@ import {
   SITE_NAME,
   CALC_SITE_NAME,
 } from "@/lib/site";
+import { authorship, calcReviewedDate, CALC_SOURCES } from "@/lib/trust";
 
 // 계산기 페이지 공용 셸 (서버 컴포넌트)
 // 헤더 + 계산기 본문(children) + 광고 + SEO 텍스트 + 예시 표 + FAQ + 관련 계산기 + 푸터
@@ -22,6 +23,8 @@ export default function CalcShell({
 }) {
   const calc = getCalc(id);
   const url = `${CALC_URL}/calculators/${id}`;
+  const reviewed = calcReviewedDate(id);
+  const sources = CALC_SOURCES[id] ?? [];
 
   // 도메인 분리 시: 계산기 허브가 사이트 홈 역할 (2단계 경로)
   const breadcrumb = SPLIT
@@ -56,9 +59,9 @@ export default function CalcShell({
         applicationCategory: "UtilityApplication",
         operatingSystem: "All",
         browserRequirements: "Requires JavaScript",
-        inLanguage: "ko",
-        isAccessibleForFree: true,
         offers: { "@type": "Offer", price: "0", priceCurrency: "KRW" },
+        // 저작·발행 주체와 최종 점검일 — 근거 없는 계산기로 보이지 않게
+        ...authorship(reviewed),
       },
       {
         "@type": "BreadcrumbList",
@@ -87,6 +90,9 @@ export default function CalcShell({
           <span aria-hidden="true">{calc.icon}</span> {calc.name}
         </h1>
         <p className="text-sm text-[#a0a0b0] mt-1">{calc.card}</p>
+        <p className="text-[11px] text-[#707080] mt-2">
+          최종 점검 {reviewed} · 공식 고시 요율 기준
+        </p>
       </header>
 
       <main className="px-5 py-5">{children}</main>
@@ -213,6 +219,35 @@ export default function CalcShell({
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
       </div>
 
+      {/* 공식 출처 — 계산 근거를 밝히는 신뢰 신호 (help 페이지와 같은 원칙) */}
+      {sources.length > 0 && (
+        <section className="px-5 pb-4">
+          <div className="bg-card rounded-2xl p-5">
+            <h2 className="text-sm font-bold mb-2 text-accent">🏛 계산 근거·공식 출처</h2>
+            <ul className="space-y-1.5">
+              {sources.map((s) => (
+                <li key={s.url} className="text-xs text-[#a0a0b0] leading-relaxed">
+                  ·{" "}
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener nofollow"
+                    className="hover:text-accent underline underline-offset-2"
+                  >
+                    {s.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="text-[11px] text-[#606070] leading-relaxed mt-3">
+              요율과 제도는 고시에 따라 바뀝니다. 최종 점검일({reviewed}) 이후 변경된
+              내용이 있을 수 있으니, 중요한 결정에는 위 기관의 공식 안내를 함께
+              확인하세요. 계산 결과는 참고용이며 실제 금액과 다를 수 있습니다.
+            </p>
+          </div>
+        </section>
+      )}
+
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
         <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-2">
           <a
@@ -250,9 +285,6 @@ export default function CalcShell({
             이용약관
           </Link>
         </div>
-        <p className="text-xs text-[#606070]">
-          계산 결과는 참고용이며 실제 금액과 다를 수 있습니다.
-        </p>
       </footer>
     </div>
   );
