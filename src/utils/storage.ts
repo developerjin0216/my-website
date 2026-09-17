@@ -125,13 +125,18 @@ export function getStreak(): { count: number; doneToday: boolean } {
 // 한 편이 20~30분이라 중간 이탈이 반드시 생깁니다. 푼 퍼즐과 쓴 힌트를 보관해
 // 돌아왔을 때 이어서 하게 합니다. (정답 자체는 저장하지 않습니다)
 
+// 스토리를 크게 고칠 때 올립니다. 저장된 값이 이보다 낮으면 플레이어가 예전
+// 버전으로 이어하는 중이라, 새로 쓴 이야기를 영영 못 보게 됩니다.
+export const ESCAPE_VERSION = 2;
+
 export interface EscapeProgress {
   solved: string[]; // 푼 퍼즐 id
   hints: Record<string, number>; // 퍼즐별로 연 힌트 단계 (1~3)
   completedAt?: number; // 엔딩 도달 시각
+  version?: number; // 저장 당시의 스토리 버전
 }
 
-const EMPTY_ESCAPE: EscapeProgress = { solved: [], hints: {} };
+const EMPTY_ESCAPE: EscapeProgress = { solved: [], hints: {}, version: ESCAPE_VERSION };
 
 export function getEscapeProgress(): EscapeProgress {
   if (typeof window === "undefined") return EMPTY_ESCAPE;
@@ -144,6 +149,8 @@ export function getEscapeProgress(): EscapeProgress {
       hints:
         parsed.hints && typeof parsed.hints === "object" ? parsed.hints : {},
       completedAt: parsed.completedAt,
+      // version이 없으면 1편 초판(스토리 보강 전)에 저장된 것
+      version: typeof parsed.version === "number" ? parsed.version : 1,
     };
   } catch {
     return EMPTY_ESCAPE;
@@ -163,6 +170,7 @@ export function saveEscapeProgress(
       solved,
       hints,
       completedAt: completed ? Date.now() : prev.completedAt,
+      version: ESCAPE_VERSION,
     };
     localStorage.setItem(ESCAPE_KEY, JSON.stringify(next));
   } catch {

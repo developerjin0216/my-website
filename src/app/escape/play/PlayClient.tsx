@@ -15,6 +15,7 @@ import {
 } from "@/data/escape";
 import { checkAnswer } from "@/utils/escapeAnswer";
 import {
+  ESCAPE_VERSION,
   getEscapeProgress,
   resetEscapeProgress,
   saveEscapeProgress,
@@ -40,6 +41,7 @@ export default function PlayClient() {
   const [justSolved, setJustSolved] = useState<Puzzle | null>(null);
   const [seen, setSeen] = useState<string[]>([]); // 이번 방에서 살펴본 사물
   const [openObj, setOpenObj] = useState<string | null>(null);
+  const [stale, setStale] = useState(false); // 스토리 보강 전 저장분으로 이어하는 중
 
   // 저장된 진행 상황 복원 (effect 내 동기 setState를 피하려고 태스크로 지연)
   useEffect(() => {
@@ -63,8 +65,13 @@ export default function PlayClient() {
         setView("ending");
       } else {
         setSceneIdx(idx);
-        const list = getPuzzlesOf(orderedScenes[idx].id);
-        setView(list.some((q) => done.has(q.id)) ? "puzzle" : "intro");
+        // 이어하기도 반드시 방 도입부부터. 곧장 퍼즐로 복원하면 이야기를 건너뛰고
+        // 문제만 튀어나와서, 이어하는 사람에게는 이 게임이 퀴즈로만 보입니다.
+        setView("intro");
+      }
+      // 스토리 보강 전에 저장된 진행이면 알려줍니다. 강제로 지우지는 않습니다.
+      if ((p.version ?? 1) < ESCAPE_VERSION && p.solved.length > 0) {
+        setStale(true);
       }
       setLoaded(true);
     }, 0);
@@ -158,6 +165,7 @@ export default function PlayClient() {
     setJustSolved(null);
     setSeen([]);
     setOpenObj(null);
+    setStale(false);
   };
 
   const share = async () => {
@@ -211,6 +219,33 @@ export default function PlayClient() {
           />
         </div>
       </div>
+
+      {/* 스토리 보강 전 저장분으로 이어하는 중 — 새 내용을 못 보고 지나칩니다 */}
+      {stale && view !== "ending" && (
+        <div className="mb-4 rounded-xl border border-accent/40 bg-[#3d2e00]/30 p-4">
+          <p className="text-xs font-bold text-accent mb-1">이야기가 크게 보강됐습니다</p>
+          <p className="text-[11px] text-[#c8c8d8] leading-relaxed">
+            지금 이어하시는 진행은 이야기를 넣기 전에 저장된 것입니다. 방마다 살펴보는
+            물건과 회상이 새로 들어갔는데, 이어하면 지나온 방의 내용은 볼 수 없습니다.
+          </p>
+          <div className="flex gap-2 mt-3">
+            <button
+              type="button"
+              onClick={restart}
+              className="flex-1 rounded-lg bg-accent text-[#1a1a2e] text-xs font-bold py-2.5"
+            >
+              처음부터 다시
+            </button>
+            <button
+              type="button"
+              onClick={() => setStale(false)}
+              className="flex-1 rounded-lg bg-[#16213e] border border-[#2a3a5a] text-[#a0a0b0] text-xs font-semibold py-2.5"
+            >
+              이어서 할게요
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── 장면 도입 ── */}
       {view === "intro" && (
@@ -299,6 +334,16 @@ export default function PlayClient() {
             {scene.title} · {current.order}/{scenePuzzles.length}
           </p>
           <h2 className="text-lg font-bold text-accent mb-3">{current.title}</h2>
+
+          {/* 언제든 방으로 돌아가 물건을 다시 볼 수 있어야 합니다.
+              퍼즐 화면에 갇히면 앞의 서술이 기억나지 않아 문제만 남습니다. */}
+          <button
+            type="button"
+            onClick={() => setView("explore")}
+            className="text-[11px] text-[#606070] hover:text-[#a0a0b0] underline underline-offset-2 mb-3"
+          >
+            ← 이 방 다시 둘러보기
+          </button>
 
           {/* 진입 서술 — 왜 지금 이걸 보고 있는가 */}
           {current.lead.map((line, i) => (

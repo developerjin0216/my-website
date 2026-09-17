@@ -109,6 +109,15 @@ export function GET(request: NextRequest) {
         description: "11개 카테고리 상식 퀴즈, MBTI 16유형 백과, 밈·신조어 사전",
       },
       [
+        // 최신 글이 맨 앞 — 네이버는 RSS 신선도를 크게 봅니다.
+        // 새 코너를 만들 때 여기 추가하지 않으면 피드가 과거에 멈춰 있습니다.
+        {
+          title: "웹 방탈출 '현상되지 않은 필름' - 한빛사진관",
+          link: `${QUIZ_URL}/escape`,
+          description:
+            "폐업을 앞둔 동네 사진관을 정리하며 20년 전 흔적을 따라가는 무료 추리 방탈출. 방 6개, 퍼즐 12개.",
+          date: "2026-09-14",
+        },
         ...mbtiTypes.map((t) => ({
           title: `${t.code} 특징 총정리 - ${t.name}`,
           link: `${QUIZ_URL}/mbti/${t.code.toLowerCase()}`,
