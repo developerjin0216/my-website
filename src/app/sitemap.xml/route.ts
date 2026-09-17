@@ -29,6 +29,7 @@ import {
 const MBTI_MEME_LAUNCH = "2026-09-08"; // MBTI 백과·밈 사전 공개일 (실제 lastmod)
 const memeCategoryIds = Object.keys(memeCategories);
 const ESCAPE_LAUNCH = "2026-09-14"; // 웹 방탈출 1편 공개일
+const OMOK_LAUNCH = "2026-09-15"; // 1:1 온라인 오목 공개일
 
 interface Entry {
   url: string;
@@ -82,6 +83,7 @@ function quizEntries(): Entry[] {
     { url: QUIZ_URL, changefreq: "daily", priority: 1 },
     { url: `${QUIZ_URL}/quiz`, changefreq: "daily", priority: 0.9 },
     { url: `${QUIZ_URL}/battle`, changefreq: "monthly", priority: 0.8 },
+    { url: `${QUIZ_URL}/omok`, lastmod: OMOK_LAUNCH, changefreq: "monthly", priority: 0.8 },
     ...categories.map((c) => ({
       url: `${QUIZ_URL}/quiz/${c.id}`,
       changefreq: "monthly" as const,

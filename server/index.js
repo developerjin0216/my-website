@@ -2,6 +2,7 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const omok = require("./omok");
 
 const app = express();
 app.use(cors());
@@ -61,6 +62,9 @@ function broadcastRoom(roomId) {
 }
 
 io.on("connection", (socket) => {
+  // 1:1 오목 — 퀴즈와 방 저장소·이벤트 이름이 분리돼 있습니다
+  omok.register(io, socket);
+
   console.log("connected:", socket.id);
 
   // ── 로비 입장 (방 리스트 구독) ──
@@ -269,7 +273,7 @@ function advanceQuestion(roomId) {
 
 // ── Health check + Room list API ──
 app.get("/", (req, res) => {
-  res.json({ status: "ok", rooms: rooms.size });
+  res.json({ status: "ok", rooms: rooms.size, omokRooms: omok.omokRooms.size });
 });
 
 app.get("/rooms", (req, res) => {
@@ -278,5 +282,5 @@ app.get("/rooms", (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
-  console.log(`Quiz Battle Server running on port ${PORT}`);
+  console.log(`Quiz Battle + Omok Server running on port ${PORT}`);
 });

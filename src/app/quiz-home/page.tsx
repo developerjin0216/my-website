@@ -116,6 +116,19 @@ export default function QuizHome() {
         </Link>
       </div>
 
+      {/* 1:1 오목 — 친구 초대형 콘텐츠 */}
+      <div className="px-5 pb-4">
+        <Link
+          href="/omok"
+          className="block rounded-2xl p-4 transition-transform active:scale-[0.99] bg-gradient-to-br from-[#8B5E34] to-[#c9a063] border border-[#d8bb8a]"
+        >
+          <p className="text-base font-bold text-white">⚫ 1:1 온라인 오목</p>
+          <p className="text-[11px] text-white/80 mt-1">
+            초대 코드만 보내면 바로 대국 — 가입·설치 없음
+          </p>
+        </Link>
+      </div>
+
       {/* 웹 방탈출 — 체류·공유형 콘텐츠 (검색 유입보다 바이럴을 노린 자리) */}
       <div className="px-5 pb-4">
         <Link
