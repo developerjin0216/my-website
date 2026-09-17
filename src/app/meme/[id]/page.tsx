@@ -197,25 +197,33 @@ export default async function MemeDetailPage({
         </section>
       )}
 
+      {/* 같은 카테고리의 다른 말 — 용어명만 링크합니다.
+          뜻까지 함께 싣던 때는 이 블록이 페이지의 60%를 차지했고, 같은 카테고리
+          페이지끼리 문장 단위로 47%가 동일했습니다. 본문보다 반복 블록이 큰
+          페이지가 96개면 '크롤링됨 - 색인되지 않음'으로 몰립니다.
+          링크 자체는 크롤 경로라 남기고, 중복되는 설명만 걷어냅니다. */}
       {siblings.length > 0 && (
-        <section className="mb-4">
+        <section className="bg-card rounded-2xl p-5 mb-4">
           <h2 className="text-sm font-bold text-[#a0a0b0] mb-3">
             {cat.name}의 다른 말들
           </h2>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="flex flex-wrap gap-1.5">
             {siblings.map((s) => (
               <Link
                 key={s.id}
                 href={`/meme/${s.id}`}
-                className="bg-card rounded-xl p-3.5 border border-[#2a3a5a] hover:border-accent transition-colors"
+                className="text-xs bg-[#16213e] border border-[#2a3a5a] rounded-full px-3 py-1.5 text-[#c0c8d8] hover:text-accent hover:border-accent transition-colors"
               >
-                <p className="text-sm font-bold text-[#e8e8f0] break-keep">{s.term}</p>
-                <p className="text-[11px] text-[#a0a0b0] mt-1 leading-snug break-keep line-clamp-2">
-                  {s.meaning}
-                </p>
+                {s.term}
               </Link>
             ))}
           </div>
+          <Link
+            href="/meme"
+            className="inline-block text-[11px] text-[#606070] hover:text-[#a0a0b0] mt-3"
+          >
+            {cat.name} 전체 보기 →
+          </Link>
         </section>
       )}
 
