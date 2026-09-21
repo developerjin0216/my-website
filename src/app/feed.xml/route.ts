@@ -13,6 +13,7 @@ import {
   CALC_HOST,
   QUIZ_HOST,
   TOOLS_HOST,
+  ROOT_HOST,
   INFO_SITE_NAME,
   CALC_SITE_NAME,
   SITE_NAME,
@@ -71,8 +72,60 @@ ${body}
 export function GET(request: NextRequest) {
   const host = request.headers.get("host");
 
+  // 통합 후 정식 호스트는 루트 하나. 호스트가 전부 같아져 아래 분기가 첫 조건에
+  // 걸리므로, 통합 상태에서는 섹션을 합친 단일 피드를 내보낸다.
+  const unified = ROOT_HOST === QUIZ_HOST && ROOT_HOST === CALC_HOST;
+
   let xml: string;
-  if (host === CALC_HOST) {
+  if (unified) {
+    xml = renderFeed(
+      {
+        title: `${INFO_SITE_NAME} - 생활 안내·계산기·퀴즈`,
+        link: ROOT_URL,
+        description:
+          "긴급 대처법과 생활 계산기, 상식 퀴즈까지 — 급할 때 바로 쓰는 생활 정보",
+      },
+      ([
+        {
+          title: "1:1 온라인 오목 - 가입 없이 친구와 바로 두기",
+          link: `${ROOT_URL}/omok`,
+          description:
+            "설치도 가입도 없이 브라우저에서 친구와 1:1 오목을 둡니다.",
+          date: "2026-09-15",
+        },
+        {
+          title: "웹 방탈출 '현상되지 않은 필름' - 한빛사진관",
+          link: `${ROOT_URL}/escape`,
+          description:
+            "폐업을 앞둔 동네 사진관을 정리하며 20년 전 흔적을 따라가는 무료 추리 방탈출.",
+          date: "2026-09-14",
+        },
+        ...helpTopics.map((t) => ({
+          title: t.title,
+          link: `${ROOT_URL}/help/${t.id}`,
+          description: t.description,
+          date: t.date,
+        })),
+        ...guides.map((g) => ({
+          title: g.title,
+          link: `${ROOT_URL}/guides/${g.id}`,
+          description: g.description,
+          date: g.date,
+        })),
+        ...Object.entries(memeCategories).map(([cid, c]) => ({
+          title: `${c.name} 뜻 총정리`,
+          link: `${ROOT_URL}/meme/${cid}`,
+          description: c.desc,
+          date: "2026-09-08",
+        })),
+        ...tools.map((t) => ({
+          title: t.name,
+          link: `${ROOT_URL}/tools/${t.id}`,
+          description: t.metaDescription,
+        })),
+      ] as FeedItem[]).sort((a, b) => ((a.date ?? "") < (b.date ?? "") ? 1 : -1))
+    );
+  } else if (host === CALC_HOST) {
     xml = renderFeed(
       {
         title: `${CALC_SITE_NAME} - 생활 가이드`,

@@ -12,20 +12,22 @@
 
 const DEFAULT_URL = "https://8282114.xyz"; // 소유 도메인 (2026-08 구입, Porkbun)
 
-// 잘못된 env(스킴 누락 등)는 무시하고 폴백 — 사이트가 죽는 것보다 분리 비활성이 낫다
-function parseUrl(raw: string | undefined, fallback: string): URL {
-  if (!raw) return new URL(fallback);
-  try {
-    return new URL(raw);
-  } catch {
-    return new URL(fallback);
-  }
-}
-
+// ── 2026-09 단일 도메인으로 통합 ──
+// 2026-07에 퀴즈·계산기·도구를 서브도메인으로 분리했으나, 5주 동안 네 도메인
+// 모두 구글 색인 0이었습니다. 검색엔진은 서브도메인을 상당 부분 별개 사이트로
+// 보기 때문에, 신뢰가 없는 신규 도메인을 넷으로 쪼개면 각자 처음부터 쌓아야
+// 합니다. 226페이지짜리 사이트 하나가 5주 된 사이트 네 개보다 낫다고 판단해
+// 되돌립니다. 색인된 URL이 없는 지금이 이전 비용이 가장 싼 시점입니다.
+//
+// env는 일부러 읽지 않습니다. Vercel에 값이 남아 있어도 분리가 되살아나지
+// 않도록 코드에서 확정합니다. 다시 나누려면 아래 세 줄을
+//   const quizUrl = new URL(process.env.NEXT_PUBLIC_QUIZ_URL ?? DEFAULT_URL);
+// 처럼 env를 읽도록 되돌리면 QUIZ_SPLIT 이하 분리 로직이 그대로 살아납니다.
+// (host 비교로 판정하므로 상수만 바뀌면 canonical·사이트맵·프록시가 따라옵니다)
 const rootUrl = new URL(DEFAULT_URL);
-const quizUrl = parseUrl(process.env.NEXT_PUBLIC_QUIZ_URL, DEFAULT_URL);
-const calcUrl = parseUrl(process.env.NEXT_PUBLIC_CALC_URL, DEFAULT_URL);
-const toolsUrl = parseUrl(process.env.NEXT_PUBLIC_TOOLS_URL, DEFAULT_URL);
+const quizUrl = rootUrl;
+const calcUrl = rootUrl;
+const toolsUrl = rootUrl;
 
 // origin으로 정규화 — 트레일링 슬래시·경로가 섞여 들어와도 안전
 export const ROOT_URL = rootUrl.origin;

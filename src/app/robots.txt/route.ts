@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import {
   ROOT_URL,
+  ROOT_HOST,
   QUIZ_URL,
   CALC_URL,
   TOOLS_URL,
@@ -21,6 +22,10 @@ export async function GET(request: NextRequest) {
   const host = request.headers.get("host");
 
   // 정식 호스트가 아니면(www, *.vercel.app 등) 루트 robots로 308 — sitemap.xml과 동일 규칙
+  // 통합 후에는 정식 호스트가 루트 하나 — 옛 서브도메인 요청은 루트로 넘긴다
+  if (!SPLIT_ACTIVE && host && host !== ROOT_HOST && !host.startsWith("localhost")) {
+    return NextResponse.redirect(new URL("/robots.txt", ROOT_URL), 308);
+  }
   if (SPLIT_ACTIVE && host && !KNOWN_HOSTS.has(host)) {
     return NextResponse.redirect(new URL("/robots.txt", ROOT_URL), 308);
   }

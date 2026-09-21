@@ -3,6 +3,7 @@ import Link from "next/link";
 import { tools } from "@/data/tools";
 import {
   TOOLS_URL,
+  TOOLS_SPLIT,
   TOOLS_SITE_NAME,
   ROOT_URL,
   QUIZ_URL,
@@ -18,7 +19,8 @@ export const metadata: Metadata = {
   title: { absolute: "모두의 도구 - 로그인 없이 쓰는 무료 웹 도구" },
   description:
     "인스타그램·쓰레드 언팔 확인(맞팔 체크)부터 — 비밀번호 입력 없이, 파일이 서버로 전송되지 않는 안전한 무료 웹 도구 모음입니다.",
-  alternates: { canonical: TOOLS_URL },
+  // 통합 후 TOOLS_URL은 루트와 같으므로 실제 경로를 붙인다
+  alternates: { canonical: TOOLS_SPLIT ? TOOLS_URL : `${TOOLS_URL}/tools` },
   openGraph: {
     title: "모두의 도구 - 로그인 없이 쓰는 무료 웹 도구",
     description:

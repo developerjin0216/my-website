@@ -1,112 +1,47 @@
 import { NextResponse, type NextRequest } from "next/server";
-import {
-  ROOT_URL,
-  QUIZ_URL,
-  CALC_URL,
-  TOOLS_URL,
-  ROOT_HOST,
-  QUIZ_HOST,
-  CALC_HOST,
-  TOOLS_HOST,
-  QUIZ_SPLIT,
-  CALC_SPLIT,
-  TOOLS_SPLIT,
-  SPLIT_ACTIVE,
-} from "@/lib/site";
+import { ROOT_URL, ROOT_HOST, SPLIT_ACTIVE } from "@/lib/site";
 
-// 3분할 프록시 (Next.js 16: middleware → proxy)
-// - 루트(8282114.xyz): 급할때 생활안내 홈(/ + /help/*) — 퀴즈·계산기 경로는 각 서브도메인으로 308
-// - quiz 서브도메인: /를 /quiz-home으로 rewrite, 퀴즈 경로 서빙 — 그 외는 해당 도메인으로 308
-// - calc 서브도메인: /를 /calculators로 rewrite (기존과 동일)
-// - /about, /contact, /privacy, /terms 는 모든 도메인에서 서빙 (AdSense 필수 페이지)
-// - 같은 호스트로의 redirect는 절대 발생하지 않도록 host 비교 후에만 308 (루프 방지)
+// 단일 도메인 통합 프록시 (Next.js 16: middleware → proxy)
+//
+// 2026-07에 quiz·calc·tools를 서브도메인으로 분리했다가 2026-09에 되돌렸습니다.
+// 이유는 lib/site.ts 주석 참고. 이 파일이 하는 일은 이제 두 가지뿐입니다.
+//  1) 옛 서브도메인으로 들어온 요청을 루트의 같은 경로로 308 영구 이동
+//  2) 그 외(루트·로컬)는 그대로 통과
+//
+// 서브도메인 루트(/)는 각 섹션 홈으로 보냅니다. 루트 도메인의 /는 '급할때
+// 생활안내' 홈이라, 그냥 /로 넘기면 퀴즈를 찾아온 사람이 엉뚱한 데 떨어집니다.
 
-const QUIZ_PATHS = ["/quiz", "/quiz-home", "/quiz-bank", "/battle", "/result", "/mbti", "/meme", "/escape", "/omok"];
-const CALC_PATHS = ["/calculators", "/guides"];
-// 루트 도메인(8282114.xyz) 소속 경로 — /en(외국인용 영문 가이드), /deals(토스 특가)
-const HELP_PATHS = ["/help", "/en", "/deals"];
-const TOOLS_PATHS = ["/tools"];
+const LEGACY_HOME: Record<string, string> = {
+  "quiz.8282114.xyz": "/quiz-home",
+  "calc.8282114.xyz": "/calculators",
+  "tools.8282114.xyz": "/tools",
+};
 
-function matches(pathname: string, prefixes: string[]): boolean {
-  return prefixes.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`)
-  );
-}
+// www도 같이 정리 — 정식 호스트는 8282114.xyz 하나입니다
+const LEGACY_HOSTS = new Set([...Object.keys(LEGACY_HOME), "www.8282114.xyz"]);
 
 export function proxy(request: NextRequest) {
-  if (!SPLIT_ACTIVE) return NextResponse.next();
-
   const host = request.headers.get("host");
-  const { pathname, search } = request.nextUrl;
+  if (!host) return NextResponse.next();
 
-  const isQuizPath = matches(pathname, QUIZ_PATHS);
-  const isCalcPath = matches(pathname, CALC_PATHS);
-  const isHelpPath = matches(pathname, HELP_PATHS);
-  const isToolsPath = matches(pathname, TOOLS_PATHS);
+  // 통합 후에는 정식 호스트가 하나뿐이라 SPLIT_ACTIVE는 항상 false입니다.
+  // 다시 분리하게 되면 이 가드가 옛 동작을 되살릴 자리입니다.
+  if (SPLIT_ACTIVE) return NextResponse.next();
 
-  // 경로가 속한 정식 도메인
-  const targetUrl = isCalcPath
-    ? CALC_URL
-    : isQuizPath
-      ? QUIZ_URL
-      : isToolsPath
-        ? TOOLS_URL
-        : ROOT_URL; // help 및 기타 공용 경로의 기준은 루트
+  if (host === ROOT_HOST) return NextResponse.next();
 
-  if (host === CALC_HOST && CALC_SPLIT) {
-    if (pathname === "/") {
-      return NextResponse.rewrite(new URL(`/calculators${search}`, request.url));
-    }
-    if (
-      (isQuizPath || isHelpPath || isToolsPath) &&
-      new URL(targetUrl).host !== host
-    ) {
-      return NextResponse.redirect(new URL(pathname + search, targetUrl), 308);
-    }
-    return NextResponse.next();
+  if (LEGACY_HOSTS.has(host)) {
+    const { pathname, search } = request.nextUrl;
+    const target = pathname === "/" ? (LEGACY_HOME[host] ?? "/") : pathname;
+    return NextResponse.redirect(new URL(target + search, ROOT_URL), 308);
   }
 
-  if (host === QUIZ_HOST && QUIZ_SPLIT) {
-    if (pathname === "/") {
-      return NextResponse.rewrite(new URL(`/quiz-home${search}`, request.url));
-    }
-    if (
-      (isCalcPath || isHelpPath || isToolsPath) &&
-      new URL(targetUrl).host !== host
-    ) {
-      return NextResponse.redirect(new URL(pathname + search, targetUrl), 308);
-    }
-    return NextResponse.next();
-  }
-
-  if (host === TOOLS_HOST && TOOLS_SPLIT) {
-    if (pathname === "/") {
-      return NextResponse.rewrite(new URL(`/tools${search}`, request.url));
-    }
-    if (
-      (isQuizPath || isCalcPath || isHelpPath) &&
-      new URL(targetUrl).host !== host
-    ) {
-      return NextResponse.redirect(new URL(pathname + search, targetUrl), 308);
-    }
-    return NextResponse.next();
-  }
-
-  if (host === ROOT_HOST) {
-    if (
-      (isQuizPath || isCalcPath || isToolsPath) &&
-      new URL(targetUrl).host !== host
-    ) {
-      return NextResponse.redirect(new URL(pathname + search, targetUrl), 308);
-    }
-    return NextResponse.next();
-  }
-
-  // 알 수 없는 호스트(구 vercel.app 주소 등) → 경로에 맞는 정식 도메인으로 이관
-  return NextResponse.redirect(new URL(pathname + search, targetUrl), 308);
+  // 로컬 개발(localhost 등)은 건드리지 않습니다
+  return NextResponse.next();
 }
 
 export const config = {
-  // 정적 에셋(_next, 확장자 있는 파일: ads.txt, sitemap.xml 등)은 모든 도메인에서 그대로 서빙
+  // 정적 에셋(_next, 확장자 있는 파일)은 프록시를 타지 않습니다.
+  // sitemap.xml·robots.txt는 각 라우트에서 자체적으로 호스트를 판별합니다.
   matcher: ["/((?!_next|.*\\..*).*)"],
 };

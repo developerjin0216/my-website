@@ -5,7 +5,7 @@ import AdBanner from "@/components/AdBanner";
 import DailyQuote from "@/components/DailyQuote";
 import HomeClient from "@/components/HomeClient";
 import DailyStreak from "@/components/quiz/DailyStreak";
-import { QUIZ_URL, CALC_URL, SITE_NAME } from "@/lib/site";
+import { QUIZ_URL, CALC_URL, SITE_NAME, QUIZ_SPLIT } from "@/lib/site";
 
 // 상식왕 퀴즈 홈 — quiz 서브도메인의 루트(/)로 rewrite되어 서빙됩니다 (src/proxy.ts)
 
@@ -13,11 +13,13 @@ export const metadata: Metadata = {
   title: { absolute: "상식왕 퀴즈 - 무료 상식 퀴즈 1,100문제 & 실시간 퀴즈 배틀" },
   description:
     "경제·맞춤법·역사·과학·MZ 등 11개 카테고리 1,100문제 상식 퀴즈, 매일 새로운 오늘의 퀴즈, 최대 10명 실시간 퀴즈 배틀까지 무료로 즐기세요.",
-  alternates: { canonical: QUIZ_URL },
+  // 통합 후 QUIZ_URL은 루트와 같으므로 실제 경로를 붙인다.
+  // 그냥 QUIZ_URL로 두면 '급할때 생활안내' 홈과 canonical이 겹친다.
+  alternates: { canonical: QUIZ_SPLIT ? QUIZ_URL : `${QUIZ_URL}/quiz-home` },
   openGraph: {
     title: "상식왕 퀴즈 - 무료 상식 퀴즈 1,000문제",
     description: "10개 카테고리 1,000문제, 오늘의 퀴즈, 실시간 퀴즈 배틀",
-    url: QUIZ_URL,
+    url: QUIZ_SPLIT ? QUIZ_URL : `${QUIZ_URL}/quiz-home`,
     siteName: SITE_NAME,
     locale: "ko_KR",
     type: "website",

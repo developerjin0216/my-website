@@ -4,7 +4,7 @@ import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
 import CoupangGoldbox from "@/components/CoupangGoldbox";
 import { helpTopics } from "@/data/help";
-import { ROOT_URL, QUIZ_URL, CALC_URL, TOOLS_URL, INFO_SITE_NAME } from "@/lib/site";
+import { ROOT_URL, CALC_URL, TOOLS_URL, INFO_SITE_NAME } from "@/lib/site";
 
 // 루트(8282114.xyz) 홈 — 급할때 생활안내 허브
 // 도메인 자체가 브랜드: 8282(빨리빨리) + 114(안내)
@@ -134,8 +134,10 @@ export default function InfoHome() {
           </span>
           <span className="text-[#E1306C] text-sm shrink-0 ml-2">→</span>
         </a>
-        <a
-          href={QUIZ_URL}
+        {/* 통합 전에는 QUIZ_URL(서브도메인)을 가리켰는데, 단일 도메인이 되면서
+            루트 홈 자기 자신을 링크하게 됐습니다. 실제 경로로 교체합니다. */}
+        <Link
+          href="/quiz-home"
           className="flex items-center justify-between rounded-xl px-4 py-3 bg-card border border-[#2a3a5a] hover:border-accent transition-colors"
         >
           <span className="text-sm text-[#a0a0b0]">
@@ -144,7 +146,43 @@ export default function InfoHome() {
             {" — "}11개 카테고리 1,100여 문제·실시간 배틀
           </span>
           <span className="text-accent text-sm shrink-0 ml-2">→</span>
-        </a>
+        </Link>
+      </div>
+
+      {/* 놀거리 — 통합 전에는 퀴즈 서브도메인 홈에만 있어서 루트에서 닿지 않았습니다.
+          내부 링크가 없으면 크롤러도 사람도 이 페이지들에 도달하지 못합니다. */}
+      <div className="px-5 pb-4">
+        <h2 className="text-lg font-bold mb-2.5">쉬어가기</h2>
+        <div className="grid grid-cols-2 gap-2.5">
+          <Link
+            href="/omok"
+            className="rounded-xl p-3.5 bg-gradient-to-br from-[#8B5E34] to-[#c9a063] border border-[#d8bb8a]"
+          >
+            <p className="text-sm font-bold text-white">⚫ 1:1 오목</p>
+            <p className="text-[11px] text-white/80 mt-1">초대 코드로 바로 대국</p>
+          </Link>
+          <Link
+            href="/escape"
+            className="rounded-xl p-3.5 bg-gradient-to-br from-[#2C3E50] to-[#4A6572] border border-[#5a6a7a]"
+          >
+            <p className="text-sm font-bold text-white">🔦 웹 방탈출</p>
+            <p className="text-[11px] text-white/70 mt-1">한빛사진관 추리</p>
+          </Link>
+          <Link
+            href="/mbti"
+            className="rounded-xl p-3.5 bg-gradient-to-br from-[#9B59B6] to-[#5B86E5]"
+          >
+            <p className="text-sm font-bold text-white">🔮 MBTI 백과</p>
+            <p className="text-[11px] text-white/70 mt-1">16유형 특징·궁합</p>
+          </Link>
+          <Link
+            href="/meme"
+            className="rounded-xl p-3.5 bg-gradient-to-br from-[#E67E22] to-[#E74C3C]"
+          >
+            <p className="text-sm font-bold text-white">😂 밈 사전</p>
+            <p className="text-[11px] text-white/70 mt-1">요즘 말 뜻·유래</p>
+          </Link>
+        </div>
       </div>
 
       {/* SEO 콘텐츠 — 크롤러용 정적 텍스트 */}
