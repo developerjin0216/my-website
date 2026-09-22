@@ -74,7 +74,9 @@ const INTRO: Record<PromptCategoryId, string[]> = {
 
 // 광고 위치를 고정합니다. 'N개마다'로 두면 긴 문서(유행 이미지 26개)에 배너가
 // 9개씩 붙어서 읽기가 끊기고 애드센스 심사에서도 광고 과다로 잡힙니다.
-const AD_SLOTS = [2, 8, 14];
+// 본문 중간은 한 곳만 씁니다. 프롬프트가 4~6개뿐인 짧은 문서에서는 이 위치가
+// 아예 없어서 문서 끝의 배너 하나만 남습니다.
+const AD_SLOTS = [5];
 
 export function generateStaticParams() {
   return CATEGORY_IDS.map((category) => ({ category }));
