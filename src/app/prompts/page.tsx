@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
-import CopyButton from "@/components/CopyButton";
 import {
   promptCategories,
   prompts,
@@ -10,6 +9,12 @@ import {
   TOTAL_PROMPTS,
   type PromptCategoryId,
 } from "@/data/prompts";
+import {
+  viralCategories,
+  viralByCategory,
+  TOTAL_VIRAL,
+  type ViralCategoryId,
+} from "@/data/promptsViral";
 import { ROOT_URL, INFO_SITE_NAME } from "@/lib/site";
 import { authorship } from "@/lib/trust";
 
@@ -167,6 +172,41 @@ export default function PromptsHub() {
 
       <AdBanner slot="XXXXXXXXXX" format="horizontal" />
 
+      {/* 유행 프롬프트 — 남이 만든 것이라 직접 쓴 것과 구역을 나눕니다 */}
+      <section className="px-5 py-6">
+        <h2 className="text-lg font-bold mb-1">온라인에서 유행한 프롬프트</h2>
+        <p className="text-xs text-[#606070] mb-4 break-keep">
+          커뮤니티·SNS에서 실제로 퍼진 {TOTAL_VIRAL}개를 출처와 함께 정리했습니다.
+          저희가 만든 것이 아니라 어디서 시작됐는지 밝혀둔 것들입니다.
+        </p>
+        <div className="grid grid-cols-1 gap-2.5">
+          {(Object.keys(viralCategories) as ViralCategoryId[]).map((c) => {
+            const cat = viralCategories[c];
+            return (
+              <Link
+                key={c}
+                href={`/prompts/viral/${c}`}
+                className="rounded-xl p-4 border transition-colors"
+                style={{
+                  background: `linear-gradient(135deg, ${cat.color}22, #16213e 75%)`,
+                  borderColor: `${cat.color}44`,
+                }}
+              >
+                <p className="text-sm font-bold text-[#e8e8f0] break-keep">
+                  {cat.emoji} {cat.name}
+                  <span className="text-[11px] font-normal text-[#a0a0b0] ml-2">
+                    {viralByCategory(c).length}개
+                  </span>
+                </p>
+                <p className="text-[11px] text-[#a0a0b0] mt-1 break-keep">
+                  {cat.desc}
+                </p>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="px-5 py-6">
         <h2 className="text-lg font-bold mb-1">맛보기</h2>
         <p className="text-xs text-[#606070] mb-4">분류마다 하나씩 — 바로 복사해서 써보세요</p>
@@ -184,7 +224,6 @@ export default function PromptsHub() {
                     {p.title}
                   </p>
                 </div>
-                <CopyButton text={p.body} label={p.title} />
               </div>
               <p className="text-[12px] leading-relaxed text-[#8a8a9a] break-keep">
                 {p.why}

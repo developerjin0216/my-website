@@ -6,6 +6,7 @@ import { categories } from "@/data/quizData";
 import { mbtiTypes } from "@/data/mbti";
 import { memeCategories } from "@/data/memes";
 import { promptCategories } from "@/data/prompts";
+import { viralCategories } from "@/data/promptsViral";
 import {
   ROOT_URL,
   CALC_URL,
@@ -97,6 +98,12 @@ export function GET(request: NextRequest) {
         ...Object.entries(promptCategories).map(([cid, c]) => ({
           title: `${c.name} — AI 프롬프트`,
           link: `${ROOT_URL}/prompts/${cid}`,
+          description: c.desc,
+          date: "2026-09-22",
+        })),
+        ...Object.entries(viralCategories).map(([cid, c]) => ({
+          title: `${c.name} — 출처와 함께`,
+          link: `${ROOT_URL}/prompts/viral/${cid}`,
           description: c.desc,
           date: "2026-09-22",
         })),

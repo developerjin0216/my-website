@@ -72,6 +72,10 @@ const INTRO: Record<PromptCategoryId, string[]> = {
   ],
 };
 
+// 광고 위치를 고정합니다. 'N개마다'로 두면 긴 문서(유행 이미지 26개)에 배너가
+// 9개씩 붙어서 읽기가 끊기고 애드센스 심사에서도 광고 과다로 잡힙니다.
+const AD_SLOTS = [2, 8, 14];
+
 export function generateStaticParams() {
   return CATEGORY_IDS.map((category) => ({ category }));
 }
@@ -221,7 +225,7 @@ export default async function PromptCategoryPage({
               애드센스는 승인 전이라 AdBanner가 null을 반환합니다. 지금 실제로
               보이는 건 쿠팡뿐이라 그 자리를 쿠팡으로 채우고, 애드센스 슬롯은
               승인 뒤 자동으로 함께 뜨도록 아래에 같이 둡니다. */}
-          {idx % 3 === 2 && idx < list.length - 1 && (
+          {AD_SLOTS.includes(idx) && idx < list.length - 1 && (
             <div className="mb-4 space-y-3">
               <CoupangBanner />
               <AdBanner slot="XXXXXXXXXX" format="horizontal" />

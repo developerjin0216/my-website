@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { sendGAEvent } from "@next/third-parties/google";
 import CopyButton from "@/components/CopyButton";
+import { formatPromptBody } from "@/utils/promptFormat";
 
 // 프롬프트 카드 — 본문은 버튼을 눌러야 펼쳐집니다.
 //
@@ -31,6 +32,9 @@ export default function PromptCard({
   tip: string;
   caution: string;
 }) {
+  // 화면과 복사 텍스트에 같은 것을 씁니다 — 붙여넣었을 때도 읽기 좋아야 합니다
+  const text = formatPromptBody(body);
+
   const [open, setOpen] = useState(false);
   const [counted, setCounted] = useState(false);
 
@@ -51,10 +55,7 @@ export default function PromptCard({
 
   return (
     <>
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <h2 className="text-lg font-bold text-accent break-keep">{title}</h2>
-        <CopyButton text={body} label={title} />
-      </div>
+      <h2 className="text-lg font-bold text-accent break-keep mb-3">{title}</h2>
 
       <p className="text-[13px] text-[#a0a0b0] leading-relaxed break-keep mb-3">
         <span className="font-bold text-[#e8e8f0]">왜 해볼 만한가 </span>
@@ -74,9 +75,15 @@ export default function PromptCard({
 
       {/* hidden 속성으로만 감춥니다 — DOM에는 항상 있어야 색인됩니다 */}
       <div id={panelId} hidden={!open} className="mt-3">
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <span className="text-[11px] text-[#606070]">
+            아래 내용을 그대로 붙여넣으세요
+          </span>
+          <CopyButton text={text} label={title} />
+        </div>
         <div className="rounded-xl bg-[#0f1626] border border-[#2a3a5a] p-4">
           <p className="text-[13px] leading-relaxed text-[#d8dce8] break-keep whitespace-pre-wrap select-all">
-            {body}
+            {text}
           </p>
         </div>
 
@@ -92,7 +99,7 @@ export default function PromptCard({
         )}
 
         <div className="mt-3 flex justify-end">
-          <CopyButton text={body} label={title} />
+          <CopyButton text={text} label={title} />
         </div>
       </div>
     </>

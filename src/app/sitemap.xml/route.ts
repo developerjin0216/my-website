@@ -8,6 +8,7 @@ import { tools } from "@/data/tools";
 import { mbtiTypes } from "@/data/mbti";
 import { memeCategories } from "@/data/memes";
 import { promptCategories } from "@/data/prompts";
+import { viralCategories } from "@/data/promptsViral";
 import { enGuides } from "@/data/guidesEn";
 import { slangEntries } from "@/data/slangEn";
 import {
@@ -34,6 +35,7 @@ const ESCAPE_LAUNCH = "2026-09-14"; // 웹 방탈출 1편 공개일
 const OMOK_LAUNCH = "2026-09-15"; // 1:1 온라인 오목 공개일
 const PROMPTS_LAUNCH = "2026-09-22"; // AI 프롬프트 모음 공개일
 const promptCategoryIds = Object.keys(promptCategories);
+const viralCategoryIds = Object.keys(viralCategories);
 
 interface Entry {
   url: string;
@@ -75,6 +77,12 @@ function rootEntries(): Entry[] {
     { url: `${ROOT_URL}/prompts`, lastmod: PROMPTS_LAUNCH, changefreq: "weekly", priority: 0.9 },
     ...promptCategoryIds.map((cid) => ({
       url: `${ROOT_URL}/prompts/${cid}`,
+      lastmod: PROMPTS_LAUNCH,
+      changefreq: "monthly" as const,
+      priority: 0.8,
+    })),
+    ...viralCategoryIds.map((cid) => ({
+      url: `${ROOT_URL}/prompts/viral/${cid}`,
       lastmod: PROMPTS_LAUNCH,
       changefreq: "monthly" as const,
       priority: 0.8,
