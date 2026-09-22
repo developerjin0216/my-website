@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
+import CoupangBanner from "@/components/CoupangBanner";
 import CopyButton from "@/components/CopyButton";
 import {
   promptCategories,
@@ -170,8 +171,9 @@ export default function PromptsHub() {
         <h2 className="text-lg font-bold mb-1">맛보기</h2>
         <p className="text-xs text-[#606070] mb-4">분류마다 하나씩 — 바로 복사해서 써보세요</p>
         <div className="space-y-3">
-          {teasers.map((p) => (
-            <div key={p.id} className="bg-card rounded-2xl p-4">
+          {teasers.map((p, i) => (
+            <div key={p.id}>
+            <div className="bg-card rounded-2xl p-4">
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="min-w-0">
                   <p className="text-[11px] text-[#606070]">
@@ -184,15 +186,21 @@ export default function PromptsHub() {
                 </div>
                 <CopyButton text={p.body} label={p.title} />
               </div>
-              <p className="text-[12px] leading-relaxed text-[#8a8a9a] break-keep line-clamp-3">
-                {p.body}
+              <p className="text-[12px] leading-relaxed text-[#8a8a9a] break-keep">
+                {p.why}
               </p>
               <Link
                 href={`/prompts/${p.category}#${p.id}`}
-                className="inline-block text-[11px] text-[#606070] hover:text-accent mt-2"
+                className="inline-block text-xs font-semibold text-accent hover:underline mt-2"
               >
-                전문 보기 →
+                프롬프트 전문 보기 →
               </Link>
+            </div>
+            {i === 3 && (
+              <div className="mt-3">
+                <CoupangBanner />
+              </div>
+            )}
             </div>
           ))}
         </div>

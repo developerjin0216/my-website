@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AdBanner from "@/components/AdBanner";
-import CopyButton from "@/components/CopyButton";
+import CoupangBanner from "@/components/CoupangBanner";
+import PromptCard from "@/components/PromptCard";
 import {
   promptCategories,
   promptsByCategory,
@@ -203,44 +204,35 @@ export default async function PromptCategoryPage({
       </nav>
 
       {list.map((p, idx) => (
-        <article
-          key={p.id}
-          id={p.id}
-          className="bg-card rounded-2xl p-5 mb-4 scroll-mt-4"
-        >
-          <div className="flex items-start justify-between gap-3 mb-3">
-            <h2 className="text-lg font-bold text-accent break-keep">{p.title}</h2>
-            <CopyButton text={p.body} label={p.title} />
-          </div>
+        <div key={p.id}>
+          <article id={p.id} className="bg-card rounded-2xl p-5 mb-4 scroll-mt-4">
+            <PromptCard
+              id={p.id}
+              title={p.title}
+              body={p.body}
+              why={p.why}
+              tip={p.tip}
+              caution={p.caution}
+            />
+          </article>
 
-          {/* 프롬프트 전문 — 길게 눌러 직접 선택할 수도 있어야 합니다 */}
-          <div className="rounded-xl bg-[#0f1626] border border-[#2a3a5a] p-4 mb-3">
-            <p className="text-[13px] leading-relaxed text-[#d8dce8] break-keep whitespace-pre-wrap select-all">
-              {p.body}
-            </p>
-          </div>
-
-          <p className="text-[13px] text-[#a0a0b0] leading-relaxed break-keep">
-            <span className="font-bold text-[#e8e8f0]">왜 해볼 만한가 </span>
-            {p.why}
-          </p>
-          <p className="text-[13px] text-[#a0a0b0] leading-relaxed break-keep mt-2">
-            <span className="font-bold text-[#e8e8f0]">더 잘 뽑으려면 </span>
-            {p.tip}
-          </p>
-          {p.caution && (
-            <p className="text-xs text-[#d8c98a] leading-relaxed break-keep mt-3 rounded-lg bg-[#3d2e00]/30 border border-[#ffd700]/25 px-3 py-2">
-              ⚠ {p.caution}
-            </p>
-          )}
-
-          {idx === 2 && (
-            <div className="mt-5">
+          {/* 광고는 프롬프트 3개마다 한 번. 카드 안이 아니라 사이에 둡니다 —
+              펼침 버튼 바로 옆에 광고가 있으면 오조작 클릭이 납니다.
+              애드센스는 승인 전이라 AdBanner가 null을 반환합니다. 지금 실제로
+              보이는 건 쿠팡뿐이라 그 자리를 쿠팡으로 채우고, 애드센스 슬롯은
+              승인 뒤 자동으로 함께 뜨도록 아래에 같이 둡니다. */}
+          {idx % 3 === 2 && idx < list.length - 1 && (
+            <div className="mb-4 space-y-3">
+              <CoupangBanner />
               <AdBanner slot="XXXXXXXXXX" format="horizontal" />
             </div>
           )}
-        </article>
+        </div>
       ))}
+
+      <div className="mb-4">
+        <CoupangBanner />
+      </div>
 
       <section className="bg-card rounded-2xl p-5 mb-4">
         <h2 className="text-base font-bold text-accent mb-3">다른 분류도 보기</h2>
