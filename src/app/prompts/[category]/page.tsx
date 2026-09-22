@@ -72,12 +72,6 @@ const INTRO: Record<PromptCategoryId, string[]> = {
   ],
 };
 
-// 광고 위치를 고정합니다. 'N개마다'로 두면 긴 문서(유행 이미지 26개)에 배너가
-// 9개씩 붙어서 읽기가 끊기고 애드센스 심사에서도 광고 과다로 잡힙니다.
-// 본문 중간은 한 곳만 씁니다. 프롬프트가 4~6개뿐인 짧은 문서에서는 이 위치가
-// 아예 없어서 문서 끝의 배너 하나만 남습니다.
-const AD_SLOTS = [5];
-
 export function generateStaticParams() {
   return CATEGORY_IDS.map((category) => ({ category }));
 }
@@ -123,6 +117,8 @@ export default async function PromptCategoryPage({
 
   const cat = promptCategories[category];
   const list = promptsByCategory(category);
+  // 프롬프트가 몇 개든 문서 가운데 한 곳에만 광고를 둡니다
+  const AD_INDEX = Math.floor((list.length - 1) / 2);
   const url = `${ROOT_URL}/prompts/${category}`;
 
   const jsonLd = {
@@ -222,12 +218,11 @@ export default async function PromptCategoryPage({
             />
           </article>
 
-          {/* 광고는 프롬프트 3개마다 한 번. 카드 안이 아니라 사이에 둡니다 —
-              펼침 버튼 바로 옆에 광고가 있으면 오조작 클릭이 납니다.
-              애드센스는 승인 전이라 AdBanner가 null을 반환합니다. 지금 실제로
-              보이는 건 쿠팡뿐이라 그 자리를 쿠팡으로 채우고, 애드센스 슬롯은
-              승인 뒤 자동으로 함께 뜨도록 아래에 같이 둡니다. */}
-          {AD_SLOTS.includes(idx) && idx < list.length - 1 && (
+          {/* 광고는 문서 가운데 한 곳뿐입니다. 끝에 두면 거기까지 내려오는
+              사람이 거의 없고, 여러 곳에 흩으면 프롬프트를 훑는 흐름이 끊깁니다.
+              카드 안이 아니라 카드 사이에 둡니다 — 펼침 버튼 바로 옆에 광고가
+              있으면 오조작 클릭이 납니다. */}
+          {idx === AD_INDEX && (
             <div className="mb-4 space-y-3">
               <CoupangBanner />
               <AdBanner slot="XXXXXXXXXX" format="horizontal" />
@@ -235,10 +230,6 @@ export default async function PromptCategoryPage({
           )}
         </div>
       ))}
-
-      <div className="mb-4">
-        <CoupangBanner />
-      </div>
 
       <section className="bg-card rounded-2xl p-5 mb-4">
         <h2 className="text-base font-bold text-accent mb-3">다른 분류도 보기</h2>
