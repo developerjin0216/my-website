@@ -118,6 +118,19 @@ export default function QuizHome() {
         </Link>
       </div>
 
+      {/* AI 프롬프트 — 검색 수요가 있는 코너로 내부 링크를 늘립니다 */}
+      <div className="px-5 pb-4">
+        <Link
+          href="/prompts"
+          className="block rounded-2xl p-4 transition-transform active:scale-[0.99] bg-gradient-to-br from-[#5B4B8A] to-[#8E7CC3] border border-[#a99ad6]"
+        >
+          <p className="text-base font-bold text-white">🤖 AI 프롬프트 모음</p>
+          <p className="text-[11px] text-white/80 mt-1">
+            복사해서 바로 쓰는 챗GPT 질문 78개 — 재미·자기분석·일·공부
+          </p>
+        </Link>
+      </div>
+
       {/* 1:1 오목 — 친구 초대형 콘텐츠 */}
       <div className="px-5 pb-4">
         <Link

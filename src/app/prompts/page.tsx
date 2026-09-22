@@ -38,6 +38,33 @@ export const metadata: Metadata = {
   },
 };
 
+const FAQ = [
+  {
+    q: "프롬프트를 그대로 복사해서 써도 되나요?",
+    a: "그대로 붙여넣으면 됩니다. 대괄호 [ ] 로 표시된 자리만 본인 상황으로 바꾸세요. 그 자리를 성의 있게 채울수록 결과가 달라집니다. 대괄호를 그대로 두고 보내면 AI가 되물어보는 경우가 많습니다.",
+  },
+  {
+    q: "ChatGPT 말고 Claude나 Gemini에서도 되나요?",
+    a: "대부분 그대로 작동합니다. 다만 '지금까지 우리가 나눈 대화를 바탕으로' 같은 프롬프트는 이전 대화를 기억하는 기능이 켜져 있어야 제대로 나옵니다. 이미지로 결과를 뽑는 프롬프트는 이미지 생성이 되는 모델에서만 됩니다.",
+  },
+  {
+    q: "결과가 밋밋하게 나옵니다",
+    a: "대개 재료가 부족해서입니다. 내 메시지나 기록을 붙여넣는 프롬프트는 자료가 짧으면 일반론이 나옵니다. 또 '근거가 없으면 추측이라고 표시해줘'를 덧붙이면 AI가 아무 말이나 지어내는 것을 줄일 수 있습니다.",
+  },
+  {
+    q: "무료 계정으로도 되나요?",
+    a: "글로 답하는 프롬프트는 대부분 무료로 됩니다. 이미지를 만드는 프롬프트는 무료 계정에서 하루 생성 횟수가 제한되는 경우가 있습니다.",
+  },
+  {
+    q: "개인정보를 넣어도 괜찮나요?",
+    a: "주민등록번호, 카드·계좌번호, 주소, 타인의 연락처는 넣지 마세요. 카드 내역을 분석하는 프롬프트는 가맹점과 날짜만 남기고 번호는 지운 뒤 붙여넣는 것을 권합니다. 회사 자료는 사내 정책을 먼저 확인하세요.",
+  },
+  {
+    q: "AI가 알려준 내용을 믿어도 되나요?",
+    a: "사실과 다른 내용을 그럴듯하게 말하는 일이 자주 있습니다. 특히 건강·법률·세금·투자에 관한 답은 반드시 해당 분야 전문가나 공식 기관 안내로 확인해야 합니다. 자기 분석 프롬프트도 관찰을 돕는 도구일 뿐 상담이나 진단을 대신하지 않습니다.",
+  },
+];
+
 /** 수록된 프롬프트들에서 실제로 관찰되는 공통 원리 */
 const HOWTO = [
   {
@@ -81,6 +108,14 @@ export default function PromptsHub() {
           position: i + 1,
           name: promptCategories[c].name,
           url: `${url}/${c}`,
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: FAQ.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
         })),
       },
       {
@@ -242,6 +277,24 @@ export default function PromptsHub() {
             )}
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="px-5 pb-6">
+        <div className="bg-card rounded-2xl p-5">
+          <h2 className="text-base font-bold mb-3 text-accent">자주 묻는 질문</h2>
+          <div className="space-y-4">
+            {FAQ.map((f) => (
+              <div key={f.q}>
+                <p className="text-sm font-semibold text-[#e8e8f0] mb-1 break-keep">
+                  {f.q}
+                </p>
+                <p className="text-xs text-[#a0a0b0] leading-relaxed break-keep">
+                  {f.a}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

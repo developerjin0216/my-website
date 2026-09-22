@@ -74,6 +74,20 @@ export default function ToolsHubPage() {
           ))}
         </div>
 
+        {/* 도구를 찾아온 사람은 'AI로 뭘 할 수 있나'에도 관심이 있습니다.
+            새 코너로 가는 내부 링크가 홈 하나뿐이면 크롤러가 중요하게 보지 않습니다. */}
+        <Link
+          href="/prompts"
+          className="flex items-center justify-between rounded-xl px-4 py-3 mb-3 bg-card border border-[#2a3a5a] hover:border-[#8E7CC3] transition-colors"
+        >
+          <span className="text-sm text-[#a0a0b0]">
+            <span aria-hidden="true">🤖</span>{" "}
+            <span className="font-semibold text-[#e8e8f0]">AI 프롬프트 모음</span>
+            {" — "}복사해서 바로 쓰는 챗GPT 질문 78개
+          </span>
+          <span className="text-[#8E7CC3] text-sm shrink-0 ml-2">→</span>
+        </Link>
+
         <AdBanner slot="XXXXXXXXXX" format="auto" />
 
         <CoupangGoldbox />

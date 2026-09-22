@@ -243,6 +243,18 @@ export default async function ViralCategoryPage({
         </div>
       </section>
 
+      <div className="flex justify-center gap-4 mb-5">
+        <Link href="/prompts" className="text-xs text-[#606070] hover:text-accent">
+          프롬프트 전체
+        </Link>
+        <Link href="/tools" className="text-xs text-[#606070] hover:text-accent">
+          웹 도구
+        </Link>
+        <Link href="/" className="text-xs text-[#606070] hover:text-accent">
+          홈
+        </Link>
+      </div>
+
       <footer className="text-center text-xs text-[#606070] pb-8 leading-relaxed break-keep">
         AI가 내놓은 답에는 사실과 다른 내용이 섞일 수 있습니다. 사진을 올리는
         프롬프트는 본인 사진만 쓰고, 타인의 사진은 동의 없이 올리지 마세요.
