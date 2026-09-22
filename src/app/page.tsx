@@ -149,6 +149,19 @@ export default function InfoHome() {
         </Link>
       </div>
 
+      {/* AI 프롬프트 — 검색 수요가 있고 우리가 직접 쓴 콘텐츠라 앞자리에 둡니다 */}
+      <div className="px-5 pb-4">
+        <Link
+          href="/prompts"
+          className="block rounded-2xl p-4 transition-transform active:scale-[0.99] bg-gradient-to-br from-[#5B4B8A] to-[#8E7CC3] border border-[#a99ad6]"
+        >
+          <p className="text-base font-bold text-white">🤖 AI 프롬프트 모음</p>
+          <p className="text-[11px] text-white/80 mt-1">
+            복사해서 바로 쓰는 챗GPT 질문 37개 — 재미·자기분석·일·공부
+          </p>
+        </Link>
+      </div>
+
       {/* 놀거리 — 통합 전에는 퀴즈 서브도메인 홈에만 있어서 루트에서 닿지 않았습니다.
           내부 링크가 없으면 크롤러도 사람도 이 페이지들에 도달하지 못합니다. */}
       <div className="px-5 pb-4">

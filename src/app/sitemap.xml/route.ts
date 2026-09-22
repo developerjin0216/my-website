@@ -7,6 +7,7 @@ import { helpTopics } from "@/data/help";
 import { tools } from "@/data/tools";
 import { mbtiTypes } from "@/data/mbti";
 import { memeCategories } from "@/data/memes";
+import { promptCategories } from "@/data/prompts";
 import { enGuides } from "@/data/guidesEn";
 import { slangEntries } from "@/data/slangEn";
 import {
@@ -31,6 +32,8 @@ const MBTI_MEME_LAUNCH = "2026-09-08"; // MBTI 백과·밈 사전 공개일 (실
 const memeCategoryIds = Object.keys(memeCategories);
 const ESCAPE_LAUNCH = "2026-09-14"; // 웹 방탈출 1편 공개일
 const OMOK_LAUNCH = "2026-09-15"; // 1:1 온라인 오목 공개일
+const PROMPTS_LAUNCH = "2026-09-22"; // AI 프롬프트 모음 공개일
+const promptCategoryIds = Object.keys(promptCategories);
 
 interface Entry {
   url: string;
@@ -72,6 +75,14 @@ function rootEntries(): Entry[] {
     // 지금은 예시 카드만 있어 페이지가 noindex 상태이므로 사이트맵에 넣지 않습니다.
     // (사이트맵 생성이 토스 API 응답을 기다리게 만들면 GSC 수집이 느려질 수 있어
     //  일부러 자동 판정하지 않고 수동 한 줄로 남겨둡니다)
+    // AI 프롬프트 — 분류 문서 단위 (프롬프트별 페이지는 만들지 않음)
+    { url: `${ROOT_URL}/prompts`, lastmod: PROMPTS_LAUNCH, changefreq: "weekly", priority: 0.9 },
+    ...promptCategoryIds.map((cid) => ({
+      url: `${ROOT_URL}/prompts/${cid}`,
+      lastmod: PROMPTS_LAUNCH,
+      changefreq: "monthly" as const,
+      priority: 0.8,
+    })),
     { url: `${ROOT_URL}/about`, changefreq: "yearly", priority: 0.4 },
     { url: `${ROOT_URL}/contact`, changefreq: "yearly", priority: 0.4 },
     { url: `${ROOT_URL}/privacy`, changefreq: "yearly", priority: 0.3 },

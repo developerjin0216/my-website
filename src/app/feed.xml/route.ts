@@ -5,6 +5,7 @@ import { tools } from "@/data/tools";
 import { categories } from "@/data/quizData";
 import { mbtiTypes } from "@/data/mbti";
 import { memeCategories } from "@/data/memes";
+import { promptCategories } from "@/data/prompts";
 import {
   ROOT_URL,
   CALC_URL,
@@ -86,6 +87,19 @@ export function GET(request: NextRequest) {
           "긴급 대처법과 생활 계산기, 상식 퀴즈까지 — 급할 때 바로 쓰는 생활 정보",
       },
       ([
+        {
+          title: "한 번쯤 해볼 만한 AI 프롬프트 모음",
+          link: `${ROOT_URL}/prompts`,
+          description:
+            "복사해서 바로 쓰는 AI 프롬프트를 분류별로 정리했습니다. ChatGPT·Claude·Gemini 공용.",
+          date: "2026-09-22",
+        },
+        ...Object.entries(promptCategories).map(([cid, c]) => ({
+          title: `${c.name} — AI 프롬프트`,
+          link: `${ROOT_URL}/prompts/${cid}`,
+          description: c.desc,
+          date: "2026-09-22",
+        })),
         {
           title: "1:1 온라인 오목 - 가입 없이 친구와 바로 두기",
           link: `${ROOT_URL}/omok`,
