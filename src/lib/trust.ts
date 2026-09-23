@@ -118,6 +118,10 @@ export const CALC_SOURCES: Record<string, SourceLink[]> = {
     { name: "행정안전부", url: "https://www.mois.go.kr" },
   ],
   "freelancer-tax": [{ name: "국세청 — 원천징수", url: "https://www.nts.go.kr" }],
+  "median-income": [
+    { name: "보건복지부 — 기준 중위소득 고시", url: "https://www.mohw.go.kr" },
+    { name: "복지로 — 복지서비스 모의계산", url: "https://www.bokjiro.go.kr" },
+  ],
 };
 
 /** 요율이 바뀌면 값이 달라지는 계산기 — 기준일을 함께 표기합니다 */
