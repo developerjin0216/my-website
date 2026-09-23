@@ -16,6 +16,7 @@ import {
   medianIncome,
   atRate,
   won,
+  PENDING_YEAR,
   type MedianIncomeYear,
 } from "@/utils/medianIncome";
 
@@ -172,6 +173,17 @@ export default function MedianIncomeCalcPage() {
           })}
         </div>
       </Card>
+
+      {/* '2027년 중위소득'으로 찾아오는 사람에게, 추정치를 지어내는 대신
+          지금까지 확인된 사실만 알려줍니다. */}
+      <Notice>
+        <strong>{PENDING_YEAR.year}년 기준은 아직 표로 나오지 않았습니다.</strong>{" "}
+        인상률 {PENDING_YEAR.raisePercent}%가 발표됐고 4인 가구 생계급여가 월 221만
+        7천 원으로 오른다는 것까지 공개됐지만, 가구원 수별 고시 금액은 확정 공고를
+        기다려야 합니다. 가구원 수마다 적용되는 지수가 달라 인상률만 곱하면 실제
+        금액과 어긋나기 때문에, 여기서는 추정치를 넣지 않았습니다. 고시가 나오는
+        대로 반영하겠습니다.
+      </Notice>
 
       <Notice>
         여기 계산되는 값은 고시된 기준 중위소득에 비율을 곱한 것입니다.{" "}
