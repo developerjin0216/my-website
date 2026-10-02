@@ -10,13 +10,20 @@
 
 import { CONTACT_EMAIL, INFO_SITE_NAME, ROOT_URL } from "@/lib/site";
 
-/** 콘텐츠 영역별 최종 점검일 — 데이터 파일이 마지막으로 갱신된 날 */
+/** 콘텐츠 영역별 최종 점검일 — 데이터 파일이 마지막으로 갱신된 날
+ *
+ *  확인 방법: git log -1 --format=%ad --date=short -- <파일>
+ *  (calculators는 2026-08-11로 적혀 있었지만 그 뒤 9월에 기준 중위소득 계산기가
+ *   추가되어 두 달 가까이 어긋나 있었습니다. 데이터 파일을 고치면 여기도 올리세요.)
+ */
 export const REVIEWED = {
-  calculators: "2026-08-11", // src/data/calculators.ts
+  calculators: "2026-10-02", // src/data/calculators.ts
   salaryRates: "2026-07-28", // src/utils/salary.ts (4대보험·세율)
   electricityRates: "2026-07-21", // src/utils/electricity.ts (전기요금)
   tools: "2026-08-20", // src/data/tools.ts
   guides: "2026-07-29", // src/data/guides.ts
+  help: "2026-09-09", // src/data/help.ts
+  escape: "2026-09-15", // src/data/escape.ts
 } as const;
 
 /** 모든 페이지가 공유하는 발행 주체 */
