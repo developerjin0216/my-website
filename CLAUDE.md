@@ -26,6 +26,10 @@ node scripts/gen-viral-prompts.mjs <workflow-output.json> # → src/data/prompts
 # Push 사이트맵 URLs to IndexNow (Bing·Naver·Yandex; Google does NOT participate)
 node scripts/indexnow.mjs --dry   # inspect targets
 node scripts/indexnow.mjs         # submit — only after content actually changed
+
+# Indexability audit — fetches every sitemap URL, reports blockers + body-text length
+node scripts/seo-audit.mjs                        # production
+node scripts/seo-audit.mjs http://localhost:3131  # a local `next start`
 ```
 
 Verifying host-dependent behaviour locally (sitemap, robots, legacy redirects):
@@ -61,7 +65,7 @@ split four ways had each part starting trust from zero (index count stayed at 0 
 
 | Path | Count | Data source | Notes |
 |---|---|---|---|
-| `/help/<id>` | 27 | `data/help.ts` | 긴급 대처 가이드. Richest E-E-A-T template |
+| `/help`, `/help/<id>` | 1 + 27 | `data/help.ts` | 긴급 대처 가이드. Richest E-E-A-T template. The hub groups topics by situation and **throws at build** if a topic is unassigned, duplicated, or unknown |
 | `/en`, `/en/<id>`, `/en/slang/<id>` | 6 + 53 | `data/guidesEn.ts`, `slangEn.ts` | English, for foreigners in Korea |
 | `/quiz-bank/<cat>/<page>` | 47 | `lib/quizBank.ts` over `data/categories/` | Paginated Q&A archive |
 | `/calculators/<id>` | 20 | `data/calculators.ts` | Server layout + client page |
@@ -73,6 +77,28 @@ split four ways had each part starting trust from zero (index count stayed at 0 
 | `/guides/<id>` | 6 | `data/guides.ts` | Long-form; must stay in sync with calculator rates |
 | `/escape`, `/escape/play` | 2 | `data/escape.ts` | Web escape room (noindex on `/play`) |
 | `/omok`, `/battle` | 2 | — | Realtime, need the Socket.IO server |
+
+### Body-text length is the live indexing constraint
+
+A 2026-10 sweep of all 236 live URLs found **zero** technical blockers (all 200, self-canonical,
+no noindex, no stray `X-Robots-Tag`) and 55 pages under 1,800 chars of *visible* text. The five
+thinnest were hubs, which starves everything beneath them. Measure with `scripts/seo-audit.mjs`,
+never by eye: `/quiz` shipped 22 KB of HTML that reduced to **464 characters** a human can read —
+the rest was Tailwind class strings and the RSC payload.
+
+Rough bands from this site: `<1000` won't be indexed, `1000–1799` is at risk, `≥3000` is safe.
+Client-only routes (`/quiz`, `/omok`, `/battle`, `/mbti/test`) render nothing for crawlers, so
+their `layout.tsx` must carry the server-rendered prose — that is the whole reason those layouts
+exist. Every page needs an `<h1>`; `/quiz` had none because its body is a client component.
+
+Do not pour prose into `/tools/*` — those compete with single-purpose domains (ilovepdf, TinyPNG)
+and more words won't win. Don't delete them either; removing live URLs is a net loss.
+
+### Counts come from the data, never a typed number
+
+`CALC_COUNT` (`data/calculators.ts`) and `helpTopics.length` exist because "계산기 19종" was
+hardcoded in 10 places across 6 files while the real count was 20, and `/about` advertised 18 help
+articles when there were 27. Any "N종 / N편" string must interpolate.
 
 ### Category documents, not per-item pages
 
@@ -159,6 +185,14 @@ Rooms are in-memory `Map`s (lost on restart), 6-char codes excluding `0/O/1/I`.
   carries server-rendered rules/FAQ so the route has indexable text.
 - New sections need: sitemap entry (`sitemap.xml/route.ts`), RSS item (`feed.xml/route.ts`), and
   **inbound internal links** — a page linked from one place is treated as unimportant.
+- Section homes are `/quiz-home`, `/calculators`, `/tools` — **not** `QUIZ_URL`/`TOOLS_URL`, which
+  both collapse to `ROOT_URL` now. Code written for the split emitted the bare host, which silently
+  dropped `/tools` and `/quiz-home` from the sitemap and pointed footer links at the wrong home.
+- Breadcrumb/`og:site_name` for anything rooted at `/` must use `ROOT_SITE_NAME`, not `SITE_NAME`
+  ("상식왕 퀴즈" is a *section* name; using it for the root made name and URL disagree).
+- The root layout hardcodes `<html lang="ko">` and only a root layout may render `<html>`. `/en`
+  scopes its language with a `lang="en"` wrapper using `className="contents"`; reading `headers()`
+  in the root layout to switch it would turn all 255 static pages dynamic.
 
 ### Styling
 
