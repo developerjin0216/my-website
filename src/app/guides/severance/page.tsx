@@ -100,6 +100,36 @@ export default function SeveranceGuide() {
           수 있으므로, 실제로 더 받을 금액은 사안에 따라 달라집니다.
         </p>
       </Sec>
+      <Sec title="퇴직 사유나 계약서 이름은 퇴직금을 좌우하지 않는다">
+        <p>
+          가장 흔한 오해는 그만둔 이유에 따라 퇴직금이 달라진다는 생각입니다.
+          퇴직금은 자진퇴사든 권고사직이든 해고든{" "}
+          <strong className="text-[#e8e8f0]">퇴직 사유를 가리지 않습니다</strong>.
+          이직 사유를 따지는 쪽은 실업급여인데, 두 제도를 섞어서 &lsquo;스스로
+          나가면 못 받는다&rsquo;고 알고 있는 경우가 많습니다. 사유가 실제로
+          중요한 쪽의 기준은{" "}
+          <Link href="/guides/unemployment-benefits" className="text-accent underline">
+            실업급여 신청 총정리
+          </Link>
+          에 따로 정리해 두었습니다.
+        </p>
+        <p>
+          4대보험에 가입되어 있지 않거나 근로계약서를 쓰지 않았다는 사정도 그 자체로
+          퇴직금을 없애지는 않습니다. 보험 가입은 회사가 신고를 했느냐의 문제이고,
+          퇴직금은 실제로 근로관계가 있었는지로 판단하기 때문입니다.
+        </p>
+        <p>
+          소득세 3%와 지방소득세 0.3%, 합계 3.3%를 떼는 프리랜서 계약도 계약서
+          제목만으로 결론이 나지 않습니다. 출퇴근 시간이 정해져 있었는지, 업무 지시와
+          감독을 받았는지 같은 실질을 따져 근로자인지를 판단하며,{" "}
+          <strong className="text-[#e8e8f0]">그 판단은 고용노동청의 진정 조사나
+          법원에서 이뤄집니다</strong>. 떼인 세금의 구조만 먼저 보려면{" "}
+          <Link href="/calculators/freelancer-tax" className="text-accent underline">
+            프리랜서 3.3% 계산기
+          </Link>
+          를 참고하세요.
+        </p>
+      </Sec>
     </GuideShell>
   );
 }
