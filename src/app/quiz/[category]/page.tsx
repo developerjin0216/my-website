@@ -29,6 +29,10 @@ const DESCRIPTIONS: Record<string, string> = {
     "되/돼, 안/않, 금세/금새, 띄어쓰기, 외래어 표기까지 — 국립국어원 규정 기준으로 검증한 헷갈리는 맞춤법 168문제. 당신의 맞춤법 실력은 몇 점인가요?",
 };
 
+// 맛보기를 늘리면 카테고리마다 고유 본문이 그만큼 늘어납니다.
+// 해설이 붙은 실제 문답이라 분량 채우기용 문장보다 쓸모도 있습니다.
+const SAMPLE_COUNT = 8;
+
 export function generateStaticParams() {
   return categories.map((c) => ({ category: c.id }));
 }
@@ -73,7 +77,16 @@ export default async function CategoryLandingPage({
   const cat = categories.find((c) => c.id === category);
   if (!cat) notFound();
 
-  const samples = (quizzes[category] ?? []).slice(0, 3);
+  // 맛보기 문제는 이 카테고리에만 있는 고유 본문입니다. 레이아웃 설명문은
+  // 12개 퀴즈 페이지가 똑같이 들고 있으므로, 분량은 여기서 늘려야 합니다.
+  const all = quizzes[category] ?? [];
+  const count = all.length;
+  // 앞에서부터 자르면 /quiz-bank/<카테고리>/1 의 첫 문제들과 그대로 겹칩니다.
+  // 고르게 띄워 뽑아 두 페이지의 본문이 서로 다른 문제를 보여주게 합니다.
+  const step = Math.max(1, Math.floor(count / SAMPLE_COUNT));
+  const samples = Array.from({ length: Math.min(SAMPLE_COUNT, count) }, (_, i) =>
+    all[(i * step + 3) % count]
+  );
   const url = `${QUIZ_URL}/quiz/${category}`;
 
   const jsonLd = {
@@ -127,14 +140,14 @@ export default async function CategoryLandingPage({
             {cat.name} 퀴즈 시작하기
           </p>
           <p className="text-sm text-[#1a1a2e]/70 mt-1">
-            100문제 중 랜덤 10문제 출제
+            {count}문제 중 랜덤 10문제 출제
           </p>
         </Link>
 
         {/* 맛보기 문제 — 서버 렌더링 (정답은 토글) */}
         <section className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold mb-4 text-accent">
-            맛보기 문제 3개
+            맛보기 문제 {samples.length}개
           </h2>
           <div className="space-y-5">
             {samples.map((q, i) => (
@@ -168,8 +181,8 @@ export default async function CategoryLandingPage({
             ))}
           </div>
           <p className="text-xs text-[#606070] mt-4">
-            나머지 97문제는 퀴즈에서 만나보세요 — 카테고리별 최고 점수가
-            저장됩니다.
+            나머지 {(count - samples.length).toLocaleString()}문제는 퀴즈에서
+            만나보세요 — 카테고리별 최고 점수가 저장됩니다.
           </p>
         </section>
 
@@ -183,7 +196,7 @@ export default async function CategoryLandingPage({
             <span className="font-semibold text-[#e8e8f0]">
               {cat.name} 문제은행
             </span>
-            {" — "}100문제 정답·해설 전체 보기
+            {" — "}{count.toLocaleString()}문제 정답·해설 전체 보기
           </span>
           <span className="text-accent text-sm shrink-0 ml-2">→</span>
         </Link>
