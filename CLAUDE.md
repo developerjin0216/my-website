@@ -7,65 +7,162 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev      # Start Next.js dev server (localhost:3000)
-npm run build    # Production build
-npm run lint     # ESLint (flat config, Next.js core-web-vitals + typescript)
+npm run dev      # Next.js dev server (localhost:3000)
+npm run build    # Production build — also runs the escape-story validator (see below)
+npm run lint     # ESLint flat config (next/core-web-vitals + typescript); server/** is excluded
+npx tsc --noEmit # Type check
 
-# Battle server (separate process, runs on port 3001)
+# Realtime server — separate Node process, port 3001 (PORT env)
 cd server && npm start
+
+# Integration tests (the only tests in the repo) — start the server first
+node server/test/omok.test.js            # 17 assertions: rooms, turns, win, resign, rematch, leave
+node server/test/omok-directions.test.js # vertical / both diagonals
+
+# Data generators — never hand-edit their output files
+node scripts/gen-prompts.mjs <workflow-output.json>       # → src/data/prompts.ts
+node scripts/gen-viral-prompts.mjs <workflow-output.json> # → src/data/promptsViral.ts
+
+# Push 사이트맵 URLs to IndexNow (Bing·Naver·Yandex; Google does NOT participate)
+node scripts/indexnow.mjs --dry   # inspect targets
+node scripts/indexnow.mjs         # submit — only after content actually changed
 ```
 
-There are no tests configured in this project.
+Verifying host-dependent behaviour locally (sitemap, robots, legacy redirects):
+
+```bash
+npm run build && npx next start -p 3000
+curl -H "Host: quiz.8282114.xyz" localhost:3000/mbti   # expect 308 → 8282114.xyz/mbti
+```
 
 ## Architecture
 
-This is a Korean-language quiz app ("상식왕 퀴즈") built with **Next.js 16** (App Router) + a separate **Socket.IO battle server**.
+Korean-language personal site on **Next.js 16** (App Router) + a standalone **Socket.IO** server.
+~236 indexable URLs across eight content sections. Deployed on Vercel; realtime server on Render.
 
-### Two-process system
-- **Next.js frontend** (`src/`): Quiz UI, results, Google AdSense integration. Deployed on Vercel.
-- **Socket.IO server** (`server/index.js`): Express + Socket.IO for real-time multiplayer quiz battles. Standalone Node.js process with its own `package.json`, port via `PORT` env var (default 3001). Client connect URL comes from `NEXT_PUBLIC_SOCKET_URL` (defaults to `http://localhost:3001`).
+### Single domain — do not re-split
 
-### Domain split (quiz vs calculators)
-One codebase serves two sites. `src/proxy.ts` (Next 16 renamed middleware → proxy) branches on the request host: on the calc domain, `/` rewrites to `/calculators` and quiz paths 308-redirect to the quiz domain; on the quiz domain, `/calculators*` 308-redirects to the calc domain. `/about`, `/contact`, `/privacy`, `/terms` serve on both. Controlled by `NEXT_PUBLIC_QUIZ_URL` / `NEXT_PUBLIC_CALC_URL` env vars via `src/lib/site.ts` (`SPLIT` build-time constant — canonical/OG/JSON-LD/sitemap/branding all switch on it). **No env set → split inactive, single-domain behavior.** Test locally: build with both env vars set, then `curl -H "Host: <calc-host>" localhost:3000/...`.
+`8282114.xyz` serves everything. Subdomains were tried in 2026-07 (`quiz.` / `calc.` / `tools.`)
+and **reverted in 2026-09**: search engines treat subdomains as separate sites, so a new domain
+split four ways had each part starting trust from zero (index count stayed at 0 for five weeks).
 
-### Route structure (`src/app/`)
-| Route | Rendering | Purpose |
-|-------|-----------|---------|
-| `/` (page.tsx) | Server component | Home: category grid, daily quiz link, battle link, SEO content |
-| `/quiz` | Client (`"use client"`) | Solo quiz player. Query params: `mode=daily\|category`, `category=<id>` |
-| `/result` | Client | Score display, wrong-answer review, share |
-| `/battle` | Client | Full multiplayer flow in one file: lobby, room creation/joining, gameplay, rankings |
-| `/calculators` | Server | Hub for 11 life calculators (salary, severance, electricity, exchange, BMI, ...) |
-| `/calculators/<id>` | Server layout + client page | Each calculator: `layout.tsx` renders metadata + `CalcShell` (server-rendered SEO text + ads) around a `"use client"` calculator page |
-| `/privacy`, `/terms` | Server | Static policy pages (AdSense requirement), plus `sitemap.ts` |
+- `src/lib/site.ts` hard-codes `QUIZ_URL = CALC_URL = TOOLS_URL = ROOT_URL`. It deliberately does
+  **not** read `NEXT_PUBLIC_*_URL` env vars, so stale Vercel values cannot resurrect the split.
+  The `*_SPLIT` / `SPLIT_ACTIVE` constants derive from host comparison and are therefore all false.
+- `src/proxy.ts` (Next 16 renamed middleware → proxy) now only 308s legacy hosts
+  (`quiz.` / `calc.` / `tools.` / `www.`) to the root, mapping each subdomain root to its section
+  home (`quiz.→/quiz-home`, `calc.→/calculators`, `tools.→/tools`).
+- **Keep the subdomains attached to the Vercel project** — detaching them kills the redirects.
+- Re-splitting means restoring the env reads in `site.ts`; canonical/OG/sitemap/RSS/proxy all key
+  off those constants and follow automatically. The `SPLIT_ACTIVE` branches left in
+  `sitemap.xml/route.ts`, `robots.txt/route.ts`, and `proxy.ts` exist for exactly that.
 
-### Data layer (`src/data/`)
-- `quizData.ts`: Central registry — exports `categories` array and `quizzes` record (category ID -> Quiz[]). To add a category: create `categories/<id>.ts`, then register in both exports here.
-- `categories/*.ts`: Each file exports 100 Quiz objects for one category (10 categories, ~1000 total questions)
-- `quotes.ts`: 365 daily quotes indexed by month/day
-- Quiz shape: `{ question, options: string[], answer: number, hint, explanation? }` — `answer` is an index into `options`
-- `calculators.ts`: Registry for `/calculators` — card info, per-page metadata, and SEO text all come from here; `sitemap.ts` also iterates it. To add a calculator: add an entry here, create `app/calculators/<id>/layout.tsx` (metadata + `CalcShell`) and `page.tsx` (client UI using `components/calculators/ui.tsx` primitives). Korean tax/utility rates live in shared utils (`utils/salary.ts` for 4대보험/세율 — feeds the salary calculator, its example table, and the insurance guide; `utils/electricity.ts` for 전기요금 — feeds electricity + aircon + the electricity guide) or as constants at the top of each calculator page — update there when official rates change, and keep guide prose (`app/guides/*`) in sync. Rates were verified against 2026 고시 (연금 4.75%, 건보 3.595%, 장기요양 13.14%).
+### Content sections
 
-### Solo quiz flow
-- Client picks 10 random questions (shuffle + `slice(0, 10)`). `mode=daily` pools ALL categories; `mode=category` uses one category. 15-second timer per question.
-- Results are handed to `/result` via query params (score/correct/total) plus the full answer list in `sessionStorage` key `quiz_answers`.
-- `src/utils/storage.ts` persists per-category high scores (`quiz_king_scores`) and daily completion (`quiz_king_daily`) in localStorage.
+| Path | Count | Data source | Notes |
+|---|---|---|---|
+| `/help/<id>` | 27 | `data/help.ts` | 긴급 대처 가이드. Richest E-E-A-T template |
+| `/en`, `/en/<id>`, `/en/slang/<id>` | 6 + 53 | `data/guidesEn.ts`, `slangEn.ts` | English, for foreigners in Korea |
+| `/quiz-bank/<cat>/<page>` | 47 | `lib/quizBank.ts` over `data/categories/` | Paginated Q&A archive |
+| `/calculators/<id>` | 20 | `data/calculators.ts` | Server layout + client page |
+| `/mbti/<type>`, `/mbti/test` | 18 | `data/mbti.ts` | |
+| `/tools/<id>` | 12 | `data/tools.ts` | Browser-only utilities (no upload) |
+| `/quiz`, `/quiz/<cat>` | 12 | `data/quizData.ts` | 11 categories × 100 questions |
+| `/prompts/<cat>`, `/prompts/viral/<cat>` | 7 + 3 | `data/prompts.ts`, `promptsViral.ts` | 37 original + 41 sourced |
+| `/meme/<category>` | 7 | `data/memes.ts`, `memeUsage.ts` | |
+| `/guides/<id>` | 6 | `data/guides.ts` | Long-form; must stay in sync with calculator rates |
+| `/escape`, `/escape/play` | 2 | `data/escape.ts` | Web escape room (noindex on `/play`) |
+| `/omok`, `/battle` | 2 | — | Realtime, need the Socket.IO server |
 
-### Battle system
-**The server holds no quiz data.** The host client selects 10 random questions from `src/data` and sends them in the `start-game` payload; the server just relays questions, validates answers against `quiz.answer`, and keeps score. Changing quiz content never requires touching the server.
+### Category documents, not per-item pages
 
-- Client -> Server events: `join-lobby`, `leave-lobby`, `create-room`, `join-room`, `start-game`, `submit-answer`
-- Server -> Client events: `room-list`, `room-update`, `game-start`, `next-question`, `score-update`, `question-result`, `game-end`
-- Scoring: 10 points correct, 5 points if hint was used, 0 for wrong. Client shows a 15s timer; the server force-advances at 16s (1s grace), then shows results for 2.5s before the next question.
-- Rooms live in an in-memory `Map` (lost on restart): 6-char codes (no 0/O/1/I), max 10 players, nicknames must be unique across ALL rooms. Host disconnect promotes the next player; empty rooms are deleted. After `game-end` the room returns to `waiting` so the same group can rematch.
-- `src/utils/socket.ts` is a lazy-init singleton with `autoConnect: false` — callers must `connect()`/`disconnectSocket()` manually.
-- Server health endpoints: `GET /` (status + room count), `GET /rooms` (waiting-room list).
+Meme terms (95) once had one page each at ~540 chars; **none were indexed**. They were consolidated
+into 7 category documents (3,000–6,500 chars each), with old term URLs 308ing to
+`/meme/<category>#<term>`. `/prompts` follows the same shape from the start.
+
+**Do not add a page per small item.** Group them into a category document and use anchors.
+`meme/[id]/page.tsx` throws at module load if a term id ever collides with a category id.
+
+### Build-time content validators
+
+`src/lib/escapeValidate.ts` runs at module load of `/escape/page.tsx`, so a violation **fails
+`npm run build`**. It enforces story structure that reviewers kept missing by eye:
+
+- Clue planted before payoff; `Clue.payoffIn` ↔ `Scene.resolves` must agree both ways
+- ≥4 clues resolved in the final scene; every clue planted by a `SceneObject`, not narration
+- A puzzle's `needs` must already be available at that point in the story
+- ≤40% standalone puzzles; the last three scenes must all require earlier rooms
+- Prose floors: ≥3 objects/scene, ≥700 chars/scene, ≥60 chars per puzzle lead, ≥8,000 total
+
+Changing escape content means re-running the build; the error message names every violation.
+
+### Trust signals (`src/lib/trust.ts`)
+
+Shared `Organization`/`WebSite` JSON-LD is injected in the root layout; page schemas reference it
+by `@id`. `authorship(date)` supplies author/publisher/dateModified. `CALC_SOURCES` maps each
+calculator to its real governing body, rendered as a "계산 근거·공식 출처" block.
+
+**Dates are never invented** — `REVIEWED` holds the real last-changed date of each data file.
+Update it whenever rates change.
+
+### Rates and official figures
+
+Korean rates live in shared utils so one edit updates calculator + example table + guide prose:
+`utils/salary.ts` (4대보험·세율), `utils/electricity.ts` (전기요금), `utils/medianIncome.ts`
+(기준 중위소득 2023–2026).
+
+For welfare/tax numbers, **verify before publishing and record how**. `medianIncome.ts` carries its
+cross-check in a comment (생계급여 32% back-calculated against a korea.kr figure). When only a
+raise rate is announced but the per-household table is not, expose it as `PENDING_YEAR` and say so
+on the page rather than multiplying an estimate — household sizes use different equivalence scales.
+
+Calculators state inputs → outputs only. They must not render eligibility verdicts: real welfare
+decisions use 소득인정액 (asset conversion, income deductions, 부양의무자), which this code cannot
+compute, and a wrong "you don't qualify" makes people abandon valid claims.
+
+### Realtime server (`server/`)
+
+Own `package.json`, own deploy (Render free tier — **first connect after idle takes 20–60s**, so
+clients need an explicit connecting state). Two independent games share one process with separate
+room maps and event namespaces:
+
+- Quiz battle (`index.js`): **server stores no quiz data**. The host client picks 10 questions from
+  `src/data` and ships them in `start-game`; the server only relays, validates against
+  `quiz.answer`, and scores (10 pts, 5 with hint). Client timer 15s, server force-advances at 16s.
+- Omok (`omok.js`, `omok:` prefixed events): 15×15, free rule, win checked in four directions from
+  the last stone. **The server rejects out-of-turn, occupied, and out-of-bounds moves** — never
+  trust the client. Colors and first move swap each rematch to offset black's advantage.
+
+Rooms are in-memory `Map`s (lost on restart), 6-char codes excluding `0/O/1/I`.
+`src/utils/socket.ts` is a lazy singleton with `autoConnect: false`; callers connect/disconnect.
+
+### Monetization state
+
+- **AdSense is not approved.** Every `AdBanner` slot is the placeholder `"XXXXXXXXXX"` and the
+  component returns `null`, so those slots render nothing. Only Coupang actually displays.
+- Keep ad density low — one banner mid-document is the current rule on prompt pages. A
+  placeholder/"준비 중" page is an explicit AdSense rejection reason (`/deals` was removed for this).
+- Toss ShareLink was **rejected**: its API only offers best-selling/today-deals lists, and a
+  persistent product list is exactly the commerce format they refuse. `lib/toss.ts` and
+  `TossProducts` stay but render nothing without keys.
+- Affiliate and prompt-copy clicks fire GA4 events via `utils/analytics.ts` and `CopyButton`
+  (`affiliate_click`, `prompt_copy`, `prompt_open`). Coupang's iframe carousel cannot be tracked.
+
+### SEO invariants
+
+- Every indexable page needs a self-referencing canonical. The root layout sets
+  `alternates: { canonical: "/" }`, so a new page that omits it silently claims the homepage URL.
+  noindex pages must still self-canonicalize — pointing elsewhere can spread the noindex.
+- Collapsible content must stay in the DOM (`hidden` attribute, not conditional rendering).
+  `PromptCard` hides prompt bodies this way precisely because the prompt text *is* the content.
+- Client-only pages (`/battle`, `/omok`) render almost nothing for crawlers; their `layout.tsx`
+  carries server-rendered rules/FAQ so the route has indexable text.
+- New sections need: sitemap entry (`sitemap.xml/route.ts`), RSS item (`feed.xml/route.ts`), and
+  **inbound internal links** — a page linked from one place is treated as unimportant.
 
 ### Styling
-- Tailwind CSS v4 with `@theme inline` block in `globals.css`
-- Dark theme with CSS custom properties (`--bg-primary: #1a1a2e`, `--accent: #ffd700`, etc.)
-- Mobile-first, max-width `max-w-lg` layout throughout
-- Path alias: `@/*` maps to `./src/*`
 
-### AdSense
-The AdSense script loads globally in `src/app/layout.tsx` (client ID hardcoded there); `src/components/AdBanner.tsx` renders individual ad units. Policy pages and server-rendered SEO content on `/` exist to satisfy AdSense review — keep meaningful server-rendered text on public pages.
+Tailwind v4 with `@theme inline` in `globals.css`; dark theme via CSS custom properties
+(`--bg-primary: #1a1a2e`, `--accent: #ffd700`). Mobile-first, `max-w-lg` throughout.
+Path alias `@/*` → `./src/*`. Calculator UI uses the primitives in
+`components/calculators/ui.tsx`; section shells live in `components/<section>/*Shell.tsx`.
