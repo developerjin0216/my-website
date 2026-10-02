@@ -156,10 +156,63 @@ export default function AboutPage() {
             <h2 className="text-base font-bold text-white mb-2">운영 원칙</h2>
             <ul className="list-disc pl-5 space-y-1 text-[#a0a0b0]">
               <li>계산기 입력값과 도구에 올린 파일은 서버로 전송하지 않습니다 — 브라우저 안에서만 처리됩니다</li>
-              <li>Google AdSense 광고와 쿠팡 파트너스 제휴로 운영되며, 제휴 배너에는 수수료 수령 사실을 표시합니다</li>
-              <li>광고·제휴는 콘텐츠 열람을 방해하지 않는 위치에만 배치합니다</li>
+              <li>광고와 제휴 수수료로 운영합니다. 현재 노출되는 것은 쿠팡 파트너스 제휴 배너이며, 제휴 링크에는 수수료를 받는다는 사실을 함께 표시합니다</li>
+              <li>광고·제휴는 콘텐츠 열람을 방해하지 않는 위치에만 배치합니다. 본문 중간을 끊거나 화면을 덮는 형태는 쓰지 않습니다</li>
               <li>오류·개선 제보를 환영하며, 확인 후 빠르게 반영합니다</li>
             </ul>
+          </section>
+
+          <section>
+            <h2 className="text-base font-bold text-white mb-2">하지 않는 것</h2>
+            <p>
+              무엇을 하는지만큼 무엇을 하지 않는지도 밝혀두는 편이 낫다고
+              생각합니다.
+            </p>
+            <ul className="list-disc pl-5 mt-2 space-y-1 text-[#a0a0b0]">
+              <li>
+                <strong className="text-white">돈을 받고 본문을 쓰지 않습니다</strong>{" "}
+                — 특정 업체나 상품을 추천해 달라는 대가성 의뢰는 받지 않습니다.
+                제휴는 배너 영역에만 있고, 어떤 제도를 어떻게 설명할지는 제휴와
+                무관하게 정합니다
+              </li>
+              <li>
+                <strong className="text-white">수급 자격을 판정하지 않습니다</strong>{" "}
+                — 계산기는 공개된 요율에 숫자를 넣어 계산할 뿐입니다. 실제 판정에는
+                소득인정액·재산환산·부양의무자처럼 이 코드가 알 수 없는 요소가
+                들어가고, 틀린 &lsquo;대상 아님&rsquo;은 받을 수 있는 사람이 신청을
+                포기하게 만듭니다
+              </li>
+              <li>
+                <strong className="text-white">확인되지 않은 수치를 올리지 않습니다</strong>{" "}
+                — 인상률만 발표되고 구간별 표가 아직 안 나온 경우, 곱해서 추정치를
+                적어두는 대신 아직 고시 전이라고 밝힙니다
+              </li>
+              <li>
+                <strong className="text-white">로그인을 요구하지 않습니다</strong>{" "}
+                — 가입 절차가 없고, 계정이나 비밀번호를 받지 않습니다. 점수·기록은
+                사용하시는 브라우저 안에만 남습니다
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-base font-bold text-white mb-2">
+              틀린 내용을 발견하면
+            </h2>
+            <p>
+              제도와 요율은 자주 바뀌고, 혼자 운영하다 보면 개정을 늦게 반영하는
+              일이 생깁니다. 숫자가 이상하다고 느끼시면{" "}
+              <Link href="/contact" className="text-accent underline">
+                문의
+              </Link>
+              로 알려주세요. 페이지 주소와 함께 보내주시면 원 자료를 다시 확인하고,
+              틀렸다면 계산기와 설명글을 같은 자료를 보고 함께 고친 뒤 하단의 최종
+              확인 날짜를 갱신합니다.
+            </p>
+            <p className="mt-2">
+              각 페이지 아래에는 마지막으로 확인한 날짜와 근거 기관을 적어둡니다.
+              오래된 날짜가 보이면 그만큼 의심하고 보셔도 됩니다.
+            </p>
           </section>
 
           <section>
