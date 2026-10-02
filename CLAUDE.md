@@ -71,7 +71,7 @@ split four ways had each part starting trust from zero (index count stayed at 0 
 | `/calculators/<id>` | 20 | `data/calculators.ts` | Server layout + client page |
 | `/mbti/<type>`, `/mbti/test` | 18 | `data/mbti.ts` | |
 | `/tools/<id>` | 12 | `data/tools.ts` | Browser-only utilities (no upload) |
-| `/quiz`, `/quiz/<cat>` | 12 | `data/quizData.ts` | 11 categories × 100 questions |
+| `/quiz`, `/quiz/<cat>` | 12 | `data/quizData.ts` | 11 categories, 1,168 questions (맞춤법 has 168, the rest 100). Category pages show 8 spread-sampled Q&A as their unique body |
 | `/prompts/<cat>`, `/prompts/viral/<cat>` | 7 + 3 | `data/prompts.ts`, `promptsViral.ts` | 37 original + 41 sourced |
 | `/meme/<category>` | 7 | `data/memes.ts`, `memeUsage.ts` | |
 | `/guides/<id>` | 6 | `data/guides.ts` | Long-form; must stay in sync with calculator rates |
@@ -93,6 +93,31 @@ exist. Every page needs an `<h1>`; `/quiz` had none because its body is a client
 
 Do not pour prose into `/tools/*` — those compete with single-purpose domains (ilovepdf, TinyPNG)
 and more words won't win. Don't delete them either; removing live URLs is a net loss.
+
+Shared layout prose is duplicated across every child route. `app/quiz/layout.tsx` wraps `/quiz`
+**and** all 11 `/quiz/<cat>` pages, so a long block there ships 12 identical copies and gives each
+category page a poor unique-content ratio. Put page-specific prose in the page (make it a server
+component wrapping a `"use client"` child, as `/quiz` does with `QuizClient.tsx`) and keep only
+genuinely shared navigation in the layout. Same reason the layout must not carry an `<h1>` when
+children have their own.
+
+### Never pad a page with unverified claims
+
+Adding length to calculator/guide pages means writing about Korean tax, labour and welfare law.
+Two 2026-10 content passes were adversarially verified before being applied, and the verifier
+rejected **51 of 196** calculator items and **14 of 16** guide sections. Among the rejects: telling
+readers to *exclude* 식대·상여 from 최저임금 (backwards since 2024), a 다자녀 자동차세 감면 that
+doesn't exist (it's 취득세), 근저당 설정비 billed to the borrower (banks have paid it since 2011),
+and the 환율 100× error stated in the wrong direction.
+
+Rules that follow from this:
+- A number may only be written if it already exists in the repo. Cite the file and constant.
+- Do **not** apply a reviewer's suggested fix for an out-of-repo legal claim — it is no better
+  grounded than the text it replaces. Drop the item instead.
+- Prefer angles that need no numbers: what the calculator excludes, which input people mis-enter,
+  where the result legitimately differs from a payslip, who decides the real determination.
+- Leaving a page thin is better than publishing a wrong rate. `/guides/pension-reform` and
+  `/guides/minimum-wage-2027` were deliberately left short for this reason.
 
 ### Counts come from the data, never a typed number
 
