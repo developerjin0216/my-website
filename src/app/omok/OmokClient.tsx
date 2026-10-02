@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { getSocket, disconnectSocket } from "@/utils/socket";
 
 // 1:1 온라인 오목 — 퀴즈 배틀과 같은 Socket.IO 서버를 쓰되 이벤트는 omok: 접두사로 분리.
@@ -42,6 +43,18 @@ export default function OmokClient() {
   const [error, setError] = useState("");
   const [slow, setSlow] = useState(false);
   const myStone = useRef<1 | 2 | null>(null);
+
+  // 초대 링크(/omok?r=CODE&n=보낸사람)로 들어온 경우.
+  // 코드를 외워서 로비에 입력하게 만들면 대부분 중간에 이탈합니다.
+  const params = useSearchParams();
+  const invite = (params.get("r") ?? "")
+    .replace(/[^A-Za-z0-9]/g, "")
+    .toUpperCase()
+    .slice(0, 6);
+  const inviter = (params.get("n") ?? "").slice(0, 12);
+  const [ignoreInvite, setIgnoreInvite] = useState(false);
+  const [shared, setShared] = useState(false);
+  const invited = invite.length === 6 && !ignoreInvite;
 
   useEffect(() => {
     const socket = getSocket();
@@ -109,7 +122,38 @@ export default function OmokClient() {
     getSocket().emit("omok:leave");
     setRoom(null);
     setView("lobby");
+    setIgnoreInvite(true); // 나갔는데 초대 화면으로 되돌아가면 갇힙니다
     getSocket().emit("omok:lobby");
+  };
+
+  // 방을 만든 사람이 친구를 부르는 유일한 수단입니다.
+  // 코드를 불러주게 하지 말고 링크 한 번으로 끝나야 합니다.
+  const share = async () => {
+    if (!room) return;
+    const url = `${window.location.origin}/omok?r=${room.id}${
+      nickname ? `&n=${encodeURIComponent(nickname)}` : ""
+    }`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "1:1 오목",
+          text: `${nickname || "친구"}님이 오목 한 판 신청했습니다`,
+          url,
+        });
+        return;
+      } catch (e) {
+        // 공유 시트를 직접 닫은 것이면 복사까지 할 필요가 없습니다
+        if ((e as Error)?.name === "AbortError") return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    } catch {
+      // http 같은 비보안 컨텍스트에서는 클립보드가 막힙니다
+      window.prompt("이 링크를 복사해서 보내세요", url);
+    }
   };
 
   // ── 연결 중 ──
@@ -117,7 +161,11 @@ export default function OmokClient() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] max-w-lg mx-auto w-full px-5 text-center">
         <div className="text-5xl mb-6 animate-bounce">⚫</div>
-        <h1 className="text-xl font-bold text-accent mb-3">서버 연결 중…</h1>
+        <h1 className="text-xl font-bold text-accent mb-3">
+          {invited
+            ? `${inviter || "친구"}님의 방으로 가는 중…`
+            : "서버 연결 중…"}
+        </h1>
         <p className="text-sm text-[#a0a0b0] leading-relaxed">
           {slow ? (
             <>
@@ -138,6 +186,63 @@ export default function OmokClient() {
             />
           ))}
         </div>
+      </div>
+    );
+  }
+
+  // ── 초대 링크로 들어온 경우 ──
+  // 로비 전체를 보여주면 "방 만들기"를 눌러 엉뚱한 방을 파는 사람이 생깁니다.
+  // 할 일을 닉네임 입력 하나로 줄입니다.
+  if (invited && (view === "lobby" || !room)) {
+    return (
+      <div className="max-w-lg mx-auto w-full px-5 py-10">
+        <div className="text-center mb-6">
+          <div className="text-5xl mb-3">⚫⚪</div>
+          <h1 className="text-xl font-bold text-accent mb-1">
+            {inviter || "친구"}님이 오목 한 판 신청했습니다
+          </h1>
+          <p className="text-sm text-[#a0a0b0]">
+            방 코드 <b className="font-mono text-[#e8e8f0]">{invite}</b> · 가입도
+            설치도 없습니다
+          </p>
+        </div>
+
+        <div className="bg-card rounded-2xl p-5">
+          <label className="block text-xs text-[#a0a0b0] mb-1.5">
+            쓸 이름만 정해 주세요
+          </label>
+          <input
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value.slice(0, 12))}
+            placeholder="2~12자"
+            className="w-full rounded-xl bg-[#0f1626] border border-[#2a3a5a] px-3 py-2.5 text-sm text-[#e8e8f0] outline-none focus:border-accent"
+          />
+          <button
+            type="button"
+            onClick={() => join(invite)}
+            disabled={!nickname.trim()}
+            className="w-full mt-3 rounded-xl bg-accent text-[#1a1a2e] font-bold py-3 disabled:opacity-40 active:scale-[0.99] transition-transform"
+          >
+            들어가기
+          </button>
+          {error && (
+            <p className="text-xs text-[#EF4444] mt-3">
+              {error}
+              <br />
+              <span className="text-[#606070]">
+                방이 닫혔거나 이름이 겹쳤을 수 있습니다.
+              </span>
+            </p>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIgnoreInvite(true)}
+          className="w-full mt-4 text-xs text-[#606070] hover:text-[#a0a0b0]"
+        >
+          초대 말고 그냥 로비 둘러보기 →
+        </button>
       </div>
     );
   }
@@ -281,9 +386,7 @@ export default function OmokClient() {
       {/* 상태 줄 */}
       <p className="text-center text-sm mb-3">
         {room.status === "waiting" ? (
-          <span className="text-[#a0a0b0]">
-            상대를 기다리는 중 — 초대 코드 <b className="text-accent">{room.id}</b>
-          </span>
+          <span className="text-[#a0a0b0]">상대를 기다리는 중…</span>
         ) : room.status === "ended" ? (
           <span className="font-bold text-accent">{resultText()}</span>
         ) : myTurn ? (
@@ -292,6 +395,29 @@ export default function OmokClient() {
           <span className="text-[#a0a0b0]">상대가 두는 중…</span>
         )}
       </p>
+
+      {/* 초대 — 기다리는 동안 할 수 있는 일이 이것뿐이어야 합니다 */}
+      {room.status === "waiting" && (
+        <div className="bg-card rounded-2xl p-5 mb-4 text-center">
+          <p className="text-sm text-[#e8e8f0] font-semibold mb-1">
+            친구에게 링크를 보내세요
+          </p>
+          <p className="text-xs text-[#a0a0b0] mb-3">
+            링크를 누르면 코드 입력 없이 바로 이 방으로 들어옵니다.
+          </p>
+          <button
+            type="button"
+            onClick={share}
+            className="w-full rounded-xl bg-accent text-[#1a1a2e] font-bold py-3 active:scale-[0.99] transition-transform"
+          >
+            {shared ? "링크를 복사했습니다" : "초대 링크 보내기"}
+          </button>
+          <p className="text-[11px] text-[#606070] mt-2.5">
+            직접 불러줄 때는 초대 코드{" "}
+            <b className="text-accent font-mono">{room.id}</b>
+          </p>
+        </div>
+      )}
 
       {/* 판 */}
       <div className="bg-[#c9a063] rounded-xl p-2 mb-4 select-none">

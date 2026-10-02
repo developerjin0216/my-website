@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/og/result": ["./src/assets/fonts/*"],
     "/api/og/meme": ["./src/assets/fonts/*"],
+    "/api/og/omok": ["./src/assets/fonts/*"],
   },
 };
 
