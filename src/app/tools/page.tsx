@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { tools } from "@/data/tools";
+import { CALC_COUNT } from "@/data/calculators";
 import {
   TOOLS_URL,
   TOOLS_SPLIT,
@@ -124,7 +125,7 @@ export default function ToolsHubPage() {
               🚨 8282114 생활안내 — 급할 때 바로 찾는 긴급 대처법
             </a>
             <a href={CALC_URL} className="block text-[#c0c8d8] hover:text-accent">
-              🧮 모두의 계산기 — 연봉·퇴직금·자동차세 등 19종
+              🧮 모두의 계산기 — 연봉·퇴직금·자동차세 등 {CALC_COUNT}종
             </a>
             <a href={QUIZ_URL} className="block text-[#c0c8d8] hover:text-accent">
               👑 상식왕 퀴즈 — 11개 카테고리 1,100여 문제

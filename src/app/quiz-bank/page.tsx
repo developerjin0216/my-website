@@ -12,6 +12,29 @@ const TOTAL_QUESTIONS = Object.values(quizzes).reduce(
   0
 );
 
+const FAQ = [
+  {
+    q: "문제은행과 실전 퀴즈는 뭐가 다른가요?",
+    a: "문제은행은 정답과 해설을 바로 펼쳐 보는 열람용입니다. 시간 제한도 점수도 없어서 처음 보는 주제를 훑을 때 좋습니다. 실전 퀴즈는 같은 문제 중 10개가 무작위로 나오고 문제당 15초 제한이 걸립니다. 먼저 문제은행으로 한 바퀴 읽고, 외워졌는지 확인할 때 실전 퀴즈를 쓰는 순서를 권합니다.",
+  },
+  {
+    q: "로그인이나 결제가 필요한가요?",
+    a: "필요 없습니다. 모든 문제와 해설은 가입 없이 전부 열람할 수 있습니다. 최고 점수와 오늘의 퀴즈 완료 여부만 브라우저 안에 저장되고, 서버로는 보내지 않습니다. 브라우저 데이터를 지우면 기록도 함께 사라집니다.",
+  },
+  {
+    q: "문제는 몇 개이고 어떻게 나뉘어 있나요?",
+    a: `전체 ${TOTAL_QUESTIONS.toLocaleString()}문제이고 11개 카테고리에 100문제씩 들어 있습니다. 한 페이지에 25문제씩 끊어 두어서, 카테고리마다 네 페이지 정도를 보면 한 바퀴가 끝납니다.`,
+  },
+  {
+    q: "해설이 틀린 것 같은데 어떻게 알리나요?",
+    a: "문의 페이지로 해당 문제가 있는 페이지 주소와 함께 보내주시면 확인하고 고칩니다. 바뀐 제도나 갱신된 기록 때문에 정답이 달라지는 문제가 있어서, 제보가 들어오면 원 자료를 다시 확인한 뒤 수정합니다.",
+  },
+  {
+    q: "모바일에서도 볼 수 있나요?",
+    a: "네. 화면 너비에 맞춰 한 줄로 배치되도록 만들어 두어 휴대폰에서 보기 편합니다. 설치할 앱은 없고 브라우저만 있으면 됩니다.",
+  },
+];
+
 export const metadata: Metadata = {
   title: `퀴즈 문제은행 - 상식 퀴즈 ${TOTAL_QUESTIONS.toLocaleString()}문제 정답·해설`,
   description: `경제·맞춤법·MZ 트렌드·무한도전·IT·일반 상식·과학·역사·연예·스포츠·지리 — 11개 카테고리 ${TOTAL_QUESTIONS.toLocaleString()}문제의 정답과 해설을 무료로 열람하세요. 원하는 카테고리를 골라 실전 퀴즈에도 도전할 수 있습니다.`,
@@ -59,6 +82,14 @@ export default function QuizBankHubPage() {
           url: `${QUIZ_URL}/quiz-bank/${cat.id}`,
         })),
       },
+      {
+        "@type": "FAQPage",
+        mainEntity: FAQ.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
     ],
   };
 
@@ -95,6 +126,51 @@ export default function QuizBankHubPage() {
             틈틈이 보기 좋고, 준비가 되면 카테고리별 실전 퀴즈로 최고 점수에
             도전할 수 있습니다.
           </p>
+          <p className="text-sm text-[#a0a0b0] leading-relaxed mt-3">
+            문제마다 왜 그 답이 맞는지 해설을 붙였습니다. 상식 문제는 답만
+            외우면 보기 순서가 바뀌거나 비슷한 문제가 나왔을 때 그대로
+            무너집니다. 해설까지 읽어야 다음에 변형된 문제가 나와도 풀립니다.
+          </p>
+        </section>
+
+        <section className="bg-card rounded-2xl p-5">
+          <h2 className="text-base font-bold mb-3 text-accent">
+            기억에 남기는 순서
+          </h2>
+          <div className="space-y-3 text-sm text-[#a0a0b0] leading-relaxed">
+            <p>
+              <strong className="text-[#e8e8f0]">
+                먼저 답을 떠올려 보고 펼치세요.
+              </strong>{" "}
+              정답을 바로 보면 &lsquo;아 그거&rsquo; 하고 넘어가게 되는데, 그건
+              아는 게 아니라 알아본 것뿐입니다. 틀려도 좋으니 머릿속으로 답을
+              정한 다음 펼치면 같은 시간을 써도 훨씬 오래 남습니다.
+            </p>
+            <p>
+              <strong className="text-[#e8e8f0]">
+                한 번에 다 보지 말고 끊어 보세요.
+              </strong>{" "}
+              100문제를 하루에 몰아보는 것보다 25문제씩 나눠 며칠에 걸쳐 보는
+              쪽이 기억에 오래 남습니다. 페이지를 25문제로 끊어 둔 것도 그래서
+              입니다.
+            </p>
+            <p>
+              <strong className="text-[#e8e8f0]">
+                틀린 문제만 다시 보세요.
+              </strong>{" "}
+              실전 퀴즈를 풀면 결과 화면에 틀린 문제의 정답과 해설이 모입니다.
+              맞힌 문제를 또 보는 건 시간 낭비에 가깝고, 틀린 문제만 다시 보는
+              것이 점수를 가장 빨리 올립니다.
+            </p>
+            <p>
+              <strong className="text-[#e8e8f0]">
+                며칠 뒤에 한 번 더 확인하세요.
+              </strong>{" "}
+              본 직후에는 다 아는 것 같지만 사흘쯤 지나면 절반쯤 흐려집니다. 그때
+              같은 카테고리의 실전 퀴즈를 한 판 돌려보면 무엇이 남았고 무엇이
+              빠졌는지 바로 드러납니다.
+            </p>
+          </div>
         </section>
 
         {/* 카테고리 그리드 */}
@@ -138,6 +214,18 @@ export default function QuizBankHubPage() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section className="bg-card rounded-2xl p-5">
+          <h2 className="text-base font-bold mb-3 text-accent">자주 묻는 질문</h2>
+          <div className="space-y-4">
+            {FAQ.map((f) => (
+              <div key={f.q}>
+                <p className="text-sm font-semibold text-[#e8e8f0] mb-1">{f.q}</p>
+                <p className="text-xs text-[#a0a0b0] leading-relaxed">{f.a}</p>
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* 실전 퀴즈 CTA */}

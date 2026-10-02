@@ -1187,6 +1187,11 @@ export function getCalc(id: string): CalculatorInfo {
   return calc;
 }
 
+// "계산기 N종" 문구용. 손으로 적은 숫자가 10군데에 흩어져 있었고, 20번째
+// 계산기를 추가했을 때 전부 19로 남아 본문이 실제와 어긋났습니다.
+// 숫자를 쓰는 곳은 전부 여기를 가져다 씁니다.
+export const CALC_COUNT = calculators.length;
+
 // 계산기 레이아웃 공용 메타데이터 — canonical·OG 포함
 // 도메인 분리 시 CALC_URL이 계산기 도메인을 가리켜 canonical이 자동 전환됩니다.
 export function buildCalcMetadata(id: string): Metadata {

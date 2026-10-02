@@ -37,6 +37,13 @@ const PROMPTS_LAUNCH = "2026-09-22"; // AI 프롬프트 모음 공개일
 const promptCategoryIds = Object.keys(promptCategories);
 const viralCategoryIds = Object.keys(viralCategories);
 
+// 섹션 홈. 서브도메인 시절에는 그 호스트의 루트가 곧 섹션 홈이었지만,
+// 단일 도메인으로 합친 뒤에는 경로가 따로 생겼습니다(proxy.ts의 LEGACY_HOME과 같은 쌍).
+// 이걸 갱신하지 않아 /tools와 /quiz-home 두 허브가 사이트맵에서 빠져 있었습니다 —
+// 둘 다 200으로 살아 있는데 사이트맵에는 ROOT_URL이 중복으로 들어가 있었습니다.
+const QUIZ_HOME = SPLIT_ACTIVE ? QUIZ_URL : `${ROOT_URL}/quiz-home`;
+const TOOLS_HOME = SPLIT_ACTIVE ? TOOLS_URL : `${ROOT_URL}/tools`;
+
 interface Entry {
   url: string;
   lastmod?: string;
@@ -47,6 +54,7 @@ interface Entry {
 function rootEntries(): Entry[] {
   return [
     { url: ROOT_URL, changefreq: "weekly", priority: 1 },
+    { url: `${ROOT_URL}/help`, changefreq: "weekly", priority: 0.9 },
     ...helpTopics.map((t) => ({
       url: `${ROOT_URL}/help/${t.id}`,
       lastmod: t.date,
@@ -96,7 +104,7 @@ function rootEntries(): Entry[] {
 
 function quizEntries(): Entry[] {
   return [
-    { url: QUIZ_URL, changefreq: "daily", priority: 1 },
+    { url: QUIZ_HOME, changefreq: "daily", priority: 1 },
     { url: `${QUIZ_URL}/quiz`, changefreq: "daily", priority: 0.9 },
     { url: `${QUIZ_URL}/battle`, changefreq: "monthly", priority: 0.8 },
     { url: `${QUIZ_URL}/omok`, lastmod: OMOK_LAUNCH, changefreq: "monthly", priority: 0.8 },
@@ -155,7 +163,7 @@ function calcEntries(): Entry[] {
 
 function toolsEntries(): Entry[] {
   return [
-    { url: TOOLS_URL, changefreq: "weekly", priority: 1 },
+    { url: TOOLS_HOME, changefreq: "weekly", priority: 1 },
     ...tools.map((t) => ({
       url: `${TOOLS_URL}/tools/${t.id}`,
       changefreq: "monthly" as const,

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { categories } from "@/data/quizData";
+import { CALC_COUNT } from "@/data/calculators";
 import AdBanner from "@/components/AdBanner";
 import DailyQuote from "@/components/DailyQuote";
 import HomeClient from "@/components/HomeClient";
@@ -167,7 +168,7 @@ export default function QuizHome() {
           <span className="text-sm text-[#a0a0b0]">
             <span aria-hidden="true">🧮</span>{" "}
             <span className="font-semibold text-[#e8e8f0]">생활 계산기</span>
-            {" — "}실수령액·전기요금 등 19종
+            {" — "}실수령액·전기요금 등 {CALC_COUNT}종
           </span>
           <span className="text-[#27AE60] text-sm shrink-0 ml-2">바로가기 →</span>
         </a>
@@ -236,7 +237,7 @@ export default function QuizHome() {
             <li>• MBTI 백과 — 16가지 성격유형 특징·연애·궁합·직업 + 무료 간이 테스트</li>
             <li>• 밈·신조어 사전 — 요즘 유행어 뜻·유래·사용 예시 정리</li>
             <li>• 오늘의 명언 — 365일 매일 새로운 명언</li>
-            <li>• 생활 계산기 — 연봉 실수령액, 퇴직금, 전기요금, 환율 등 19종</li>
+            <li>• 생활 계산기 — 연봉 실수령액, 퇴직금, 전기요금, 환율 등 {CALC_COUNT}종</li>
             <li>• 모바일 최적화 — 언제 어디서든 플레이</li>
           </ul>
 

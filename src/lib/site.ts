@@ -57,6 +57,11 @@ export const SITE_NAME = "상식왕 퀴즈";
 export const CALC_SITE_NAME = CALC_SPLIT ? "모두의 계산기" : SITE_NAME;
 export const TOOLS_SITE_NAME = TOOLS_SPLIT ? "모두의 도구" : INFO_SITE_NAME;
 
+// 루트(/)를 가리키는 이름. 단일 도메인에서 "상식왕 퀴즈"는 사이트 이름이 아니라
+// 섹션 이름이라, 빵부스러기 1번 항목이 이걸 쓰면 이름은 '상식왕 퀴즈'인데 주소는
+// 8282114.xyz 또는 /calculators인 불일치가 생깁니다(구조화 데이터 검사에서 잡힙니다).
+export const ROOT_SITE_NAME = SPLIT_ACTIVE ? SITE_NAME : INFO_SITE_NAME;
+
 export const CONTACT_EMAIL = "developerjin0216@gmail.com";
 
 // 기존 코드 호환용 — 공용 페이지(about/contact/privacy/terms)의 기준 도메인

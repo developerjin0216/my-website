@@ -2,7 +2,13 @@ import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import { getGuide } from "@/data/guides";
 import { getCalc } from "@/data/calculators";
-import { CALC_URL, CALC_SITE_NAME } from "@/lib/site";
+import {
+  CALC_URL,
+  CALC_SITE_NAME,
+  CALC_SPLIT,
+  ROOT_URL,
+  ROOT_SITE_NAME,
+} from "@/lib/site";
 
 // 가이드 본문 섹션 (h2 + 프로즈)
 export function Sec({
@@ -95,20 +101,38 @@ export default function GuideShell({
       },
       {
         "@type": "BreadcrumbList",
+        // 1번 항목의 이름과 주소가 서로 맞아야 합니다. 예전에는 이름이
+        // CALC_SITE_NAME(단일 도메인에서는 '상식왕 퀴즈')인데 주소는
+        // /calculators라 둘이 어긋나 있었습니다.
         itemListElement: [
           {
             "@type": "ListItem",
             position: 1,
-            name: CALC_SITE_NAME,
-            item: `${CALC_URL}/calculators`,
+            name: CALC_SPLIT ? CALC_SITE_NAME : ROOT_SITE_NAME,
+            item: CALC_SPLIT ? `${CALC_URL}/calculators` : ROOT_URL,
           },
+          ...(CALC_SPLIT
+            ? []
+            : [
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: "생활 계산기 모음",
+                  item: `${CALC_URL}/calculators`,
+                },
+              ]),
           {
             "@type": "ListItem",
-            position: 2,
+            position: CALC_SPLIT ? 2 : 3,
             name: "생활 가이드",
             item: `${CALC_URL}/guides`,
           },
-          { "@type": "ListItem", position: 3, name: guide.title, item: url },
+          {
+            "@type": "ListItem",
+            position: CALC_SPLIT ? 3 : 4,
+            name: guide.title,
+            item: url,
+          },
         ],
       },
     ],

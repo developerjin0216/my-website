@@ -3,12 +3,13 @@ import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
 import { getCalc } from "@/data/calculators";
 import {
-  QUIZ_URL,
   CALC_URL,
+  ROOT_URL,
   SPLIT,
-  SITE_NAME,
+  ROOT_SITE_NAME,
   CALC_SITE_NAME,
 } from "@/lib/site";
+import { guides } from "@/data/guides";
 import { authorship, calcReviewedDate, CALC_SOURCES } from "@/lib/trust";
 
 // 계산기 페이지 공용 셸 (서버 컴포넌트)
@@ -25,6 +26,7 @@ export default function CalcShell({
   const url = `${CALC_URL}/calculators/${id}`;
   const reviewed = calcReviewedDate(id);
   const sources = CALC_SOURCES[id] ?? [];
+  const relatedGuides = guides.filter((g) => g.relatedCalcs.includes(id));
 
   // 도메인 분리 시: 계산기 허브가 사이트 홈 역할 (2단계 경로)
   const breadcrumb = SPLIT
@@ -38,7 +40,8 @@ export default function CalcShell({
         { "@type": "ListItem", position: 2, name: calc.name, item: url },
       ]
     : [
-        { "@type": "ListItem", position: 1, name: SITE_NAME, item: QUIZ_URL },
+        // 루트를 가리키므로 이름도 사이트 이름이어야 합니다 (섹션 이름 아님)
+        { "@type": "ListItem", position: 1, name: ROOT_SITE_NAME, item: ROOT_URL },
         {
           "@type": "ListItem",
           position: 2,
@@ -215,6 +218,31 @@ export default function CalcShell({
         </section>
       )}
 
+      {/* 관련 가이드 — 지금까지 가이드→계산기 한 방향만 걸려 있어서
+          계산기 20개에서 /guides로 나가는 링크가 하나도 없었습니다.
+          짝은 guides.relatedCalcs를 뒤집어 찾으므로 따로 관리할 목록이 없습니다. */}
+      {relatedGuides.length > 0 && (
+        <section className="px-5 pb-4">
+          <h2 className="text-base font-bold mb-3">제도가 궁금하다면</h2>
+          <div className="space-y-2.5">
+            {relatedGuides.map((g) => (
+              <Link
+                key={g.id}
+                href={`/guides/${g.id}`}
+                className="block bg-card rounded-2xl p-4 transition-transform active:scale-[0.98] hover:brightness-110"
+              >
+                <p className="font-semibold text-sm">
+                  <span aria-hidden="true">{g.icon}</span> {g.title}
+                </p>
+                <p className="text-xs text-[#a0a0b0] mt-1.5 leading-relaxed line-clamp-2">
+                  {g.description}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       <div className="px-5 pb-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
       </div>
@@ -250,12 +278,14 @@ export default function CalcShell({
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
         <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-2">
-          <a
-            href={SPLIT ? QUIZ_URL : "/"}
+          {/* 단일 도메인에서 "/"는 생활안내 홈입니다. 퀴즈 홈은 /quiz-home이라
+              SPLIT 시절 그대로 두면 이름과 목적지가 어긋납니다. */}
+          <Link
+            href={SPLIT ? "/" : "/quiz-home"}
             className="text-xs text-[#606070] hover:text-[#a0a0b0]"
           >
             상식왕 퀴즈
-          </a>
+          </Link>
           <span className="text-xs text-[#606070]">|</span>
           <Link
             href="/about"

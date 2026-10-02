@@ -2,6 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT_EMAIL, INFO_SITE_NAME, ROOT_URL } from "@/lib/site";
 import { publisher } from "@/lib/trust";
+import { CALC_COUNT } from "@/data/calculators";
+import { helpTopics } from "@/data/help";
+import { tools } from "@/data/tools";
+import { categories, quizzes } from "@/data/quizData";
+
+// 섹션 규모는 데이터에서 셉니다. 손으로 적어 두면 "계산기 19종"(실제 20종),
+// "대처 매뉴얼 18편"(실제 27편)처럼 소개글이 조용히 사실과 어긋납니다.
+const TOTAL_QUESTIONS = Object.values(quizzes).reduce(
+  (n, list) => n + list.length,
+  0
+);
 
 export const metadata: Metadata = {
   title: { absolute: "사이트 소개 - 8282114" },
@@ -73,25 +84,53 @@ export default function AboutPage() {
             </p>
             <ul className="list-disc pl-5 mt-2 space-y-1 text-[#a0a0b0]">
               <li>
-                <strong className="text-white">급할때 생활안내 (8282114.xyz)</strong> —
-                보이스피싱·분실·교통사고·의료비 등 긴급상황 실전 대처 매뉴얼
-                18편. 상황을 고르면 행동 순서를 알려주는 분기형 안내 제공
+                <Link href="/help" className="text-white font-bold hover:text-accent">
+                  급할 때 생활안내
+                </Link>{" "}
+                — 보이스피싱·분실·교통사고·의료비 등 긴급상황 실전 대처 안내{" "}
+                {helpTopics.length}편
               </li>
               <li>
-                <strong className="text-white">모두의 계산기 (calc.8282114.xyz)</strong> —
-                연봉 실수령액·퇴직금·자동차세·실업급여 등 19종 생활 계산기와
-                제도 가이드
+                <Link
+                  href="/calculators"
+                  className="text-white font-bold hover:text-accent"
+                >
+                  생활 계산기
+                </Link>{" "}
+                — 연봉 실수령액·퇴직금·자동차세·실업급여 등 {CALC_COUNT}종과{" "}
+                <Link href="/guides" className="hover:text-accent">
+                  제도 가이드
+                </Link>
               </li>
               <li>
-                <strong className="text-white">모두의 도구 (tools.8282114.xyz)</strong> —
-                인스타 언팔 확인, 카톡 대화 분석, PDF·이미지 도구 등 12종.
-                파일이 서버로 전송되지 않는 브라우저 완결형
+                <Link href="/tools" className="text-white font-bold hover:text-accent">
+                  생활 도구
+                </Link>{" "}
+                — 인스타 언팔 확인, 카톡 대화 분석, PDF·이미지 도구 등{" "}
+                {tools.length}종. 파일이 서버로 전송되지 않는 브라우저 완결형
               </li>
               <li>
-                <strong className="text-white">상식왕 퀴즈 (quiz.8282114.xyz)</strong> —
-                11개 카테고리 1,100여 문제와 실시간 퀴즈 배틀
+                <Link
+                  href="/quiz-home"
+                  className="text-white font-bold hover:text-accent"
+                >
+                  상식왕 퀴즈
+                </Link>{" "}
+                — {categories.length}개 카테고리 {TOTAL_QUESTIONS.toLocaleString()}
+                문제와 실시간 퀴즈 배틀
+              </li>
+              <li>
+                <Link href="/en" className="text-white font-bold hover:text-accent">
+                  English guides
+                </Link>{" "}
+                — 한국에 사는 외국인을 위한 생활 안내 영문판
               </li>
             </ul>
+            <p className="mt-3 text-xs text-[#8a90a0]">
+              2026년 9월까지는 계산기·도구·퀴즈를 각각 다른 서브도메인에서
+              운영했습니다. 지금은 모두 8282114.xyz 한 곳으로 합쳤고, 옛 주소는
+              해당 페이지로 자동 연결됩니다.
+            </p>
           </section>
 
           <section>
