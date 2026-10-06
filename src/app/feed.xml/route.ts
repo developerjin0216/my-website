@@ -1,6 +1,8 @@
 import type { NextRequest } from "next/server";
 import { helpTopics } from "@/data/help";
 import { guides } from "@/data/guides";
+import { calculators, CALC_COUNT } from "@/data/calculators";
+import { REVIEWED, calcReviewedDate } from "@/lib/trust";
 import { tools } from "@/data/tools";
 import { categories } from "@/data/quizData";
 import { mbtiTypes } from "@/data/mbti";
@@ -88,6 +90,34 @@ export function GET(request: NextRequest) {
           "긴급 대처법과 생활 계산기, 상식 퀴즈까지 — 급할 때 바로 쓰는 생활 정보",
       },
       ([
+        // 사이트맵과 같은 함정이 있었습니다 — 계산기는 CALC_HOST 분기에만 있어서
+        // 통합 후에는 피드에 한 건도 안 실렸습니다. 섹션 허브도 빠져 있었고요.
+        // 그래서 피드 최신 날짜가 9월 22일에 멈춰, 10월에 대대적으로 손본 것이
+        // 전혀 드러나지 않았습니다.
+        {
+          title: "생활 계산기 모음",
+          link: `${ROOT_URL}/calculators`,
+          description: `연봉 실수령액·퇴직금·전기요금·기준 중위소득 등 ${CALC_COUNT}종. 입력값은 서버로 보내지 않습니다.`,
+          date: REVIEWED.calculators,
+        },
+        ...calculators.map((c) => ({
+          title: c.name,
+          link: `${ROOT_URL}/calculators/${c.id}`,
+          description: c.card,
+          date: calcReviewedDate(c.id),
+        })),
+        {
+          title: "급할 때 생활안내",
+          link: `${ROOT_URL}/help`,
+          description: `분실·사고·체불·환불까지 상황별 대처 ${helpTopics.length}편. 지금 할 일과 연락처를 먼저 둡니다.`,
+          date: REVIEWED.help,
+        },
+        {
+          title: "로그인 없이 쓰는 생활 도구",
+          link: `${ROOT_URL}/tools`,
+          description: `인스타 언팔 확인·카톡 분석·PDF 편집 등 ${tools.length}종. 파일이 서버로 전송되지 않습니다.`,
+          date: REVIEWED.tools,
+        },
         {
           title: "한 번쯤 해볼 만한 AI 프롬프트 모음",
           link: `${ROOT_URL}/prompts`,
