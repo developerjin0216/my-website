@@ -26,11 +26,89 @@ export interface HelpInfo {
   enId?: string; // 짝이 되는 영문 가이드 id (/en/<enId>) — hreflang 쌍방 연결
   faq?: HelpFaq[]; // 있으면 FAQ 섹션 + FAQPage 구조화 데이터 출력
   sources?: HelpSource[]; // 있으면 '공식 출처' 섹션 출력 (E-E-A-T)
+  /** 제철이 있는 글의 노출 월(1~12). 철이 지나면 목록 뒤로 내려갑니다. */
+  season?: number[];
+}
+
+/** 상황 묶음 — 급한 순서. /help 허브와 홈이 같은 순서를 씁니다. */
+export const HELP_GROUPS: { title: string; lead: string; ids: string[] }[] = [
+  {
+    title: "지금 당장 벌어진 일",
+    lead: "몇 분 안에 뭘 해야 하는지가 결과를 가르는 상황입니다. 번호부터 누르고 읽어도 됩니다.",
+    ids: [
+      "emergency-numbers",
+      "car-accident",
+      "lost-card",
+      "lost-phone",
+      "voice-phishing",
+      "missing-person",
+      "outdoor-injury",
+      "natural-disaster",
+    ],
+  },
+  {
+    title: "아플 때·병원비",
+    lead: "문 연 곳을 찾는 일과 돈이 없어 못 가는 일은 해결 방법이 다릅니다.",
+    ids: ["night-hospital", "medical-cost", "supplement-guide"],
+  },
+  {
+    title: "집에서 생긴 문제",
+    lead: "세입자가 부담하는 것과 집주인이 부담하는 것의 경계는 생각보다 명확합니다.",
+    ids: [
+      "utility-outage",
+      "locked-out",
+      "noise-complaint",
+      "rental-repair",
+      "jeonse-check",
+      "moving-checklist",
+    ],
+  },
+  {
+    title: "돈을 못 받았거나 떼였을 때",
+    lead: "대부분 기한이 걸려 있습니다. 늦으면 받을 수 있던 것도 못 받습니다.",
+    ids: [
+      "unpaid-wages",
+      "secondhand-scam",
+      "online-refund",
+      "gym-refund",
+      "telecom-cancel",
+      "flight-delay",
+      "hidden-money",
+    ],
+  },
+  {
+    title: "서류·개인정보",
+    lead: "처리 기간이 정해져 있어서, 언제 움직이는지가 전부인 일들입니다.",
+    ids: ["urgent-passport", "privacy-leak", "chuseok-gift"],
+  },
+];
+
+/**
+ * 목록 노출 순서. 급한 것부터 나오고, 철 지난 계절 글은 맨 뒤로 갑니다.
+ *
+ * helpTopics 선언 순서를 그대로 쓰면 배열 맨 앞의 추석 글이 1년 내내 홈 첫
+ * 카드가 됩니다. 10월에 9월 명절 글이 맨 위에 있으면 사람이 봐도 검색엔진이
+ * 봐도 관리가 멈춘 사이트입니다.
+ *
+ * month는 호출하는 쪽에서 넘깁니다 — 여기서 new Date()를 읽으면 정적 생성
+ * 시점에 값이 굳어 같은 문제가 반복됩니다.
+ */
+export function orderedHelpTopics(month: number): HelpInfo[] {
+  const rank = new Map<string, number>();
+  HELP_GROUPS.flatMap((g) => g.ids).forEach((id, i) => rank.set(id, i));
+  const inSeason = (t: HelpInfo) => !t.season || t.season.includes(month);
+  return [...helpTopics].sort((a, b) => {
+    if (inSeason(a) !== inSeason(b)) return inSeason(a) ? -1 : 1;
+    return (rank.get(a.id) ?? 999) - (rank.get(b.id) ?? 999);
+  });
 }
 
 export const helpTopics: HelpInfo[] = [
   {
     id: "chuseok-gift",
+    // 명절 글입니다. 철이 지나면 목록 맨 뒤로 내려갑니다 — 10월에 홈 첫 카드가
+    // 9월 추석 선물 가이드면 관리가 멈춘 사이트로 보입니다.
+    season: [8, 9],
     title: "추석 선물세트 고르기 가이드",
     metaTitle: "추석 선물세트 추천 가이드 2026 - 예산별·대상별 고르는 법과 배송 마감일",
     description:

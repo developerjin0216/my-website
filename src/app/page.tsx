@@ -3,7 +3,11 @@ import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
 import CoupangGoldbox from "@/components/CoupangGoldbox";
-import { helpTopics } from "@/data/help";
+import { orderedHelpTopics } from "@/data/help";
+
+// 하루에 한 번 다시 만듭니다. 계절 글을 철에 맞춰 내리려면 '지금이 몇 월인지'를
+// 알아야 하는데, 정적 생성으로 굳히면 배포한 달에 값이 멈춥니다.
+export const revalidate = 86400;
 import { CALC_COUNT } from "@/data/calculators";
 import { ROOT_URL, CALC_URL, TOOLS_URL, INFO_SITE_NAME } from "@/lib/site";
 
@@ -86,7 +90,7 @@ export default function InfoHome() {
       <div className="px-5 pb-4 flex-1">
         <h2 className="text-lg font-bold mb-3">상황별 대처 안내</h2>
         <div className="space-y-2.5">
-          {helpTopics.map((topic) => (
+          {orderedHelpTopics(new Date().getMonth() + 1).map((topic) => (
             <Link
               key={topic.id}
               href={`/help/${topic.id}`}

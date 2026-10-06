@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
-import { helpTopics } from "@/data/help";
+import { helpTopics, HELP_GROUPS } from "@/data/help";
 import { ROOT_URL, INFO_SITE_NAME } from "@/lib/site";
 import { authorship } from "@/lib/trust";
 
@@ -16,62 +16,11 @@ import { authorship } from "@/lib/trust";
 
 const url = `${ROOT_URL}/help`;
 
-// 상황 묶음. 급한 순서대로 둡니다 — 사고가 난 사람은 스크롤하지 않습니다.
-const GROUPS: { title: string; lead: string; ids: string[] }[] = [
-  {
-    title: "지금 당장 벌어진 일",
-    lead: "몇 분 안에 뭘 해야 하는지가 결과를 가르는 상황입니다. 번호부터 누르고 읽어도 됩니다.",
-    ids: [
-      "emergency-numbers",
-      "car-accident",
-      "lost-card",
-      "lost-phone",
-      "voice-phishing",
-      "missing-person",
-      "outdoor-injury",
-      "natural-disaster",
-    ],
-  },
-  {
-    title: "아플 때·병원비",
-    lead: "문 연 곳을 찾는 일과 돈이 없어 못 가는 일은 해결 방법이 다릅니다.",
-    ids: ["night-hospital", "medical-cost", "supplement-guide"],
-  },
-  {
-    title: "집에서 생긴 문제",
-    lead: "세입자가 부담하는 것과 집주인이 부담하는 것의 경계는 생각보다 명확합니다.",
-    ids: [
-      "utility-outage",
-      "locked-out",
-      "noise-complaint",
-      "rental-repair",
-      "jeonse-check",
-      "moving-checklist",
-    ],
-  },
-  {
-    title: "돈을 못 받았거나 떼였을 때",
-    lead: "대부분 기한이 걸려 있습니다. 늦으면 받을 수 있던 것도 못 받습니다.",
-    ids: [
-      "unpaid-wages",
-      "secondhand-scam",
-      "online-refund",
-      "gym-refund",
-      "telecom-cancel",
-      "flight-delay",
-      "hidden-money",
-    ],
-  },
-  {
-    title: "서류·개인정보",
-    lead: "처리 기간이 정해져 있어서, 언제 움직이는지가 전부인 일들입니다.",
-    ids: ["urgent-passport", "privacy-leak", "chuseok-gift"],
-  },
-];
+// 묶음 정의는 data/help.ts의 HELP_GROUPS — 홈과 같은 순서를 써야 합니다.
 
 // 글을 새로 추가하고 묶음에 넣는 걸 잊으면 허브에서 조용히 사라집니다.
 // 빌드가 깨지게 해서 그 일이 생기지 않게 합니다.
-const assigned = GROUPS.flatMap((g) => g.ids);
+const assigned = HELP_GROUPS.flatMap((g) => g.ids);
 const missing = helpTopics.filter((t) => !assigned.includes(t.id)).map((t) => t.id);
 const unknown = assigned.filter((id) => !helpTopics.some((t) => t.id === id));
 const duplicated = assigned.filter((id, i) => assigned.indexOf(id) !== i);
@@ -179,7 +128,7 @@ export default function HelpHubPage() {
           </p>
         </section>
 
-        {GROUPS.map((g) => (
+        {HELP_GROUPS.map((g) => (
           <section key={g.title}>
             <h2 className="text-lg font-bold mb-1">{g.title}</h2>
             <p className="text-xs text-[#a0a0b0] leading-relaxed mb-3">{g.lead}</p>
