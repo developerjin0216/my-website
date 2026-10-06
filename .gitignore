@@ -41,3 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# 티스토리 원문 수집 결과 (로컬 작업용)
+tis-*.json
+tis-*.txt
