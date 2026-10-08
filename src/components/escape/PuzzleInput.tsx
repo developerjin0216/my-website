@@ -32,11 +32,15 @@ export function toAnswer(
       return state.pick ?? "";
     case "multi":
       return [...state.multi].sort().join("-");
+    case "overlay":
+      return state.text; // 맞춰서 읽어낸 글자가 답입니다
   }
 }
 
 export interface PuzzleState {
   text: string;
+  /** overlay — 위에 덮은 종이의 위치 [열, 행] */
+  sheet: [number, number];
   dial: number[];
   order: string[];
   pick: string | null;
@@ -46,6 +50,7 @@ export interface PuzzleState {
 export function initialState(interaction: Interaction): PuzzleState {
   return {
     text: "",
+    sheet: [0, 0],
     dial:
       interaction.kind === "dial"
         ? Array.from({ length: interaction.digits }, () => 0)
@@ -68,6 +73,8 @@ export function isReady(interaction: Interaction, s: PuzzleState): boolean {
       return s.pick !== null;
     case "multi":
       return s.multi.length >= interaction.min;
+    case "overlay":
+      return s.text.trim().length > 0;
   }
 }
 
@@ -293,6 +300,95 @@ function Multi({
   );
 }
 
+
+/* ── 겹쳐 읽기 ── */
+function Overlay({
+  grid,
+  windows,
+  sheet,
+  pos,
+  onMove,
+}: {
+  grid: string[][];
+  windows: [number, number][];
+  sheet: [number, number];
+  pos: [number, number];
+  onMove: (p: [number, number]) => void;
+}) {
+  const rows = grid.length;
+  const cols = grid[0]?.length ?? 0;
+  const [sw, sh] = sheet;
+  const maxX = Math.max(0, cols - sw);
+  const maxY = Math.max(0, rows - sh);
+  const [px, py] = pos;
+
+  // 종이 구멍이 지금 덮고 있는 칸인지
+  const visible = new Set(
+    windows.map(([wx, wy]) => `${px + wx},${py + wy}`)
+  );
+  const covered = (c: number, r: number) =>
+    c >= px && c < px + sw && r >= py && r < py + sh;
+
+  const move = (dx: number, dy: number) =>
+    onMove([
+      Math.min(maxX, Math.max(0, px + dx)),
+      Math.min(maxY, Math.max(0, py + dy)),
+    ]);
+
+  return (
+    <div>
+      <div className="overflow-x-auto">
+        <div
+          className="inline-grid gap-[2px] bg-[#0f1626] p-2 rounded-xl border border-[#2a3a5a]"
+          style={{ gridTemplateColumns: `repeat(${cols}, 1.6rem)` }}
+        >
+          {grid.map((row, r) =>
+            row.map((ch, c) => {
+              const inSheet = covered(c, r);
+              const show = visible.has(`${c},${r}`);
+              return (
+                <div
+                  key={`${c}-${r}`}
+                  className={`h-7 flex items-center justify-center text-[13px] rounded-[3px] ${
+                    show
+                      ? "bg-[#3d2e00] text-accent font-bold ring-1 ring-accent/60"
+                      : inSheet
+                        ? "bg-[#2a2622] text-transparent"
+                        : "bg-[#16213e] text-[#55607a]"
+                  }`}
+                >
+                  {inSheet && !show ? "" : ch}
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+      <p className="text-[11px] text-[#606070] mt-2 leading-relaxed">
+        덮은 종이를 움직이면 구멍에 걸린 글자만 보입니다. 위치 {px + 1},{py + 1}
+      </p>
+      <div className="flex justify-center gap-1.5 mt-2">
+        {([
+          ["←", -1, 0],
+          ["↑", 0, -1],
+          ["↓", 0, 1],
+          ["→", 1, 0],
+        ] as [string, number, number][]).map(([t, dx, dy]) => (
+          <button
+            key={t}
+            type="button"
+            aria-label={`종이 ${t} 이동`}
+            onClick={() => move(dx, dy)}
+            className="w-11 h-9 rounded-lg bg-[#16213e] border border-[#2a3a5a] text-[#a0a0b0] hover:border-accent"
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function PuzzleInput({
   interaction,
   state,
@@ -351,6 +447,25 @@ export default function PuzzleInput({
           value={state.pick}
           onChange={(pick) => up({ pick })}
         />
+      )}
+
+      {interaction.kind === "overlay" && (
+        <>
+          <Overlay
+            grid={interaction.grid}
+            windows={interaction.windows}
+            sheet={interaction.sheet}
+            pos={state.sheet}
+            onMove={(sheet) => up({ sheet })}
+          />
+          <input
+            value={state.text}
+            onChange={(e) => up({ text: e.target.value })}
+            placeholder={interaction.placeholder}
+            autoComplete="off"
+            className="w-full mt-3 rounded-xl bg-[#0f1626] border border-[#2a3a5a] px-3 py-2.5 text-sm text-[#e8e8f0] outline-none focus:border-accent"
+          />
+        </>
       )}
 
       {interaction.kind === "multi" && (
