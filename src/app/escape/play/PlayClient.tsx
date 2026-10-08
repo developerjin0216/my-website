@@ -14,6 +14,12 @@ import {
   type Puzzle,
 } from "@/data/escape";
 import { checkAnswer } from "@/utils/escapeAnswer";
+import PuzzleInput, {
+  toAnswer,
+  initialState,
+  isReady,
+  type PuzzleState,
+} from "@/components/escape/PuzzleInput";
 import {
   ESCAPE_VERSION,
   getEscapeProgress,
@@ -34,7 +40,8 @@ export default function PlayClient() {
   const [hints, setHints] = useState<Record<string, number>>({});
   const [sceneIdx, setSceneIdx] = useState(0);
   const [view, setView] = useState<View>("intro");
-  const [input, setInput] = useState("");
+  // 퍼즐마다 조작 방식이 달라서, 입력 상태도 방식별로 둡니다
+  const [pstate, setPstate] = useState<PuzzleState | null>(null);
   const [wrong, setWrong] = useState(false);
   const [checking, setChecking] = useState(false);
   const [journalOpen, setJournalOpen] = useState(false);
@@ -109,11 +116,16 @@ export default function PlayClient() {
     completed = false
   ) => saveEscapeProgress(nextSolved, nextHints, completed);
 
+  // 퍼즐이 바뀌면 그 방식의 초기 상태로 맞춥니다 (다이얼은 0, 순서는 주어진 차례)
+  const state = pstate ?? (current ? initialState(current.interaction) : null);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!current || checking) return;
     setChecking(true);
-    const ok = await checkAnswer(input, current.salt, current.answerHash);
+    if (!state) return;
+    const answer = toAnswer(current.interaction, state);
+    const ok = await checkAnswer(answer, current.salt, current.answerHash);
     setChecking(false);
     if (!ok) {
       setWrong(true);
@@ -122,7 +134,7 @@ export default function PlayClient() {
     const next = [...solved, current.id];
     setSolved(next);
     persist(next, hints);
-    setInput("");
+    setPstate(null);
     setWrong(false);
     setJustSolved(current);
     setView("solved");
@@ -161,7 +173,7 @@ export default function PlayClient() {
     setHints({});
     setSceneIdx(0);
     setView("intro");
-    setInput("");
+    setPstate(null);
     setJustSolved(null);
     setSeen([]);
     setOpenObj(null);
@@ -373,28 +385,23 @@ export default function PlayClient() {
           </div>
 
           <form onSubmit={submit}>
-            <label className="block text-xs text-[#a0a0b0] mb-1.5">
-              {current.inputLabel}
-            </label>
-            <div className="flex gap-2">
-              <input
-                value={input}
-                onChange={(e) => {
-                  setInput(e.target.value);
-                  setWrong(false);
-                }}
-                placeholder={current.placeholder}
-                autoComplete="off"
-                className="flex-1 min-w-0 rounded-xl bg-[#0f1626] border border-[#2a3a5a] px-3 py-2.5 text-sm text-[#e8e8f0] outline-none focus:border-accent"
+            {state && (
+              <PuzzleInput
+                interaction={current.interaction}
+                state={state}
+                onChange={setPstate}
+                onWrongReset={() => setWrong(false)}
               />
-              <button
-                type="submit"
-                disabled={checking || !input.trim()}
-                className="shrink-0 rounded-xl bg-accent text-[#1a1a2e] font-bold px-5 py-2.5 text-sm disabled:opacity-40 active:scale-[0.98] transition-transform"
-              >
-                {checking ? "…" : "확인"}
-              </button>
-            </div>
+            )}
+            <button
+              type="submit"
+              disabled={
+                checking || !state || !isReady(current.interaction, state)
+              }
+              className="w-full mt-3 rounded-xl bg-accent text-[#1a1a2e] font-bold px-5 py-3 text-sm disabled:opacity-40 active:scale-[0.98] transition-transform"
+            >
+              {checking ? "…" : "확인"}
+            </button>
           </form>
 
           {wrong && (

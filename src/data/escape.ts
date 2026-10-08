@@ -78,6 +78,31 @@ export interface Clue {
   payoffIn: SceneId;
 }
 
+export interface PickItem {
+  id: string;
+  label: string;
+  note?: string;
+}
+
+/**
+ * 퍼즐을 푸는 '동작'.
+ *
+ * 처음에는 12개가 전부 text 하나였습니다. 서사를 아무리 붙여도 매번 같은 칸에
+ * 타이핑만 하면 방탈출이 아니라 설문지입니다. 동작이 달라져야 방이 달라집니다.
+ * escapeValidate가 한 방식에 쏠리지 않는지 빌드 때 검사합니다.
+ *
+ * 정답은 방식별로 아래 규칙대로 문자열이 되어 해시와 대조됩니다.
+ *   text  입력한 그대로      dial  자리값을 이어 붙임
+ *   order 고른 순서대로 id를 -로 연결      pick  고른 id
+ *   multi 고른 id들을 정렬해 -로 연결
+ */
+export type Interaction =
+  | { kind: "text"; label: string; placeholder: string }
+  | { kind: "dial"; label: string; digits: number }
+  | { kind: "order"; label: string; items: PickItem[] }
+  | { kind: "pick"; label: string; layout: "rows" | "strip" | "grid"; items: PickItem[] }
+  | { kind: "multi"; label: string; min: number; items: PickItem[] };
+
 export interface Puzzle {
   id: string;
   scene: SceneId;
@@ -90,8 +115,8 @@ export interface Puzzle {
   /** 그림을 어떻게 읽어야 하는지 */
   body: string[];
   art: ArtKey;
-  inputLabel: string;
-  placeholder: string;
+  /** 푸는 동작 */
+  interaction: Interaction;
   salt: string;
   answerHash: string;
   hints: [string, string, string];
@@ -688,22 +713,39 @@ export const puzzles: Puzzle[] = [
       "숫자를 다루는 사람은 실수를 반복하지 않는다. 그 번호가 뭔지부터 알아야겠다.",
     ],
     prompt:
-      "접수번호는 빠짐없이 이어져야 한다. 장부에 아예 나타나지 않는 번호를 찾아라.",
+      "접수번호는 빠짐없이 이어져야 한다. 아래 번호 중 장부에 아예 나타나지 않는 것을 골라라.",
     body: [
       "취소선이 그어진 줄은 접수가 취소된 건이다. 번호 자체는 장부에 남아 있다.",
       "'✓찾아감'은 손님이 사진을 받아 간 건이다.",
       "찾는 것은 취소된 번호도, 찾아간 번호도 아니다. 처음부터 적히지 않은 번호다.",
     ],
     art: "ledger",
-    inputLabel: "장부에 없는 접수번호",
-    placeholder: "네 자리 숫자",
+    interaction: {
+      kind: "pick",
+      layout: "grid",
+      label: "장부에 없는 번호를 고르세요",
+      items: [
+        { id: "0311", label: "0311" },
+        { id: "0312", label: "0312" },
+        { id: "0313", label: "0313" },
+        { id: "0314", label: "0314" },
+        { id: "0315", label: "0315" },
+        { id: "0316", label: "0316" },
+        { id: "0317", label: "0317" },
+        { id: "0318", label: "0318" },
+        { id: "0319", label: "0319" },
+        { id: "0320", label: "0320" },
+        { id: "0321", label: "0321" },
+        { id: "0322", label: "0322" },
+      ],
+    },
     salt: "hanbit:p1",
     answerHash:
       "b6eb50cb8773e9272087c53524424a6ed08406ac377bca8da298ce8ac462d957",
     hints: [
       "취소선이 그어진 0314와 0319는 번호가 장부에 있습니다. 찾는 건 그런 게 아닙니다.",
       "0316 다음 줄의 번호를 확인해 보세요.",
-      "0317입니다.",
+      "0316 다음이 0318입니다. 0317을 고르세요.",
     ],
     solved: [
       "0317. 이 번호만 처음부터 없다.",
@@ -732,8 +774,11 @@ export const puzzles: Puzzle[] = [
       "이미 사진을 찾아간 손님의 봉투는 꽂이에 남아 있지 않다. 장부의 '✓찾아감' 표시를 떠올려라.",
     ],
     art: "envelope-rack",
-    inputLabel: "빈자리의 주인",
-    placeholder: "이름 세 글자",
+    interaction: {
+      kind: "text",
+      label: "빈자리의 주인",
+      placeholder: "이름 세 글자",
+    },
     salt: "hanbit:p2",
     answerHash:
       "09e8cb4ac0b8c1e341cc11fa329f6071b5ff38a0e912079dadbf4990e883c37f",
@@ -765,22 +810,33 @@ export const puzzles: Puzzle[] = [
       "언제부터 이 가게에 있던 사람인지부터 알아야겠다.",
     ],
     prompt:
-      "왼쪽 끝에서 반쯤 잘린 채 찍힌 사람이 있다. 그가 나온 사진 중 가장 오래된 것은 몇 년도인가?",
+      "왼쪽 끝에서 반쯤 잘린 채 찍힌 사람이 있다. 벽에 걸린 여섯 장 중 그가 찍힌 사진을 모두 골라라.",
     body: [
       "액자에는 연도가 적혀 있지 않다. 사진마다 가게 벽에 걸린 달력이 함께 찍혔다.",
       "액자가 걸린 순서는 연도순이 아니다.",
       "달력 숫자를 하나씩 확인해야 한다.",
     ],
     art: "photo-wall",
-    inputLabel: "가장 오래된 사진의 연도",
-    placeholder: "네 자리 연도",
+    interaction: {
+      kind: "multi",
+      min: 5,
+      label: "그 사람이 찍힌 사진을 모두 고르세요",
+      items: [
+        { id: "1994", label: "1994년 달력" },
+        { id: "2005", label: "2005년 달력" },
+        { id: "1981", label: "1981년 달력" },
+        { id: "1997", label: "1997년 달력" },
+        { id: "1985", label: "1985년 달력" },
+        { id: "1990", label: "1990년 달력" },
+      ],
+    },
     salt: "hanbit:p3",
     answerHash:
-      "03646af0cd1276fe2d4fe86163fa8bfc5819d5fe609d8311c7b64d6f4adb6f80",
+      "e3cccf483ba553664f65c828c718b2127c9394802e0d13cf8137ef80716fd5db",
     hints: [
       "여섯 장 중 왼쪽 끝이 잘린 사람이 없는 사진이 한 장 있습니다. 그건 빼세요.",
       "나머지 다섯 장의 달력 연도를 모두 읽고 가장 작은 수를 고르세요.",
-      "1981년입니다.",
+      "2005년 사진에만 그 사람이 없습니다. 나머지 다섯 장을 전부 고르세요.",
     ],
     solved: [
       "1981년. 가장 오래된 사진부터 그는 거기 있었다.",
@@ -802,22 +858,25 @@ export const puzzles: Puzzle[] = [
       "숫자 두 개가 있으면 차이도 하나다. 그게 번호일 것 같다.",
     ],
     prompt:
-      "자물쇠는 두 자리다. 이 가게가 생긴 해와, 지금 대표 이름이 올라간 해의 차이를 넣어라.",
+      "자물쇠는 두 자리다. 이 가게가 생긴 해와, 지금 대표 이름이 올라간 해의 차이만큼 다이얼을 돌려라.",
     body: [
       "서류가 세 장 나왔다. 날짜가 셋 다 다르다.",
       "하나는 가게가 처음 문을 연 날, 하나는 지금 대표 명의가 된 날, 하나는 그 사이의 계약 갱신일이다.",
       "어느 것이 어느 것인지는 서류 종류를 보면 알 수 있다.",
     ],
     art: "documents",
-    inputLabel: "두 해의 차이",
-    placeholder: "두 자리 숫자",
+    interaction: {
+      kind: "dial",
+      label: "두 자리 자물쇠",
+      digits: 2,
+    },
     salt: "hanbit:p4",
     answerHash:
       "16969b920be112847cb3df9e1e52bb089827f6812bac90a81bc05531843f8c8d",
     hints: [
       "임대차계약서의 갱신일은 개업일이 아닙니다. 계산에서 빼세요.",
       "액자 뒷면의 '개업 기념' 날짜와 사업자등록증의 개업연월일을 비교하세요.",
-      "17입니다.",
+      "17로 맞추세요.",
     ],
     solved: [
       "17. 자물쇠가 열린다.",
@@ -840,21 +899,36 @@ export const puzzles: Puzzle[] = [
       "라벨은 붙어 있는데 안이 비었다. 라벨을 떼지 않았다는 건, 없어진 게 아니라 어딘가로 옮겼다는 뜻이다.",
       "먼저 몇 년도 것인지부터 확인해야 한다. 박스들이 연도순으로 놓여 있지 않아 눈으로는 안 잡힌다.",
     ],
-    prompt: "박스가 연도순으로 놓여 있지 않다. 한 해가 통째로 없다. 몇 년도인가?",
+    prompt: "박스가 뒤섞여 있다. 이른 해부터 차례로 세워라. 줄을 세우면 비어 있는 해가 드러난다.",
     body: [
       "선반 두 단에 박스가 뒤섞여 있다. 라벨의 연도를 전부 읽어야 한다.",
       "가장 이른 해부터 가장 늦은 해까지, 한 해도 거르지 않고 있어야 정상이다.",
     ],
     art: "shelf",
-    inputLabel: "없는 해",
-    placeholder: "네 자리 연도",
+    interaction: {
+      kind: "order",
+      label: "박스를 연도순으로 세우세요 (위가 이른 해)",
+      items: [
+        { id: "1995", label: "1995년 박스" },
+        { id: "1991", label: "1991년 박스" },
+        { id: "1999", label: "1999년 박스" },
+        { id: "1993", label: "1993년 박스" },
+        { id: "2001", label: "2001년 박스" },
+        { id: "1990", label: "1990년 박스" },
+        { id: "1997", label: "1997년 박스" },
+        { id: "1994", label: "1994년 박스" },
+        { id: "2000", label: "2000년 박스" },
+        { id: "1992", label: "1992년 박스" },
+        { id: "1996", label: "1996년 박스" },
+      ],
+    },
     salt: "hanbit:p5",
     answerHash:
-      "daf608313539c2048544371a721ea9c5430eb7b73b5961785e2f614b479e9f38",
+      "dfff2f0d1c6b7bca9e1da83dd9370f7e85a509fbbde08c3c019d5dbb59242476",
     hints: [
       "라벨을 작은 수부터 차례로 늘어놓아 보세요.",
       "1997과 1999는 있습니다. 그 사이가 비었습니다.",
-      "1998년입니다.",
+      "1990년부터 2001년까지 차례로 세우면 1998년 자리가 비어 있습니다.",
     ],
     solved: [
       "1998년. 그 해만 통째로 없다.",
@@ -883,8 +957,11 @@ export const puzzles: Puzzle[] = [
       "롤 번호는 다섯 자리다.",
     ],
     art: "rule-card",
-    inputLabel: "2003년 접수번호 0045의 롤 번호",
-    placeholder: "다섯 자리 숫자",
+    interaction: {
+      kind: "text",
+      label: "2003년 접수번호 0045의 롤 번호",
+      placeholder: "다섯 자리 숫자",
+    },
     salt: "hanbit:p6",
     answerHash:
       "9e616e6a7c98f3631e51588cdac6753eb8fd410328afd8d0c7c269b64664dabc",
@@ -914,22 +991,25 @@ export const puzzles: Puzzle[] = [
       "장부에서 비어 있던 번호, 선반에서 빠져 있던 해, 그리고 방금 알아낸 규칙. 세 개가 다 모였다.",
     ],
     prompt:
-      "장부에 없던 그 접수번호를, 창고 대조표의 규칙대로 롤 번호로 바꿔라. 해는 필름이 통째로 없던 그 해다.",
+      "장부에 없던 그 접수번호를 창고 대조표의 규칙대로 롤 번호로 바꿔, 다이얼을 그 번호에 맞춰라. 해는 필름이 통째로 없던 그 해다.",
     body: [
       "암실 문 · 다섯 자리 번호 자물쇠",
       "손잡이 옆에 작게 긁어 쓴 자국 — 「ROLL」",
       "가진 것은 세 가지다. 장부에 없던 접수번호, 선반에서 빠진 해, 그리고 롤 번호 규칙.",
     ],
     art: "lock",
-    inputLabel: "자물쇠 번호",
-    placeholder: "다섯 자리 숫자",
+    interaction: {
+      kind: "dial",
+      label: "다섯 자리 자물쇠",
+      digits: 5,
+    },
     salt: "hanbit:p7",
     answerHash:
       "df41a4c95302f423570a9567cec10a950fe5ec9746a12f2e94c773d2ebcc8a7f",
     hints: [
       "장부에 없던 번호는 0317, 선반에서 빠진 해는 1998년입니다.",
       "앞 두 자리는 1998의 끝 두 자리, 뒤 세 자리는 0317에서 0을 뗀 것입니다.",
-      "98317입니다.",
+      "98317로 맞추세요.",
     ],
     solved: [
       "98317. 자물쇠가 손안에서 딸깍 떨어진다.",
@@ -951,22 +1031,30 @@ export const puzzles: Puzzle[] = [
       "순서를 틀리면 필름은 그대로 날아간다. 이십 년을 버틴 걸 오늘 내 손으로 망칠 수는 없다.",
     ],
     prompt:
-      "네 통을 같은 날 새로 채웠다. 남은 양으로 사용 순서를 알아내, 공정의 첫 글자를 순서대로 이어 적어라.",
+      "네 통을 같은 날 새로 채웠다. 남은 양으로 사용 순서를 알아내, 먼저 쓰는 것부터 차례로 세워라.",
     body: [
       "선반 기둥의 메모 — 「약품은 공정 순서대로 쓴다. 먼저 쓰는 것일수록 빨리 닳는다.」",
       "통마다 남은 양이 다르다. 눈금을 비교하면 된다.",
       "가장 적게 남은 것이 가장 먼저 쓰는 약품이다.",
     ],
     art: "chemicals",
-    inputLabel: "공정 순서 (첫 글자 네 개)",
-    placeholder: "예: 가나다라",
+    interaction: {
+      kind: "order",
+      label: "쓰는 순서대로 통을 세우세요 (위가 먼저)",
+      items: [
+        { id: "정착", label: "정착액", note: "남은 양 70%" },
+        { id: "수세", label: "수세액", note: "남은 양 90%" },
+        { id: "현상", label: "현상액", note: "남은 양 20%" },
+        { id: "정지", label: "정지액", note: "남은 양 45%" },
+      ],
+    },
     salt: "hanbit:p8",
     answerHash:
-      "52c05c8762eb36f3c1e125d32e815a5f6080747cdc1c80ec95651e6714759e7e",
+      "e1e3217b2bbacbd85f747462af571b9bfdf69b5a329cfd40c7efc8d875a182a6",
     hints: [
       "남은 양이 적은 순서대로 통을 늘어놓으세요.",
       "가장 적게 남은 것은 현상액, 가장 많이 남은 것은 수세용 물입니다.",
-      "현정정수입니다.",
+      "현상 · 정지 · 정착 · 수세 순서로 세우세요.",
     ],
     solved: [
       "현상 · 정지 · 정착 · 수세.",
@@ -990,22 +1078,41 @@ export const puzzles: Puzzle[] = [
       "그럼 각진 쪽은 언제까지 쓰다가 멈춘 걸까.",
     ],
     prompt:
-      "글씨체가 어느 날을 경계로 바뀐다. 각진 글씨의 마지막 날과 둥근 글씨의 첫날 사이에 낀, 장부에 없는 그 하루는 언제인가?",
+      "글씨체가 어느 날을 경계로 바뀐다. 각진 글씨의 마지막 날과 둥근 글씨의 첫날 사이에 낀, 장부에 줄이 없는 그 하루를 골라라.",
     body: [
       "1998년 3월 한 달치가 펼쳐져 있다. 쉬는 날은 애초에 줄이 없어서, 빠진 날짜가 여럿이다.",
       "획이 눌러쓴 듯 각진 글씨와, 흘려 쓴 듯 둥근 글씨가 섞여 있다.",
       "두 글씨가 갈리는 지점을 찾아, 그 사이에 낀 날짜를 여덟 자리로 적어라.",
     ],
     art: "two-ledgers",
-    inputLabel: "글씨가 갈리는 그 하루",
-    placeholder: "YYYYMMDD",
+    interaction: {
+      kind: "pick",
+      layout: "grid",
+      label: "장부에 줄이 없는 날 중, 글씨가 갈리는 그 하루",
+      items: [
+        { id: "19980301", label: "1일" },
+        { id: "19980304", label: "4일" },
+        { id: "19980307", label: "7일" },
+        { id: "19980308", label: "8일" },
+        { id: "19980311", label: "11일" },
+        { id: "19980314", label: "14일" },
+        { id: "19980317", label: "17일" },
+        { id: "19980321", label: "21일" },
+        { id: "19980322", label: "22일" },
+        { id: "19980325", label: "25일" },
+        { id: "19980328", label: "28일" },
+        { id: "19980329", label: "29일" },
+        { id: "19980330", label: "30일" },
+        { id: "19980331", label: "31일" },
+      ],
+    },
     salt: "hanbit:p9",
     answerHash:
       "a0e84e9ea98bb287235747e4a1781880c493066cbad9b495d47789c89349baf0",
     hints: [
       "빠진 날짜는 여럿이지만, 대부분은 같은 글씨끼리의 사이입니다.",
       "각진 글씨의 마지막 줄은 3월 16일, 둥근 글씨의 첫 줄은 3월 18일입니다.",
-      "19980317입니다.",
+      "16일까지가 각진 글씨, 18일부터가 둥근 글씨입니다. 그 사이 17일을 고르세요.",
     ],
     solved: [
       "1998년 3월 17일.",
@@ -1032,22 +1139,33 @@ export const puzzles: Puzzle[] = [
       "여섯 컷. 이제 어느 걸 인화할지 정해야 한다.",
     ],
     prompt:
-      "롤 98317을 현상했다. 접수증이 가리키는 컷을 인화해야 한다. 몇 번 컷인가?",
+      "롤 98317을 현상했다. 접수증이 가리키는 컷을 스트립에서 골라라.",
     body: [
       "접수증에는 매수와 조건만 적혀 있다. 컷 번호는 적혀 있지 않다.",
       "현상해 걸어둔 필름 스트립에서 조건에 맞는 컷을 직접 찾아야 한다.",
       "컷마다 찍힌 사람 수가 다르다.",
     ],
     art: "filmstrip",
-    inputLabel: "인화할 컷 번호",
-    placeholder: "두 자리 숫자",
+    interaction: {
+      kind: "pick",
+      layout: "strip",
+      label: "인화할 컷",
+      items: [
+        { id: "21", label: "21번" },
+        { id: "22", label: "22번" },
+        { id: "23", label: "23번" },
+        { id: "24", label: "24번" },
+        { id: "25", label: "25번" },
+        { id: "26", label: "26번" },
+      ],
+    },
     salt: "hanbit:p10",
     answerHash:
       "84523f8e7bb9597e3a83cfea968f49b27221116b188f6600fa24584e2a3eec74",
     hints: [
       "접수증의 조건은 '4인 가족 전원'입니다.",
       "여섯 컷 중 사람이 네 명 찍힌 컷은 하나뿐입니다.",
-      "24번입니다.",
+      "24번 컷을 고르세요.",
     ],
     solved: [
       "24번 컷을 확대기에 건다. 인화지를 넣고 초를 센다.",
@@ -1084,8 +1202,11 @@ export const puzzles: Puzzle[] = [
       "지금 간판은 '한빛사진관'이다. 덧칠한 사람이 무엇을 남기고 무엇을 바꿨는지 생각해 보라.",
     ],
     art: "signboard",
-    inputLabel: "원래 가게 이름",
-    placeholder: "다섯 글자",
+    interaction: {
+      kind: "text",
+      label: "원래 가게 이름",
+      placeholder: "다섯 글자",
+    },
     salt: "hanbit:p11",
     answerHash:
       "03833d7a8d8c837dd0a3f344d08abf5b199865bdaa9dc91a404bde3b7f24cfb6",
@@ -1125,8 +1246,11 @@ export const puzzles: Puzzle[] = [
       "스물여덟 해 동안 이 봉투는 꽂이에서 자리를 지켰다.",
     ],
     art: "envelope",
-    inputLabel: "받는 사람",
-    placeholder: "이름 세 글자",
+    interaction: {
+      kind: "text",
+      label: "받는 사람",
+      placeholder: "이름 세 글자",
+    },
     salt: "hanbit:p12",
     answerHash:
       "c8596c7806cdb7fd4f03a2681f6be81b2190ecd8066d2ded41f78d4078d200de",

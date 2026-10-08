@@ -42,7 +42,12 @@ const LATE_SCENE_COUNT = 3; // 후반 몇 개 장면을 '연결 필수'로 볼 �
 const MIN_OBJECTS_PER_SCENE = 3; // 방마다 살펴볼 사물
 const MIN_SCENE_PROSE = 700; // 장면당 서사 최소 글자수 (intro+사물+outro+회상)
 const MIN_PUZZLE_LEAD = 60; // 퍼즐 진입 서술 최소 글자수
-const MIN_TOTAL_PROSE = 8000; // 전체 서사 최소 글자수
+const MIN_TOTAL_PROSE = 8000;
+
+// 조작 다양성 — 12개가 전부 텍스트 입력이던 시절로 돌아가지 않게 하는 장치
+const MIN_INTERACTION_KINDS = 4; // 서로 다른 조작 방식 최소 종류
+const MAX_SAME_INTERACTION_RATIO = 0.4; // 한 방식이 차지할 수 있는 최대 비율
+const MIN_CHOICE_ITEMS = 4; // 고르기·순서 맞추기의 최소 선택지 수 // 전체 서사 최소 글자수
 
 const chars = (lines: string[]): number =>
   lines.join("").replace(/\s/g, "").length;
@@ -229,6 +234,46 @@ export function validateEscapeStory(): void {
       `단독 완결 퍼즐이 ${standalone.length}/${puzzles.length}개(${Math.round(ratio * 100)}%)로 상한 ${Math.round(MAX_STANDALONE_RATIO * 100)}%를 넘음 — ` +
         `그 화면만 보면 풀리는 퍼즐이 많으면 너무 쉬워집니다 (${standalone.map((p) => p.id).join(", ")})`
     );
+  }
+
+  // ── 조작의 다양성 ──
+  // 한때 12개 퍼즐이 전부 '표를 읽고 텍스트 칸에 타이핑'이었습니다. 서사를 아무리
+  // 붙여도 매번 같은 동작이면 방탈출이 아니라 설문지입니다. 그걸 눈으로는 못 잡아서
+  // (각 퍼즐은 저마다 그럴듯해 보입니다) 여기서 셉니다.
+  const kinds = puzzles.map((p) => p.interaction.kind);
+  const kindCount = new Map<string, number>();
+  for (const k of kinds) kindCount.set(k, (kindCount.get(k) ?? 0) + 1);
+
+  if (kindCount.size < MIN_INTERACTION_KINDS) {
+    errors.push(
+      `퍼즐 조작 방식이 ${kindCount.size}종뿐 — 최소 ${MIN_INTERACTION_KINDS}종 필요 ` +
+        `(매번 같은 동작이면 방이 달라져도 하는 일이 같습니다)`
+    );
+  }
+  for (const [kind, n] of kindCount) {
+    const r = n / puzzles.length;
+    if (r > MAX_SAME_INTERACTION_RATIO) {
+      errors.push(
+        `조작 방식 '${kind}'가 ${n}/${puzzles.length}개(${Math.round(r * 100)}%)로 상한 ` +
+          `${Math.round(MAX_SAME_INTERACTION_RATIO * 100)}%를 넘음 — 한 방식에 쏠리면 단조로워집니다`
+      );
+    }
+  }
+
+  // 선택지가 있는 조작은 항목이 충분해야 찍어서 맞히기 어렵습니다
+  for (const p of puzzles) {
+    const it = p.interaction;
+    if (it.kind === "pick" || it.kind === "multi" || it.kind === "order") {
+      if (it.items.length < MIN_CHOICE_ITEMS) {
+        errors.push(
+          `퍼즐 ${p.id}: 선택지가 ${it.items.length}개뿐 — 최소 ${MIN_CHOICE_ITEMS}개 필요 (찍으면 맞는 퍼즐이 됩니다)`
+        );
+      }
+      const ids = it.items.map((i) => i.id);
+      if (new Set(ids).size !== ids.length) {
+        errors.push(`퍼즐 ${p.id}: 선택지 id가 중복됨 — 정답 대조가 어긋납니다`);
+      }
+    }
   }
 
   // 후반 장면은 난이도가 올라가야 하므로 다른 방의 정보를 반드시 요구할 것

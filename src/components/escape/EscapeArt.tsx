@@ -1,5 +1,15 @@
 import type { ReactElement, ReactNode } from "react";
 import type { ArtKey } from "@/data/escape";
+import {
+  LEDGER_ROWS,
+  WALL,
+  SHELF_TOP,
+  SHELF_BOTTOM,
+  BOTTLES,
+  MARCH,
+  CUTS,
+} from "@/data/escapeFixtures";
+
 
 // 방탈출 퍼즐 삽화 — 전부 손으로 그린 인라인 SVG입니다.
 //
@@ -71,20 +81,6 @@ function Frame({ children, viewBox }: { children: ReactNode; viewBox: string }) 
 }
 
 // ───────────────────────── 1. 접수대장 ─────────────────────────
-
-const LEDGER_ROWS: [string, string, string, "" | "cancel" | "taken"][] = [
-  ["0311", "김영호", "증명 2매", ""],
-  ["0312", "정미숙", "가족 1매", ""],
-  ["0313", "강태수", "여권 4매", ""],
-  ["0314", "서미라", "단체 1매", "cancel"],
-  ["0315", "오경자", "돌 3매", ""],
-  ["0316", "남궁현", "증명 2매", ""],
-  ["0318", "이정옥", "여권 2매", ""],
-  ["0319", "김영호", "증명 2매", "cancel"],
-  ["0320", "박정우", "가족 2매", "taken"],
-  ["0321", "정미숙", "가족 2매", ""],
-  ["0322", "강태수", "여권 4매", ""],
-];
 
 function Ledger(): ReactElement {
   return (
@@ -268,15 +264,6 @@ function EnvelopeRack(): ReactElement {
 // ───────────────────────── 3. 벽에 걸린 사진 ─────────────────────────
 
 // [달력 연도, 왼쪽 끝 잘린 인물 있음] — 걸린 순서는 연도순이 아님
-const WALL: [number, boolean][] = [
-  [1994, true],
-  [2005, false],
-  [1981, true],
-  [1997, true],
-  [1985, true],
-  [1990, true],
-];
-
 function PhotoWall(): ReactElement {
   return (
     <Frame viewBox="0 0 320 230">
@@ -384,8 +371,6 @@ function Documents(): ReactElement {
 // ───────────────────────── 5. 필름 선반 ─────────────────────────
 
 // 뒤섞인 연도 — 1990~2001 중 1998만 없음
-const SHELF_TOP = [1995, 1991, 1999, 1993, 2001, 1990];
-const SHELF_BOTTOM = [1997, 1994, 2000, 1992, 1996];
 
 function Shelf(): ReactElement {
   const box = (year: number, x: number, y: number, key: string) => (
@@ -498,13 +483,6 @@ function Lock(): ReactElement {
 // ───────────────────────── 8. 약품통 ─────────────────────────
 
 // [이름, 남은 비율] — 먼저 쓰는 약품일수록 적게 남음
-const BOTTLES: [string, number][] = [
-  ["정착", 0.7],
-  ["수세", 0.9],
-  ["현상", 0.2],
-  ["정지", 0.45],
-];
-
 function Chemicals(): ReactElement {
   return (
     <Frame viewBox="0 0 320 200">
@@ -574,26 +552,6 @@ function Chemicals(): ReactElement {
 // ───────────────────────── 9. 두 권의 장부 ─────────────────────────
 
 // [일, 성명, 내용, 필체] — a: 눌러쓴 각진 글씨 / b: 흘려 쓴 둥근 글씨
-const MARCH: [string, string, string, "a" | "b"][] = [
-  ["02", "김영호", "증명 2매", "a"],
-  ["03", "정미숙", "가족 1매", "a"],
-  ["05", "강태수", "여권 4매", "a"],
-  ["06", "서미라", "단체 1매", "a"],
-  ["09", "오경자", "돌 3매", "a"],
-  ["10", "김영호", "증명 2매", "a"],
-  ["12", "남궁현", "증명 2매", "a"],
-  ["13", "이정옥", "여권 2매", "a"],
-  ["15", "강태수", "여권 4매", "a"],
-  ["16", "오경자", "돌 3매", "a"],
-  ["18", "김영호", "증명 2매", "b"],
-  ["19", "서미라", "단체 1매", "b"],
-  ["20", "이정옥", "증명 2매", "b"],
-  ["23", "정미숙", "가족 2매", "b"],
-  ["24", "남궁현", "증명 2매", "b"],
-  ["26", "강태수", "여권 4매", "b"],
-  ["27", "오경자", "돌 3매", "b"],
-];
-
 function TwoLedgers(): ReactElement {
   return (
     <Frame viewBox="0 0 320 330">
@@ -656,15 +614,6 @@ function TwoLedgers(): ReactElement {
 }
 
 // ───────────────────────── 10. 필름 스트립 ─────────────────────────
-
-const CUTS: [number, number][] = [
-  [21, 2],
-  [22, 3],
-  [23, 1],
-  [24, 4],
-  [25, 3],
-  [26, 0],
-];
 
 function Filmstrip(): ReactElement {
   return (
