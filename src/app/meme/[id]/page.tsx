@@ -36,6 +36,26 @@ if (collision) {
   );
 }
 
+// related가 없는 id를 가리키면 '관련 용어' 링크가 아무 데도 닿지 않습니다.
+// 화면에 에러가 나지 않아서 눈으로는 안 잡히고, 실제로 2건이 한참 깨진 채
+// 있었습니다. id 오타는 용어를 추가할 때마다 나기 쉬우므로 빌드에서 막습니다.
+{
+  const ids = new Set(memes.map((m) => m.id));
+  const broken: string[] = [];
+  for (const m of memes) {
+    for (const r of m.related) {
+      if (!ids.has(r)) broken.push(`${m.term}(${m.id}) -> "${r}"`);
+      if (r === m.id) broken.push(`${m.term}(${m.id}) -> 자기 자신`);
+    }
+  }
+  if (broken.length) {
+    throw new Error(
+      `[meme] related가 존재하지 않는 용어를 가리킵니다 (${broken.length}건)\n  - ` +
+        broken.join("\n  - ")
+    );
+  }
+}
+
 const isCategory = (id: string): id is MemeCategoryId =>
   (CATEGORY_IDS as string[]).includes(id);
 
