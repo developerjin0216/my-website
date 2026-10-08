@@ -87,6 +87,10 @@ export interface SourceLink {
 
 /** 계산기별 근거 기관 — 실제 소관 기관만 적습니다 */
 export const CALC_SOURCES: Record<string, SourceLink[]> = {
+  "card-deduction": [
+    { name: "국세청 — 근로소득 연말정산 종합안내", url: "https://www.nts.go.kr" },
+    { name: "홈택스 — 연말정산 미리보기", url: "https://www.hometax.go.kr" },
+  ],
   salary: [
     { name: "국민연금공단 — 연금보험료", url: "https://www.nps.or.kr" },
     { name: "국민건강보험공단 — 보험료율", url: "https://www.nhis.or.kr" },
