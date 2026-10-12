@@ -67,6 +67,16 @@ async function fetchRoad(
   return parseCams(xml, road);
 }
 
+/**
+ * 목록과 영상 주소를 나눠 보냅니다.
+ *
+ * 영상 주소는 토큰이 붙어 한 건에 150자가 넘습니다. 충청권은 3,700대라
+ * 주소까지 다 실으면 응답이 774KB가 되는데, 그걸 휴대폰에 통째로 내려보낼
+ * 이유가 없습니다 — 사용자가 실제로 여는 건 한두 지점입니다.
+ * 이름과 노선만 보내면 106KB로 줄고(7분의 1), 주소는 고를 때 한 건만 받습니다.
+ *
+ * 목록은 서버에서 캐시되므로 두 번째 호출이 ITS를 다시 부르지는 않습니다.
+ */
 export async function GET(request: NextRequest) {
   const key = process.env.ITS_API_KEY;
   if (!key) {
@@ -76,7 +86,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const regionId = request.nextUrl.searchParams.get("region") ?? "";
+  const sp = request.nextUrl.searchParams;
+  const regionId = sp.get("region") ?? "";
   const region = findRegion(regionId);
   if (!region) {
     return NextResponse.json(
@@ -105,14 +116,39 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "불러오지 못했습니다", detail: why }, { status: 502 });
     }
     cams.sort((a, b) => a.name.localeCompare(b.name, "ko"));
-    return NextResponse.json(
-      { region: region.id, count: cams.length, cams },
-      {
-        headers: {
-          // 같은 지역을 여러 사람이 봐도 ITS 호출은 한 번으로 끝납니다
-          "Cache-Control": `public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=300`,
-        },
+
+    const headers = {
+      // 같은 지역을 여러 사람이 봐도 ITS 호출은 한 번으로 끝납니다
+      "Cache-Control": `public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=300`,
+    };
+
+    // 지점 하나의 영상 주소만 요청한 경우
+    const name = sp.get("n");
+    if (name !== null) {
+      const i = Number(sp.get("i"));
+      // 보통은 색인으로 바로 찾고, 목록이 그사이 갱신돼 어긋났으면 이름으로 찾습니다
+      const byIndex = Number.isInteger(i) ? cams[i] : undefined;
+      const cam =
+        byIndex && byIndex.name === name
+          ? byIndex
+          : cams.find((c) => c.name === name);
+      if (!cam) {
+        return NextResponse.json(
+          { error: "지점을 찾지 못했습니다", detail: "목록이 갱신됐을 수 있습니다." },
+          { status: 404 }
+        );
       }
+      return NextResponse.json({ name: cam.name, url: cam.url }, { headers });
+    }
+
+    // 목록 — 주소는 빼고 이름과 노선만
+    return NextResponse.json(
+      {
+        region: region.id,
+        count: cams.length,
+        cams: cams.map((c) => ({ n: c.name, r: c.road })),
+      },
+      { headers }
     );
   } catch (e) {
     return NextResponse.json(

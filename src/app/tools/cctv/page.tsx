@@ -4,12 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import HlsPlayer from "@/components/tools/HlsPlayer";
 import { REGIONS } from "@/data/cctvRegions";
 
+// 목록에는 이름과 노선만 옵니다. 영상 주소는 고를 때 한 건만 받습니다 —
+// 주소까지 다 실으면 큰 지역은 응답이 774KB가 됩니다.
 interface Cam {
+  n: string;
+  r: "ex" | "its";
+}
+interface Picked {
   name: string;
-  lat: number;
-  lng: number;
   url: string;
-  road: "ex" | "its";
 }
 
 const SHOW = 50; // 지역당 수백~천 대라 한 번에 다 그리면 휴대폰에서 버벅입니다
@@ -21,7 +24,9 @@ export default function CctvPage() {
   const [detail, setDetail] = useState("");
   const [q, setQ] = useState("");
   const [limit, setLimit] = useState(SHOW);
-  const [picked, setPicked] = useState<Cam | null>(null);
+  const [picked, setPicked] = useState<Picked | null>(null);
+  const [pickName, setPickName] = useState<string | null>(null);
+  const [pickErr, setPickErr] = useState("");
 
   // 지역을 바꿀 때의 초기화는 이벤트 쪽에서 합니다. effect 안에서 동기로
   // setState를 부르면 렌더가 연쇄로 일어납니다.
@@ -30,6 +35,7 @@ export default function CctvPage() {
     setRegion(id);
     setState("loading");
     setPicked(null);
+    setPickName(null);
     setQ("");
     setLimit(SHOW);
   };
@@ -62,10 +68,28 @@ export default function CctvPage() {
     };
   }, [region, reload]);
 
+  // 고른 지점의 영상 주소만 따로 받아옵니다
+  const choose = (c: Cam) => {
+    setPickName(c.n);
+    setPicked(null);
+    setPickErr("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    const i = cams.indexOf(c);
+    fetch(
+      `/api/cctv?region=${region}&i=${i}&n=${encodeURIComponent(c.n)}`
+    )
+      .then(async (r) => {
+        const j = await r.json();
+        if (!r.ok) throw new Error(j.detail || j.error || "실패");
+        setPicked(j);
+      })
+      .catch((e: Error) => setPickErr(e.message));
+  };
+
   const filtered = useMemo(() => {
     const k = q.trim();
     if (!k) return cams;
-    return cams.filter((c) => c.name.includes(k));
+    return cams.filter((c) => c.n.includes(k));
   }, [cams, q]);
 
   return (
@@ -97,9 +121,17 @@ export default function CctvPage() {
         </div>
       </div>
 
-      {picked && (
+      {pickName && (
         <div className="bg-card rounded-2xl p-4">
-          <HlsPlayer src={picked.url} label={picked.name} />
+          {pickErr ? (
+            <p className="text-sm text-[#EF4444] py-6 text-center">{pickErr}</p>
+          ) : picked ? (
+            <HlsPlayer src={picked.url} label={picked.name} />
+          ) : (
+            <p className="text-sm text-[#a0a0b0] py-6 text-center">
+              {pickName} — 연결 중…
+            </p>
+          )}
           <div className="mt-3 rounded-xl bg-[#16213e] p-3">
             <p className="text-xs font-bold text-accent mb-1.5">
               화면으로 날씨 읽는 법
@@ -164,14 +196,11 @@ export default function CctvPage() {
                 <div className="space-y-1.5">
                   {filtered.slice(0, limit).map((c) => (
                     <button
-                      key={c.url}
+                      key={c.r + c.n}
                       type="button"
-                      onClick={() => {
-                        setPicked(c);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
+                      onClick={() => choose(c)}
                       className={`w-full text-left rounded-xl px-3 py-2.5 border transition-colors ${
-                        picked?.url === c.url
+                        pickName === c.n
                           ? "border-accent bg-[#3d2e00]/40"
                           : "border-[#2a3a5a] bg-[#16213e] hover:border-[#4a5a7a]"
                       }`}
@@ -179,15 +208,15 @@ export default function CctvPage() {
                       <span className="flex items-center gap-2">
                         <span
                           className={`shrink-0 text-[10px] rounded px-1.5 py-0.5 ${
-                            c.road === "ex"
+                            c.r === "ex"
                               ? "bg-[#1e3a5f] text-[#8ab4f8]"
                               : "bg-[#2a3a2a] text-[#9ccc9c]"
                           }`}
                         >
-                          {c.road === "ex" ? "고속" : "국도"}
+                          {c.r === "ex" ? "고속" : "국도"}
                         </span>
                         <span className="text-sm text-[#e8e8f0] truncate">
-                          {c.name}
+                          {c.n}
                         </span>
                       </span>
                     </button>
