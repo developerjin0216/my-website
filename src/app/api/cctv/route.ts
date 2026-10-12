@@ -42,6 +42,18 @@ function parseCams(xml: string, road: "ex" | "its"): Cam[] {
   return out;
 }
 
+/**
+ * fetch가 실패하면 Node는 "fetch failed"만 던지고 진짜 이유는 cause에 넣습니다.
+ * 그대로 두면 화면에도 로그에도 "fetch failed"만 남아 원인을 좁힐 수 없습니다.
+ * DNS인지 TLS인지 타임아웃인지가 여기서 갈립니다.
+ */
+function describe(e: unknown): string {
+  const err = e as { message?: string; cause?: { code?: string; message?: string } };
+  const cause = err?.cause;
+  if (!cause) return err?.message ?? String(e);
+  return [err.message, cause.code, cause.message].filter(Boolean).join(" / ");
+}
+
 async function fetchRoad(
   key: string,
   road: "ex" | "its",
@@ -57,9 +69,15 @@ async function fetchRoad(
     maxY: String(box.maxY),
     getType: "xml",
   });
-  const res = await fetch(`${ITS_ENDPOINT}?${qs}`, {
-    next: { revalidate: CACHE_SECONDS },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${ITS_ENDPOINT}?${qs}`, {
+      next: { revalidate: CACHE_SECONDS },
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch (e) {
+    throw new Error(`ITS ${road} 연결 실패: ${describe(e)}`);
+  }
   if (!res.ok) throw new Error(`ITS ${road} 응답 ${res.status}`);
   const xml = await res.text();
   const err = xml.match(/<resultMsg>([^<]*)<\/resultMsg>/);
@@ -152,7 +170,7 @@ export async function GET(request: NextRequest) {
     );
   } catch (e) {
     return NextResponse.json(
-      { error: "불러오지 못했습니다", detail: (e as Error).message },
+      { error: "불러오지 못했습니다", detail: describe(e) },
       { status: 502 }
     );
   }
