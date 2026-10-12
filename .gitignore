@@ -45,3 +45,6 @@ next-env.d.ts
 # 티스토리 원문 수집 결과 (로컬 작업용)
 tis-*.json
 tis-*.txt
+
+# 외부 API 응답 테스트용 임시 폴더
+.scratch/
