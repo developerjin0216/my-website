@@ -16,6 +16,17 @@ const CACHE_SECONDS = 60 * 50; // 토큰 수명 120분보다 넉넉히 짧게
 
 export const revalidate = 0;
 
+/**
+ * 서울 리전에서 실행합니다.
+ *
+ * 기본 리전(미국)에서는 openapi.its.go.kr 호출이 8초 안에 끝나지 않고 그대로
+ * 타임아웃이 났습니다. 같은 요청이 국내에서는 2초입니다. 한국 공공 API는
+ * 해외에서 느리거나 아예 닿지 않는 경우가 흔합니다.
+ *
+ * Hobby 요금제에서도 리전 지정은 됩니다 — 유료로 올릴 필요가 없습니다.
+ */
+export const preferredRegion = ["icn1"];
+
 interface Cam {
   name: string;
   lat: number;
