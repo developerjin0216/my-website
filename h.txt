@@ -1,0 +1,11 @@
+HTTP/2 502 
+age: 0
+cache-control: public, max-age=0, must-revalidate
+content-type: application/json
+date: Mon, 12 Oct 2026 03:19:50 GMT
+server: Vercel
+strict-transport-security: max-age=63072000
+x-matched-path: /api/cctv
+x-vercel-cache: MISS
+x-vercel-id: icn1::iad1::fspwt-1791775182105-8c95b0ae2559
+
