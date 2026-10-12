@@ -30,6 +30,9 @@ node scripts/indexnow.mjs         # submit — only after content actually chang
 # Indexability audit — fetches every sitemap URL, reports blockers + body-text length
 node scripts/seo-audit.mjs                        # production
 node scripts/seo-audit.mjs http://localhost:3131  # a local `next start`
+
+# CCTV tool end-to-end check against production (key in bundle → ITS → m3u8)
+node scripts/cctv-check.mjs
 ```
 
 Verifying host-dependent behaviour locally (sitemap, robots, legacy redirects):
@@ -77,6 +80,7 @@ split four ways had each part starting trust from zero (index count stayed at 0 
 | `/guides/<id>` | 6 | `data/guides.ts` | Long-form; must stay in sync with calculator rates |
 | `/escape`, `/escape/play` | 2 | `data/escape.ts` | Web escape room (noindex on `/play`) |
 | `/omok`, `/battle` | 2 | — | Realtime, need the Socket.IO server |
+| `/tools/cctv` | 1 | `data/cctvRegions.ts` | **The only feature with an external dependency.** Browser calls ITS directly — see below |
 
 ### Body-text length is the live indexing constraint
 
@@ -118,6 +122,37 @@ Rules that follow from this:
   where the result legitimately differs from a payslip, who decides the real determination.
 - Leaving a page thin is better than publishing a wrong rate. `/guides/pension-reform` and
   `/guides/minimum-wage-2027` were deliberately left short for this reason.
+
+### The CCTV tool must call ITS from the browser, not the server
+
+`/tools/cctv` is the one feature that depends on an outside API. It was built
+server-side first (route handler holding the key) and **that does not work on Vercel**:
+
+| where | result |
+|---|---|
+| `iad1` Washington, Node runtime | 8s timeout |
+| `sin1` Singapore, Edge runtime | 8s timeout |
+| a Korean machine | 2s, fine |
+
+Singapore→Korea is ~70ms, so this is not latency. ITS appears to block datacenter IPs,
+or the non-standard port (9443 — there is no standard-port endpoint) is the problem.
+`preferredRegion` is ignored for Node functions (`x-vercel-id` read `icn1::iad1` — the
+first segment is the CDN POP, the second is the actual function region); switching to Edge
+moved it to `sin1`, not `icn1`. **Upgrading to Pro would not reliably fix this** — if the
+cause is IP blocking, a Seoul datacenter IP is blocked too.
+
+So the browser calls ITS directly. ITS echoes our origin in `Access-Control-Allow-Origin`
+and allows the `GET` preflight. The key therefore ships in the public bundle as
+`NEXT_PUBLIC_ITS_API_KEY` — **this is not a new leak**: decoding the `wmsAuthSign` token on
+every stream URL reveals `id=<the key>`, and that URL has to reach the browser for playback.
+
+Consequences to keep in mind:
+- Changing the key requires a **redeploy**; `NEXT_PUBLIC_*` is baked at build time.
+- Keep regions small. One combined 충청 region returned 3,700 cameras as 1.5 MB of XML —
+  straight onto a phone. Eight regions keep each fetch manageable.
+- Fetch 고속 and 국도 separately and render as each lands; waiting for both leaves large
+  regions blank for seconds.
+- Stream tokens last 120 minutes, so a page left open needs a refresh.
 
 ### Counts come from the data, never a typed number
 
