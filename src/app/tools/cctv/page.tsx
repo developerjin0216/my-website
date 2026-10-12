@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import HlsPlayer from "@/components/tools/HlsPlayer";
 import {
   REGIONS,
@@ -10,6 +11,16 @@ import {
   type Cam,
   type Road,
 } from "@/data/cctvRegions";
+
+// Leaflet은 window를 쓰므로 서버 렌더를 끄고, 지도 탭을 열 때만 받아옵니다
+const CctvMap = dynamic(() => import("@/components/tools/CctvMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full rounded-xl border border-[#2a3a5a] bg-[#0f1626] flex items-center justify-center" style={{ height: 340 }}>
+      <p className="text-sm text-[#606070]">지도를 불러오는 중…</p>
+    </div>
+  ),
+});
 
 const KEY = process.env.NEXT_PUBLIC_ITS_API_KEY ?? "";
 const SHOW = 50; // 지역당 수백~2,000대라 한 번에 다 그리면 휴대폰에서 버벅입니다
@@ -25,6 +36,7 @@ export default function CctvPage() {
   const [limit, setLimit] = useState(SHOW);
   const [picked, setPicked] = useState<Cam | null>(null);
   const [nonce, setNonce] = useState(0);
+  const [view, setView] = useState<"list" | "map">("list");
 
   const choose = (id: string) => {
     if (id === regionId) return;
@@ -153,6 +165,36 @@ export default function CctvPage() {
           </div>
         ) : (
           <>
+            <div className="flex gap-1.5 mb-3">
+              {(["list", "map"] as const).map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setView(v)}
+                  className={`flex-1 rounded-xl py-2 text-sm border transition-colors ${
+                    view === v
+                      ? "border-accent text-accent font-semibold"
+                      : "border-[#2a3a5a] text-[#a0a0b0] hover:border-accent"
+                  }`}
+                >
+                  {v === "list" ? "목록" : "지도"}
+                </button>
+              ))}
+            </div>
+
+            {view === "map" && cams.length > 0 && (
+              <div className="mb-3">
+                <CctvMap
+                  cams={filtered}
+                  picked={picked}
+                  onPick={(c) => {
+                    setPicked(c);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                />
+              </div>
+            )}
+
             <div className="flex items-center gap-2 mb-3">
               <input
                 value={q}
@@ -184,7 +226,7 @@ export default function CctvPage() {
               </p>
             )}
 
-            <div className="space-y-1.5">
+            <div className={view === "list" ? "space-y-1.5" : "hidden"}>
               {filtered.slice(0, limit).map((c) => (
                 <button
                   key={c.road + c.name + c.url.slice(-10)}
@@ -217,7 +259,7 @@ export default function CctvPage() {
               ))}
             </div>
 
-            {filtered.length > limit && (
+            {view === "list" && filtered.length > limit && (
               <button
                 type="button"
                 onClick={() => setLimit((n) => n + SHOW * 4)}

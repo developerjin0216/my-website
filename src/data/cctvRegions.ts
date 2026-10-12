@@ -97,6 +97,9 @@ export interface Cam {
   name: string;
   url: string;
   road: Road;
+  /** ITS가 주는 설치 좌표. 지도 표시에 씁니다 */
+  lat: number;
+  lng: number;
 }
 
 export function itsUrl(region: CctvRegion, road: Road, key: string): string {
@@ -126,9 +129,15 @@ export function parseCams(xml: string, road: Road): Cam[] {
       node.querySelector(tag)?.textContent?.trim() ?? "";
     const name = text("cctvname");
     const url = text("cctvurl");
-    if (!name || !url) continue;
+    const lat = Number(text("coordy"));
+    const lng = Number(text("coordx"));
+    // 좌표가 없거나 한반도 밖이면 지도에 엉뚱하게 찍히므로 버립니다
+    const sane =
+      Number.isFinite(lat) && Number.isFinite(lng) &&
+      lat > 32 && lat < 40 && lng > 124 && lng < 132;
+    if (!name || !url || !sane) continue;
     // 혹시 http로 오면 https로 — 사이트가 https라 섞이면 브라우저가 막습니다
-    out.push({ name, url: url.replace(/^http:/, "https:"), road });
+    out.push({ name, url: url.replace(/^http:/, "https:"), road, lat, lng });
   }
   return out;
 }
