@@ -17,6 +17,18 @@ const CACHE_SECONDS = 60 * 50; // 토큰 수명 120분보다 넉넉히 짧게
 export const revalidate = 0;
 
 /**
+ * Edge 런타임에서 돌립니다.
+ *
+ * Node 서버리스 함수의 리전은 프로젝트 기본값(iad1, 워싱턴)에 묶여 있어
+ * preferredRegion이 무시됐습니다 — 응답 헤더 x-vercel-id가 icn1::iad1 로
+ * 찍혀서 확인했습니다. Edge 런타임은 리전 지정을 따릅니다.
+ *
+ * 이 라우트가 쓰는 건 fetch·URLSearchParams·정규식뿐이라 Edge에서 그대로
+ * 동작합니다.
+ */
+export const runtime = "edge";
+
+/**
  * 서울 리전에서 실행합니다.
  *
  * 기본 리전(미국)에서는 openapi.its.go.kr 호출이 8초 안에 끝나지 않고 그대로
