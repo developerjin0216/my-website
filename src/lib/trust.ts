@@ -20,6 +20,7 @@ export const REVIEWED = {
   calculators: "2026-10-02", // src/data/calculators.ts
   salaryRates: "2026-07-28", // src/utils/salary.ts (4대보험·세율)
   electricityRates: "2026-07-21", // src/utils/electricity.ts (전기요금)
+  cardDeduction: "2026-10-15", // src/utils/cardDeduction.ts — 국회예산정책처 2025 개정세법 보고서와 대조
   tools: "2026-08-20", // src/data/tools.ts
   guides: "2026-07-29", // src/data/guides.ts
   help: "2026-09-09", // src/data/help.ts
@@ -90,6 +91,10 @@ export const CALC_SOURCES: Record<string, SourceLink[]> = {
   "card-deduction": [
     { name: "국세청 — 근로소득 연말정산 종합안내", url: "https://www.nts.go.kr" },
     { name: "홈택스 — 연말정산 미리보기", url: "https://www.hometax.go.kr" },
+    {
+      name: "국회예산정책처 — 2025년 개정세법 심의 결과 및 주요 내용 (적용기한 연장·자녀 수별 한도)",
+      url: "https://www.nabo.go.kr/board/file/bulkDown.do?idx=9022&bid=19",
+    },
   ],
   salary: [
     { name: "국민연금공단 — 연금보험료", url: "https://www.nps.or.kr" },
@@ -145,6 +150,7 @@ export const RATE_BASED: Record<string, string> = {
   electricity: REVIEWED.electricityRates,
   aircon: REVIEWED.electricityRates,
   "car-tax": REVIEWED.calculators,
+  "card-deduction": REVIEWED.cardDeduction,
 };
 
 export function calcReviewedDate(id: string): string {

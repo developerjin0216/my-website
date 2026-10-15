@@ -181,8 +181,9 @@ export default function CardDeductionPage() {
             추가 한도가 붙습니다. 그 뒤 소득세율을 곱한 만큼이 세금에서 줄어듭니다.
             <br />
             <br />
-            한도 금액은 해마다 바뀌고 출처마다 다르게 적힌 경우가 있어 여기서는
-            계산하지 않았습니다. 확정 금액은{" "}
+            기본공제 한도는 아래 &lsquo;2026년 사용분부터 달라지는 것&rsquo;과 같지만,
+            추가 한도와 세율까지 반영해야 환급액이 나오므로 여기서는 계산하지
+            않았습니다. 확정 금액은{" "}
             <strong>홈택스 &gt; 연말정산 미리보기</strong>에서 확인하세요. 이
             계산기는 그 전에 &lsquo;지금부터 뭘 쓸지&rsquo;를 정하는 용도입니다.
           </Notice>
@@ -215,6 +216,47 @@ export default function CardDeductionPage() {
         <p className="text-[11px] text-[#8a90a0] mt-2.5 leading-relaxed">
           도서·공연·영화 등 문화비는 총급여 7천만원 이하만 적용되는 별도 항목이라
           여기에 넣지 않았습니다.
+        </p>
+      </Card>
+
+      {/* 2025년 개정세법 — 국회예산정책처 「2025년 개정세법 심의 결과 및 주요 내용」(2025.12)
+          표 11·표 40에서 그대로 옮겼습니다. 추가 한도(전통시장·대중교통·문화)는 이 개정에
+          없어 여기서도 다루지 않습니다. */}
+      <Card>
+        <p className="text-sm font-bold text-[#e8e8f0] mb-2">
+          2026년 사용분부터 달라지는 것
+        </p>
+        <p className="text-xs text-[#a0a0b0] leading-relaxed mb-3 break-keep">
+          신용카드 소득공제는 2025년 말까지만 적용될 예정이었는데, 2025년 세법
+          개정으로 <strong className="text-[#e8e8f0]">2028년 12월 31일까지 3년
+          연장</strong>됐습니다. 함께 <strong className="text-[#e8e8f0]">자녀 수에 따라
+          기본공제 한도가 올라갑니다</strong>(2026년 1월 1일 시행 — 2026년에 쓴 금액을
+          정산하는 2027년 초 연말정산부터).
+        </p>
+        <div className="overflow-hidden rounded-lg border border-[#2a3a5a] text-xs">
+          <div className="grid grid-cols-4 bg-[#16213e] text-[#a0a0b0]">
+            <span className="px-2 py-1.5">총급여</span>
+            <span className="px-2 py-1.5 text-right">자녀 없음</span>
+            <span className="px-2 py-1.5 text-right">자녀 1명</span>
+            <span className="px-2 py-1.5 text-right">2명 이상</span>
+          </div>
+          {[
+            ["7천만원 이하", "300만원", "350만원", "400만원"],
+            ["7천만원 초과", "250만원", "275만원", "300만원"],
+          ].map((row) => (
+            <div key={row[0]} className="grid grid-cols-4 border-t border-[#2a3a5a] text-[#e8e8f0]">
+              {row.map((cell, i) => (
+                <span key={i} className={`px-2 py-1.5 ${i ? "text-right" : "text-[#a0a0b0]"}`}>
+                  {cell}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+        <p className="text-[11px] text-[#8a90a0] mt-2.5 leading-relaxed break-keep">
+          공제율(신용카드 15%, 체크카드·현금영수증 30%, 전통시장·대중교통 40%)과
+          총급여 25% 문턱은 그대로입니다. 출처: 국회예산정책처 「2025년 개정세법 심의
+          결과 및 주요 내용」(2025.12).
         </p>
       </Card>
     </>
