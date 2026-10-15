@@ -18,6 +18,11 @@ import {
 // /result는 disallow하지 않음 — robots 차단 시 크롤러가 페이지의 noindex를
 // 읽지 못해 URL만 색인될 수 있음. 크롤 허용 + meta noindex 조합 유지.
 
+// Daum 웹마스터도구 소유 확인 — Daum은 메타 태그가 아니라 robots.txt 의 이 주석 줄로 확인합니다.
+// 공개해도 되는 확인용 값입니다(비밀키 아님). 지우면 Daum 검색 등록이 풀릴 수 있습니다.
+const DAUM_VERIFICATION =
+  "#DaumWebMasterTool:b0b96d734f69a3fb77f71404b64e92c4af4700dd459d67b7b2843a9dfac1edc2:n4Bdeh3er8dd+gRpPxKBoA==";
+
 export async function GET(request: NextRequest) {
   const host = request.headers.get("host");
 
@@ -39,7 +44,7 @@ export async function GET(request: NextRequest) {
           ? TOOLS_URL
           : ROOT_URL;
 
-  const body = `User-Agent: *\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`;
+  const body = `${DAUM_VERIFICATION}\nUser-Agent: *\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`;
 
   return new Response(body, {
     headers: {
