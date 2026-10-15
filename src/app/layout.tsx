@@ -2,7 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
-import { BASE_URL, SITE_NAME } from "@/lib/site";
+import { BASE_URL, ROOT_SITE_NAME } from "@/lib/site";
+import { CALC_COUNT } from "@/data/calculators";
 import { siteJsonLd } from "@/lib/trust";
 
 const geistSans = Geist({
@@ -26,17 +27,19 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
     default: "8282114 - 급할 때 바로 찾는 생활 긴급 안내",
-    template: `%s | ${SITE_NAME}`,
+    // 루트 이름을 씁니다. SITE_NAME("상식왕 퀴즈")은 섹션 이름이라 전 페이지 제목이
+    // 퀴즈 사이트를 자칭하게 됩니다.
+    template: `%s | ${ROOT_SITE_NAME}`,
   },
   description:
-    "긴급 전화번호, 카드·휴대폰 분실 대처, 보이스피싱 대응, 야간 병원 찾기 — 급할 때 필요한 정보와 생활 계산기 15종, 상식 퀴즈 1,000문제를 무료로 이용하세요.",
+    `긴급 전화번호, 카드·휴대폰 분실 대처, 보이스피싱 대응, 야간 병원 찾기, 병원비·임금체불 — 급할 때 필요한 대처법과 실업급여·퇴직금 등 생활 계산기 ${CALC_COUNT}종.`,
   manifest: "/site.webmanifest",
   icons: {
     apple: "/apple-touch-icon.png",
   },
   alternates: { canonical: "/" },
   openGraph: {
-    siteName: SITE_NAME,
+    siteName: ROOT_SITE_NAME,
     locale: "ko_KR",
     type: "website",
     url: "/",

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTool } from "@/data/tools";
-import { TOOLS_URL, TOOLS_SITE_NAME, ROOT_URL, QUIZ_URL, CALC_URL, CONTACT_EMAIL } from "@/lib/site";
+import { TOOLS_URL, TOOLS_SITE_NAME, ROOT_URL, CONTACT_EMAIL } from "@/lib/site";
 import { authorship, REVIEWED } from "@/lib/trust";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
@@ -135,11 +135,13 @@ export default function ToolShell({
         {/* 푸터 */}
         <footer className="text-center text-xs text-[#606070] pb-8 space-y-2">
           <p>
+            {/* CALC_URL·QUIZ_URL은 통합 후 둘 다 루트라, 예전 링크는 이름만 다르고
+                셋 다 홈으로 갔습니다. 실제 경로를 씁니다. */}
             <a href={ROOT_URL} className="hover:text-accent">8282114 생활안내</a>
             {" · "}
-            <a href={CALC_URL} className="hover:text-accent">모두의 계산기</a>
+            <Link href="/help" className="hover:text-accent">급할 때 대처법</Link>
             {" · "}
-            <a href={QUIZ_URL} className="hover:text-accent">상식왕 퀴즈</a>
+            <Link href="/calculators" className="hover:text-accent">생활 계산기</Link>
           </p>
           <p>
             <Link href="/about" className="hover:text-accent">소개</Link>

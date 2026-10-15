@@ -54,7 +54,9 @@ export const KNOWN_HOSTS = new Set([ROOT_HOST, QUIZ_HOST, CALC_HOST, TOOLS_HOST]
 // 브랜드명 — 바꾸면 OG·JSON-LD·manifest·푸터에 일괄 반영
 export const INFO_SITE_NAME = "8282114 생활안내";
 export const SITE_NAME = "상식왕 퀴즈";
-export const CALC_SITE_NAME = CALC_SPLIT ? "모두의 계산기" : SITE_NAME;
+// 통합 상태의 계산기는 루트 사이트의 일부입니다. 예전엔 SITE_NAME("상식왕 퀴즈")으로
+// 떨어져서 계산기 페이지의 og:site_name·빵부스러기가 퀴즈 사이트를 자칭했습니다.
+export const CALC_SITE_NAME = CALC_SPLIT ? "모두의 계산기" : INFO_SITE_NAME;
 export const TOOLS_SITE_NAME = TOOLS_SPLIT ? "모두의 도구" : INFO_SITE_NAME;
 
 // 루트(/)를 가리키는 이름. 단일 도메인에서 "상식왕 퀴즈"는 사이트 이름이 아니라

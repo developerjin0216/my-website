@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { robotsFor } from "@/lib/indexPolicy";
 import { QUIZ_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -6,6 +7,7 @@ export const metadata: Metadata = {
   description:
     "친구들과 실시간 퀴즈 대결! 최대 10명이 함께 플레이하며 순위를 겨루는 멀티플레이어 퀴즈 배틀입니다.",
   alternates: { canonical: `${QUIZ_URL}/battle` },
+  robots: robotsFor("/battle"),
 };
 
 // 배틀 본체는 클라이언트 컴포넌트라 크롤러에 보이지 않으므로,

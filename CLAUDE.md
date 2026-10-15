@@ -45,7 +45,8 @@ curl -H "Host: quiz.8282114.xyz" localhost:3000/mbti   # expect 308 → 8282114.
 ## Architecture
 
 Korean-language personal site on **Next.js 16** (App Router) + a standalone **Socket.IO** server.
-~236 indexable URLs across eight content sections. Deployed on Vercel; realtime server on Render.
+**72 URLs are indexed; ~170 more stay live but noindexed** (see *Index scope* below).
+Deployed on Vercel; realtime server on Render.
 
 ### Single domain — do not re-split
 
@@ -64,23 +65,52 @@ split four ways had each part starting trust from zero (index count stayed at 0 
   off those constants and follow automatically. The `SPLIT_ACTIVE` branches left in
   `sitemap.xml/route.ts`, `robots.txt/route.ts`, and `proxy.ts` exist for exactly that.
 
+### Index scope — one topic, set in `src/lib/indexPolicy.ts`
+
+In 2026-10, nine weeks after the domain was registered, Search Console showed **1 of 243**
+sitemap URLs indexed and 2 impressions in 28 days. No manual action; the rest were *crawled — not
+indexed*, i.e. Google read them and declined. Technical checks were clean (Googlebot gets 200,
+robots allows all, Wayback shows no prior owner of the domain). The site *called* itself
+"급할 때 생활 긴급 안내" while three quarters of its URLs were quiz banks, MBTI, memes, AI prompts
+and English slang. Google weighs quality site-wide, so the off-topic bulk dragged the rest.
+
+The fix was to narrow, not to start over on a new domain (that resets trust to zero, which is
+exactly what the subdomain split proved, and costs money). Only what the domain name promises —
+8282 빨리빨리 + 114 안내 — stays indexed: `/help`, `/guides`, `/calculators` (minus BMI/칼로리),
+`/en` emergency guides, `/tools/cctv`, and the about/legal pages.
+
+- `indexPolicy.ts` is the **single source**: sitemap and RSS filter through `isIndexableUrl`;
+  section layouts and the calc/tool metadata builders set `robots: robotsFor(path)`. Reverting a
+  section means deleting one line there — sitemap, feed and meta all follow.
+- Noindexed pages still render, still self-canonicalize, and use `follow`. They are not deleted
+  and the home footer still links to them, so existing users can reach them.
+- Do **not** `Disallow` them in robots.txt — Google would then never see the noindex.
+- **A new page must fit the topic, or go into `NOINDEX_SECTIONS`.** Adding unrelated sections to
+  the index is how the site got here.
+- The verification used: fetch every URL from the *old* sitemap on a local `next start` and
+  compare its `<meta name="robots">` with `isIndexable()` (Node 22 can import the `.ts` with
+  `--experimental-strip-types`). `seo-audit.mjs` covers the other direction — it audits the
+  sitemap, so a kept page that accidentally goes noindex shows up as a blocker.
+
 ### Content sections
 
-| Path | Count | Data source | Notes |
+Indexed sections first; the rest are live but noindexed.
+
+| Path | Indexed | Data source | Notes |
 |---|---|---|---|
-| `/help`, `/help/<id>` | 1 + 27 | `data/help.ts` | 긴급 대처 가이드. Richest E-E-A-T template. The hub groups topics by situation and **throws at build** if a topic is unassigned, duplicated, or unknown |
-| `/en`, `/en/<id>`, `/en/slang/<id>` | 6 + 53 | `data/guidesEn.ts`, `slangEn.ts` | English, for foreigners in Korea |
-| `/quiz-bank/<cat>/<page>` | 47 | `lib/quizBank.ts` over `data/categories/` | Paginated Q&A archive |
-| `/calculators/<id>` | 20 | `data/calculators.ts` | Server layout + client page |
-| `/mbti/<type>`, `/mbti/test` | 18 | `data/mbti.ts` | |
-| `/tools/<id>` | 12 | `data/tools.ts` | Browser-only utilities (no upload) |
-| `/quiz`, `/quiz/<cat>` | 12 | `data/quizData.ts` | 11 categories, 1,168 questions (맞춤법 has 168, the rest 100). Category pages show 8 spread-sampled Q&A as their unique body |
-| `/prompts/<cat>`, `/prompts/viral/<cat>` | 7 + 3 | `data/prompts.ts`, `promptsViral.ts` | 37 original + 41 sourced |
-| `/meme/<category>` | 7 | `data/memes.ts`, `memeUsage.ts` | |
-| `/guides/<id>` | 6 | `data/guides.ts` | Long-form; must stay in sync with calculator rates |
-| `/escape`, `/escape/play` | 2 | `data/escape.ts` | Web escape room (noindex on `/play`) |
-| `/omok`, `/battle` | 2 | — | Realtime, need the Socket.IO server |
-| `/tools/cctv` | 1 | `data/cctvRegions.ts` | **The only feature with an external dependency.** Browser calls ITS directly — see below |
+| `/help`, `/help/<id>` | yes | `data/help.ts` | 긴급 대처 가이드, the core of the site. Richest E-E-A-T template. The hub groups topics by situation and **throws at build** if a topic is unassigned, duplicated, or unknown |
+| `/guides/<id>` | yes | `data/guides.ts` | Long-form; must stay in sync with calculator rates |
+| `/calculators/<id>` | yes, except `bmi`·`calorie` | `data/calculators.ts` | Server layout + client page |
+| `/en`, `/en/<id>` | yes | `data/guidesEn.ts` | English emergency guides for foreigners in Korea |
+| `/tools/cctv` | yes | `data/cctvRegions.ts` | **The only feature with an external dependency.** Browser calls ITS directly — see below |
+| `/en/slang/<id>` | no | `slangEn.ts` | 53 per-item pages — the pattern that already failed for memes |
+| `/quiz-bank/<cat>/<page>` | no | `lib/quizBank.ts` over `data/categories/` | Paginated Q&A archive |
+| `/quiz`, `/quiz/<cat>`, `/quiz-home` | no | `data/quizData.ts` | 11 categories, 1,168 questions (맞춤법 has 168, the rest 100) |
+| `/mbti/<type>`, `/mbti/test` | no | `data/mbti.ts` | |
+| `/tools/<id>` | no | `data/tools.ts` | Browser-only utilities (no upload) |
+| `/prompts/<cat>`, `/prompts/viral/<cat>` | no | `data/prompts.ts`, `promptsViral.ts` | 37 original + 41 sourced |
+| `/meme/<category>` | no | `data/memes.ts`, `memeUsage.ts` | |
+| `/escape`, `/omok`, `/battle` | no | `data/escape.ts` / — | Games; omok and battle need the Socket.IO server |
 
 ### Body-text length is the live indexing constraint
 
@@ -95,8 +125,8 @@ Client-only routes (`/quiz`, `/omok`, `/battle`, `/mbti/test`) render nothing fo
 their `layout.tsx` must carry the server-rendered prose — that is the whole reason those layouts
 exist. Every page needs an `<h1>`; `/quiz` had none because its body is a client component.
 
-Do not pour prose into `/tools/*` — those compete with single-purpose domains (ilovepdf, TinyPNG)
-and more words won't win. Don't delete them either; removing live URLs is a net loss.
+`/tools/*` (except CCTV) is noindexed now, so padding it is moot — they compete with
+single-purpose domains (ilovepdf, TinyPNG) anyway. Don't delete them; they still serve users.
 
 Shared layout prose is duplicated across every child route. `app/quiz/layout.tsx` wraps `/quiz`
 **and** all 11 `/quiz/<cat>` pages, so a long block there ships 12 identical copies and gives each
@@ -243,13 +273,16 @@ Rooms are in-memory `Map`s (lost on restart), 6-char codes excluding `0/O/1/I`.
   `PromptCard` hides prompt bodies this way precisely because the prompt text *is* the content.
 - Client-only pages (`/battle`, `/omok`) render almost nothing for crawlers; their `layout.tsx`
   carries server-rendered rules/FAQ so the route has indexable text.
-- New sections need: sitemap entry (`sitemap.xml/route.ts`), RSS item (`feed.xml/route.ts`), and
+- New sections must first pass *Index scope* above. Then they need: sitemap entry
+  (`sitemap.xml/route.ts`), RSS item (`feed.xml/route.ts`), and
   **inbound internal links** — a page linked from one place is treated as unimportant.
 - Section homes are `/quiz-home`, `/calculators`, `/tools` — **not** `QUIZ_URL`/`TOOLS_URL`, which
   both collapse to `ROOT_URL` now. Code written for the split emitted the bare host, which silently
   dropped `/tools` and `/quiz-home` from the sitemap and pointed footer links at the wrong home.
-- Breadcrumb/`og:site_name` for anything rooted at `/` must use `ROOT_SITE_NAME`, not `SITE_NAME`
-  ("상식왕 퀴즈" is a *section* name; using it for the root made name and URL disagree).
+- Breadcrumb/`og:site_name`/title template for anything rooted at `/` must use `ROOT_SITE_NAME`,
+  not `SITE_NAME` ("상식왕 퀴즈" is a *section* name). Until 2026-10 the root title template,
+  root `og:site_name` and `CALC_SITE_NAME` all fell back to it, so calculator pages declared
+  themselves part of a quiz site.
 - The root layout hardcodes `<html lang="ko">` and only a root layout may render `<html>`. `/en`
   scopes its language with a `lang="en"` wrapper using `className="contents"`; reading `headers()`
   in the root layout to switch it would turn all 255 static pages dynamic.

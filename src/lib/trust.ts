@@ -49,7 +49,7 @@ export function siteJsonLd() {
         ...publisher,
         "@id": `${ROOT_URL}/#organization`,
         description:
-          "급할 때 필요한 전화번호와 대처법, 생활 계산기, 상식 퀴즈를 제공하는 개인 운영 생활정보 사이트입니다.",
+          "급할 때 필요한 전화번호와 상황별 대처법, 실업급여·퇴직금 같은 생활 계산기를 제공하는 개인 운영 생활정보 사이트입니다.",
         contactPoint: {
           "@type": "ContactPoint",
           email: CONTACT_EMAIL,

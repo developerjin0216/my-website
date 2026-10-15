@@ -11,6 +11,7 @@ import { promptCategories } from "@/data/prompts";
 import { viralCategories } from "@/data/promptsViral";
 import { enGuides } from "@/data/guidesEn";
 import { slangEntries } from "@/data/slangEn";
+import { isIndexableUrl } from "@/lib/indexPolicy";
 import {
   ROOT_URL,
   ROOT_HOST,
@@ -213,6 +214,10 @@ export async function GET(request: NextRequest) {
   else if (host === CALC_HOST) entries = calcEntries();
   else if (host === TOOLS_HOST) entries = toolsEntries();
   else entries = rootEntries();
+
+  // noindex 페이지를 사이트맵에 남기면 "제출됐는데 noindex" 경고가 쌓입니다.
+  // 아래 생성 함수는 그대로 두고 여기서만 걸러서, 정책을 되돌리면 바로 복구됩니다.
+  entries = entries.filter((e) => isIndexableUrl(e.url));
 
   return new Response(render(entries), {
     headers: {

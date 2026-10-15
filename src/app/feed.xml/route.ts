@@ -23,6 +23,7 @@ import {
   SITE_NAME,
   TOOLS_SITE_NAME,
 } from "@/lib/site";
+import { isIndexableUrl } from "@/lib/indexPolicy";
 
 // RSS 2.0 피드 — 접속 도메인별로 '그 사이트의 글만' 내보냅니다.
 // 네이버 서치어드바이저는 제출 사이트와 다른 도메인 항목이 섞이면
@@ -84,10 +85,10 @@ export function GET(request: NextRequest) {
   if (unified) {
     xml = renderFeed(
       {
-        title: `${INFO_SITE_NAME} - 생활 안내·계산기·퀴즈`,
+        title: `${INFO_SITE_NAME} - 급할 때 생활 안내·계산기`,
         link: ROOT_URL,
         description:
-          "긴급 대처법과 생활 계산기, 상식 퀴즈까지 — 급할 때 바로 쓰는 생활 정보",
+          "분실·사기·체불·병원비 같은 급한 상황의 대처법과, 실수령액·퇴직금·실업급여 계산기",
       },
       ([
         // 사이트맵과 같은 함정이 있었습니다 — 계산기는 CALC_HOST 분기에만 있어서
@@ -174,7 +175,10 @@ export function GET(request: NextRequest) {
           link: `${ROOT_URL}/tools/${t.id}`,
           description: t.metaDescription,
         })),
-      ] as FeedItem[]).sort((a, b) => ((a.date ?? "") < (b.date ?? "") ? 1 : -1))
+      ] as FeedItem[])
+        // 색인에서 뺀 섹션은 피드에서도 뺍니다 (lib/indexPolicy.ts)
+        .filter((i) => isIndexableUrl(i.link))
+        .sort((a, b) => ((a.date ?? "") < (b.date ?? "") ? 1 : -1))
     );
   } else if (host === CALC_HOST) {
     xml = renderFeed(

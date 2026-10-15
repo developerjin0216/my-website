@@ -60,7 +60,7 @@ export default function CalculatorsPage() {
           </a>
         ) : (
           <Link href="/" className="text-sm text-[#a0a0b0] hover:text-accent">
-            ← 상식왕 퀴즈 홈
+            ← 8282114 홈
           </Link>
         )}
         <h1 className="text-3xl font-bold text-accent mt-2">생활 계산기 모음</h1>
@@ -156,12 +156,12 @@ export default function CalculatorsPage() {
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
         <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-2">
-          <a
-            href={SPLIT ? QUIZ_URL : "/"}
+          <Link
+            href="/help"
             className="text-xs text-[#606070] hover:text-[#a0a0b0]"
           >
-            상식왕 퀴즈
-          </a>
+            급할 때 대처법
+          </Link>
           <span className="text-xs text-[#606070]">|</span>
           <Link
             href="/about"

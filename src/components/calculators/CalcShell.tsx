@@ -278,13 +278,13 @@ export default function CalcShell({
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
         <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-2">
-          {/* 단일 도메인에서 "/"는 생활안내 홈입니다. 퀴즈 홈은 /quiz-home이라
-              SPLIT 시절 그대로 두면 이름과 목적지가 어긋납니다. */}
+          {/* 퀴즈 섹션은 2026-10에 색인에서 뺐습니다(lib/indexPolicy.ts).
+              계산기에서 이어질 곳은 같은 주제인 상황별 대처법입니다. */}
           <Link
-            href={SPLIT ? "/" : "/quiz-home"}
+            href="/help"
             className="text-xs text-[#606070] hover:text-[#a0a0b0]"
           >
-            상식왕 퀴즈
+            급할 때 대처법
           </Link>
           <span className="text-xs text-[#606070]">|</span>
           <Link

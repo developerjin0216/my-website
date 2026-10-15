@@ -4,20 +4,14 @@ import { CONTACT_EMAIL, INFO_SITE_NAME, ROOT_URL } from "@/lib/site";
 import { publisher } from "@/lib/trust";
 import { CALC_COUNT } from "@/data/calculators";
 import { helpTopics } from "@/data/help";
-import { tools } from "@/data/tools";
-import { categories, quizzes } from "@/data/quizData";
 
 // 섹션 규모는 데이터에서 셉니다. 손으로 적어 두면 "계산기 19종"(실제 20종),
 // "대처 매뉴얼 18편"(실제 27편)처럼 소개글이 조용히 사실과 어긋납니다.
-const TOTAL_QUESTIONS = Object.values(quizzes).reduce(
-  (n, list) => n + list.length,
-  0
-);
 
 export const metadata: Metadata = {
   title: { absolute: "사이트 소개 - 8282114" },
   description:
-    "8282114 생활안내·모두의 계산기·모두의 도구·상식왕 퀴즈 소개 — 운영 목적, 콘텐츠 작성 기준, 정보 출처와 갱신 원칙을 안내합니다.",
+    "8282114 소개 — 급할 때 찾는 생활 안내와 계산기를 누가, 어떤 기준으로 만드는지, 정보 출처와 갱신 원칙을 안내합니다.",
   alternates: { canonical: "/about" },
 };
 
@@ -79,7 +73,7 @@ export default function AboutPage() {
             <p>
               8282114는 <strong className="text-white">&ldquo;급할 때(8282) 바로
               찾는 안내(114)&rdquo;</strong>라는 이름 그대로, 갑작스러운 상황에서
-              헤매지 않도록 돕는 무료 서비스 묶음입니다. 회원가입 없이 누구나
+              헤매지 않도록 돕는 무료 생활 안내입니다. 회원가입 없이 누구나
               바로 이용할 수 있습니다.
             </p>
             <ul className="list-disc pl-5 mt-2 space-y-1 text-[#a0a0b0]">
@@ -103,21 +97,10 @@ export default function AboutPage() {
                 </Link>
               </li>
               <li>
-                <Link href="/tools" className="text-white font-bold hover:text-accent">
-                  생활 도구
+                <Link href="/tools/cctv" className="text-white font-bold hover:text-accent">
+                  전국 도로 CCTV
                 </Link>{" "}
-                — 인스타 언팔 확인, 카톡 대화 분석, PDF·이미지 도구 등{" "}
-                {tools.length}종. 파일이 서버로 전송되지 않는 브라우저 완결형
-              </li>
-              <li>
-                <Link
-                  href="/quiz-home"
-                  className="text-white font-bold hover:text-accent"
-                >
-                  상식왕 퀴즈
-                </Link>{" "}
-                — {categories.length}개 카테고리 {TOTAL_QUESTIONS.toLocaleString()}
-                문제와 실시간 퀴즈 배틀
+                — 폭설·폭우 때 고속도로·국도 상황을 실시간 영상으로 확인
               </li>
               <li>
                 <Link href="/en" className="text-white font-bold hover:text-accent">
@@ -251,7 +234,7 @@ export default function AboutPage() {
             이용약관
           </Link>
         </div>
-        <p className="text-xs text-[#606070]">© 2026 8282114 — 생활안내 · 계산기 · 도구 · 퀴즈</p>
+        <p className="text-xs text-[#606070]">© 2026 8282114 — 급할 때 생활 안내</p>
       </footer>
     </div>
   );

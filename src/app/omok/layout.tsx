@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { robotsFor } from "@/lib/indexPolicy";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import { QUIZ_URL, SITE_NAME } from "@/lib/site";
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
   description:
     "설치도 가입도 없이 브라우저에서 친구와 1:1 오목을 둡니다. 초대 링크를 보내면 상대가 누르는 즉시 시작하고, 15줄 정규 판에 자유룰로 진행합니다.",
   alternates: { canonical: url },
+  robots: robotsFor("/omok"),
   openGraph: {
     title: "1:1 온라인 오목 - 가입 없이 친구와 바로 두기",
     description:

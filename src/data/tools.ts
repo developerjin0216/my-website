@@ -2,6 +2,7 @@
 // 새 도구 추가: 여기에 엔트리 + app/tools/<id>/layout.tsx(ToolShell) + page.tsx(클라이언트 UI)
 
 import type { Metadata } from "next";
+import { robotsFor } from "@/lib/indexPolicy";
 import { TOOLS_URL, TOOLS_SITE_NAME } from "@/lib/site";
 
 export interface ToolFaq {
@@ -814,6 +815,7 @@ export function buildToolMetadata(id: string): Metadata {
     description: tool.metaDescription,
     keywords: tool.keywords,
     alternates: { canonical: url },
+    robots: robotsFor(`/tools/${id}`),
     openGraph: {
       title: tool.metaTitle,
       description: tool.metaDescription,

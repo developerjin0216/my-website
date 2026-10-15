@@ -3,20 +3,20 @@ import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
 import CoupangGoldbox from "@/components/CoupangGoldbox";
-import { orderedHelpTopics } from "@/data/help";
+import { helpTopics, orderedHelpTopics } from "@/data/help";
 
 // 하루에 한 번 다시 만듭니다. 계절 글을 철에 맞춰 내리려면 '지금이 몇 월인지'를
 // 알아야 하는데, 정적 생성으로 굳히면 배포한 달에 값이 멈춥니다.
 export const revalidate = 86400;
 import { CALC_COUNT } from "@/data/calculators";
-import { ROOT_URL, CALC_URL, TOOLS_URL, INFO_SITE_NAME } from "@/lib/site";
+import { ROOT_URL, INFO_SITE_NAME } from "@/lib/site";
 
 // 루트(8282114.xyz) 홈 — 급할때 생활안내 허브
 // 도메인 자체가 브랜드: 8282(빨리빨리) + 114(안내)
 
 export const metadata: Metadata = {
   title: { absolute: "8282114 - 급할 때 바로 찾는 생활 긴급 안내" },
-  description: `카드 분실, 보이스피싱, 야간 병원·약국, 정전·가스 신고까지 — 급할 때 필요한 전화번호와 대처법을 한 곳에 모았습니다. 생활 계산기 ${CALC_COUNT}종과 상식 퀴즈도 함께 이용하세요.`,
+  description: `카드 분실, 보이스피싱, 야간 병원·약국, 병원비·임금체불까지 — 급할 때 필요한 전화번호와 대처법 ${helpTopics.length}편, 실업급여·퇴직금 등 생활 계산기 ${CALC_COUNT}종을 한 곳에 모았습니다.`,
   alternates: { canonical: "/" },
   openGraph: {
     title: "8282114 - 급할 때 바로 찾는 생활 긴급 안내",
@@ -113,93 +113,44 @@ export default function InfoHome() {
         <CoupangGoldbox className="mt-3" />
       </div>
 
-      {/* 자매 서비스 */}
+      {/* 돈·제도 — 급한 상황 다음에 오는 질문("얼마 받나", "얼마 나가나")에 답하는 곳.
+          퀴즈·MBTI·프롬프트 카드는 2026-10에 내렸습니다. 홈이 무엇을 하는 사이트인지
+          흐리고, 해당 섹션은 색인에서도 뺐기 때문입니다 (lib/indexPolicy.ts). */}
       <div className="px-5 pb-4 space-y-2.5">
-        <h2 className="text-lg font-bold">함께 쓰는 서비스</h2>
-        <a
-          href={`${CALC_URL}/calculators`}
+        <h2 className="text-lg font-bold">돈 문제·제도 확인</h2>
+        <Link
+          href="/calculators"
           className="flex items-center justify-between rounded-xl px-4 py-3 bg-card border border-[#2a3a5a] hover:border-[#27AE60] transition-colors"
         >
           <span className="text-sm text-[#a0a0b0]">
             <span aria-hidden="true">🧮</span>{" "}
-            <span className="font-semibold text-[#e8e8f0]">모두의 계산기</span>
-            {" — "}실수령액·자동차세·실업급여 등 {CALC_COUNT}종
+            <span className="font-semibold text-[#e8e8f0]">생활 계산기</span>
+            {" — "}실업급여·퇴직금·실수령액·기준 중위소득 등 {CALC_COUNT}종
           </span>
           <span className="text-[#27AE60] text-sm shrink-0 ml-2">→</span>
-        </a>
-        <a
-          href={`${TOOLS_URL}/tools`}
-          className="flex items-center justify-between rounded-xl px-4 py-3 bg-card border border-[#2a3a5a] hover:border-[#E1306C] transition-colors"
-        >
-          <span className="text-sm text-[#a0a0b0]">
-            <span aria-hidden="true">🧰</span>{" "}
-            <span className="font-semibold text-[#e8e8f0]">모두의 도구</span>
-            {" — "}인스타 언팔 확인 (로그인 없이)
-          </span>
-          <span className="text-[#E1306C] text-sm shrink-0 ml-2">→</span>
-        </a>
-        {/* 통합 전에는 QUIZ_URL(서브도메인)을 가리켰는데, 단일 도메인이 되면서
-            루트 홈 자기 자신을 링크하게 됐습니다. 실제 경로로 교체합니다. */}
+        </Link>
         <Link
-          href="/quiz-home"
+          href="/guides"
           className="flex items-center justify-between rounded-xl px-4 py-3 bg-card border border-[#2a3a5a] hover:border-accent transition-colors"
         >
           <span className="text-sm text-[#a0a0b0]">
-            <span aria-hidden="true">🏆</span>{" "}
-            <span className="font-semibold text-[#e8e8f0]">상식왕 퀴즈</span>
-            {" — "}11개 카테고리 1,100여 문제·실시간 배틀
+            <span aria-hidden="true">📘</span>{" "}
+            <span className="font-semibold text-[#e8e8f0]">제도 가이드</span>
+            {" — "}실업급여·퇴직금·4대보험이 어떻게 정해지는지
           </span>
           <span className="text-accent text-sm shrink-0 ml-2">→</span>
         </Link>
-      </div>
-
-      {/* AI 프롬프트 — 검색 수요가 있고 우리가 직접 쓴 콘텐츠라 앞자리에 둡니다 */}
-      <div className="px-5 pb-4">
         <Link
-          href="/prompts"
-          className="block rounded-2xl p-4 transition-transform active:scale-[0.99] bg-gradient-to-br from-[#5B4B8A] to-[#8E7CC3] border border-[#a99ad6]"
+          href="/tools/cctv"
+          className="flex items-center justify-between rounded-xl px-4 py-3 bg-card border border-[#2a3a5a] hover:border-[#5B86E5] transition-colors"
         >
-          <p className="text-base font-bold text-white">🤖 AI 프롬프트 모음</p>
-          <p className="text-[11px] text-white/80 mt-1">
-            복사해서 바로 쓰는 챗GPT 질문 37개 — 재미·자기분석·일·공부
-          </p>
+          <span className="text-sm text-[#a0a0b0]">
+            <span aria-hidden="true">📹</span>{" "}
+            <span className="font-semibold text-[#e8e8f0]">전국 도로 CCTV</span>
+            {" — "}폭설·폭우 때 가는 길 상황을 실시간 영상으로
+          </span>
+          <span className="text-[#5B86E5] text-sm shrink-0 ml-2">→</span>
         </Link>
-      </div>
-
-      {/* 놀거리 — 통합 전에는 퀴즈 서브도메인 홈에만 있어서 루트에서 닿지 않았습니다.
-          내부 링크가 없으면 크롤러도 사람도 이 페이지들에 도달하지 못합니다. */}
-      <div className="px-5 pb-4">
-        <h2 className="text-lg font-bold mb-2.5">쉬어가기</h2>
-        <div className="grid grid-cols-2 gap-2.5">
-          <Link
-            href="/omok"
-            className="rounded-xl p-3.5 bg-gradient-to-br from-[#8B5E34] to-[#c9a063] border border-[#d8bb8a]"
-          >
-            <p className="text-sm font-bold text-white">⚫ 1:1 오목</p>
-            <p className="text-[11px] text-white/80 mt-1">초대 코드로 바로 대국</p>
-          </Link>
-          <Link
-            href="/escape"
-            className="rounded-xl p-3.5 bg-gradient-to-br from-[#2C3E50] to-[#4A6572] border border-[#5a6a7a]"
-          >
-            <p className="text-sm font-bold text-white">🔦 웹 방탈출</p>
-            <p className="text-[11px] text-white/70 mt-1">한빛사진관 추리</p>
-          </Link>
-          <Link
-            href="/mbti"
-            className="rounded-xl p-3.5 bg-gradient-to-br from-[#9B59B6] to-[#5B86E5]"
-          >
-            <p className="text-sm font-bold text-white">🔮 MBTI 백과</p>
-            <p className="text-[11px] text-white/70 mt-1">16유형 특징·궁합</p>
-          </Link>
-          <Link
-            href="/meme"
-            className="rounded-xl p-3.5 bg-gradient-to-br from-[#E67E22] to-[#E74C3C]"
-          >
-            <p className="text-sm font-bold text-white">😂 밈 사전</p>
-            <p className="text-[11px] text-white/70 mt-1">요즘 말 뜻·유래</p>
-          </Link>
-        </div>
       </div>
 
       {/* SEO 콘텐츠 — 크롤러용 정적 텍스트 */}
@@ -216,9 +167,10 @@ export default function InfoHome() {
           </p>
           <ul className="text-xs text-[#a0a0b0] leading-relaxed space-y-1.5">
             <li>• 긴급 전화번호 총정리 — 신고·상담·민원 번호 한 페이지에</li>
-            <li>• 상황별 대처 안내 — 분실·사기·응급·시설 고장 시 행동 순서</li>
-            <li>• 생활 계산기 {CALC_COUNT}종 — 연봉 실수령액부터 전기요금까지</li>
-            <li>• 상식왕 퀴즈 — 1,100여 문제 무료 상식 퀴즈</li>
+            <li>• 상황별 대처 안내 {helpTopics.length}편 — 분실·사기·응급·체불·병원비</li>
+            <li>• 생활 계산기 {CALC_COUNT}종 — 실업급여·퇴직금부터 전기요금까지</li>
+            <li>• 전국 도로 CCTV — 고속도로·국도 실시간 영상</li>
+            <li>• English guides — 한국에 사는 외국인을 위한 같은 안내의 영문판</li>
           </ul>
         </div>
       </section>
@@ -252,6 +204,26 @@ export default function InfoHome() {
             🌐 English
           </Link>
         </div>
+        {/* 검색 색인에서는 뺐지만 페이지는 그대로 열립니다. 쓰던 사람이 찾아갈 길만 남깁니다. */}
+        <p className="text-[11px] text-[#606070] mb-2">
+          쉬어가기:{" "}
+          {[
+            ["/quiz-home", "상식 퀴즈"],
+            ["/omok", "오목"],
+            ["/escape", "방탈출"],
+            ["/mbti", "MBTI"],
+            ["/meme", "밈 사전"],
+            ["/prompts", "AI 프롬프트"],
+            ["/tools", "생활 도구"],
+          ].map(([href, label], i) => (
+            <span key={href}>
+              {i > 0 && " · "}
+              <Link href={href} className="hover:text-[#a0a0b0]">
+                {label}
+              </Link>
+            </span>
+          ))}
+        </p>
         <p className="text-xs text-[#606070]">
           © 2026 8282114 — 기관 번호·제도는 변경될 수 있으니 참고용으로
           활용하세요.

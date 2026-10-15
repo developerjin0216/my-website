@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { robotsFor } from "@/lib/indexPolicy";
 import Link from "next/link";
 import { categories, quizzes } from "@/data/quizData";
 
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
   description:
     `${categories.length}개 카테고리 ${TOTAL_QUESTIONS.toLocaleString()}문제 중 랜덤 10문제에 도전하세요. 15초 제한 시간, 힌트 기능, 오답 해설까지 제공합니다.`,
   alternates: { canonical: `${QUIZ_URL}/quiz` },
+  robots: robotsFor("/quiz"),
 };
 
 // 퀴즈 본체는 클라이언트 컴포넌트라 크롤러에 보이지 않으므로,

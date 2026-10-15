@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { robotsFor } from "@/lib/indexPolicy";
 import { calcResidentialBill } from "@/utils/electricity";
 import { calcMonthlyDeductions } from "@/utils/salary";
 import { CALC_URL, CALC_SITE_NAME } from "@/lib/site";
@@ -1622,6 +1623,7 @@ export function buildCalcMetadata(id: string): Metadata {
     description: calc.metaDescription,
     keywords: calc.keywords,
     alternates: { canonical: url },
+    robots: robotsFor(`/calculators/${id}`),
     openGraph: {
       title: calc.metaTitle,
       description: calc.metaDescription,

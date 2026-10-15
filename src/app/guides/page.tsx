@@ -3,7 +3,7 @@ import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import { guides } from "@/data/guides";
 import { getCalc } from "@/data/calculators";
-import { CALC_URL, QUIZ_URL, SPLIT } from "@/lib/site";
+import { CALC_URL } from "@/lib/site";
 
 // 허브 페이지가 링크 목록만으로 끝나면 색인되지 않습니다. 실제로 이 페이지는
 // 사람이 읽는 글자가 806자뿐이라 "Crawled - currently not indexed" 후보였습니다.
@@ -202,12 +202,12 @@ export default function GuidesPage() {
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
         <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-2">
-          <a
-            href={SPLIT ? QUIZ_URL : "/"}
+          <Link
+            href="/help"
             className="text-xs text-[#606070] hover:text-[#a0a0b0]"
           >
-            상식왕 퀴즈
-          </a>
+            급할 때 대처법
+          </Link>
           <span className="text-xs text-[#606070]">|</span>
           <Link
             href="/about"
