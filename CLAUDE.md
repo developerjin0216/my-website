@@ -33,6 +33,9 @@ node scripts/seo-audit.mjs http://localhost:3131  # a local `next start`
 
 # CCTV tool end-to-end check against production (key in bundle → ITS → m3u8)
 node scripts/cctv-check.mjs
+
+# Re-verify every /help case against its source (run from a Korean IP; needs pdftotext)
+node --experimental-strip-types scripts/check-help-cases.mjs
 ```
 
 Verifying host-dependent behaviour locally (sitemap, robots, legacy redirects):
@@ -183,6 +186,29 @@ Consequences to keep in mind:
 - Fetch 고속 and 국도 separately and render as each lands; waiting for both leaves large
   regions blank for seconds.
 - Stream tokens last 120 minutes, so a page left open needs a refresh.
+
+### Real cases on /help, never invented experience (`data/helpCases.ts`)
+
+The user asked for "personal experience" reviews to make pages feel less AI-written. Fabricated
+first-person stories were refused: readers act on these pages (병원비, 체불, 보이스피싱), and
+invented experience is exactly what Google and AdSense penalise. Instead, 14 help topics carry
+**"실제로 있었던 일"** — cases published by 한국소비자원 (소비자24 피해구제 사례), 금감원
+(보이스피싱지킴이, 분쟁사례 보도자료), 국토부, 대한법률구조공단, 정책브리핑/K-공감, and MBC.
+
+- Every fact must be in the source. Each case keeps `evidence` — verbatim excerpts, not rendered.
+  `scripts/check-help-cases.mjs` re-fetches each source (금감원 hwpx/pdf attachments included) and
+  fails if an excerpt is missing or if any number on screen is absent from the evidence
+  ("1,200만 원" ↔ "12백만원" are compared as amounts). It was mutation-tested: a changed amount
+  and a fabricated excerpt are both caught.
+- `takeaway` may only restate advice the source itself gives. No added lessons.
+- Don't copy rate tables out of old cases (e.g. 2018 항공 지연 배상률) — they may be superseded.
+- Topics without a good public case get no block. 13 of 27 have none; leave them.
+- `lib/helpCases.ts` validates structure at build (unknown topic id, <2 evidence → build fails).
+- Dates: take korea.kr dates from `article:published_time`, not the first date on the page —
+  the sidebar showed 2026 on a 2022 release.
+- Case 5316 (소비자원) says a contract's own refund formula can't be overridden by
+  소비자분쟁해결기준 in the relief process; `/help/gym-refund` states such clauses are simply
+  "무효". 5309 supports the 환불불가 part; the 위약금-percentage part is less settled.
 
 ### Counts come from the data, never a typed number
 

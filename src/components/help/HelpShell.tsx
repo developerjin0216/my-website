@@ -2,6 +2,8 @@ import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
 import { getHelp } from "@/data/help";
+import { CASES_CHECKED } from "@/data/helpCases";
+import { casesFor } from "@/lib/helpCases";
 import { ROOT_URL, INFO_SITE_NAME } from "@/lib/site";
 
 // 급할때 생활안내 공용 셸 (서버 컴포넌트)
@@ -15,6 +17,7 @@ export default function HelpShell({
 }) {
   const topic = getHelp(id);
   const url = `${ROOT_URL}/help/${id}`;
+  const cases = casesFor(id);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -77,6 +80,62 @@ export default function HelpShell({
       </header>
 
       <main className="px-5 py-5 flex-1 space-y-4">{children}</main>
+
+      {/* 실제로 있었던 일 — 공공기관·언론이 공개한 사례만. 원문 대조는
+          scripts/check-help-cases.mjs. 사례가 없는 주제는 이 블록을 그리지 않습니다. */}
+      {cases.length > 0 && (
+        <section className="px-5 pb-4">
+          <div className="bg-card rounded-2xl p-5">
+            <h2 className="text-base font-bold text-accent mb-1">
+              📂 실제로 있었던 일
+            </h2>
+            <p className="text-[11px] text-[#606070] leading-relaxed mb-4 break-keep">
+              공공기관과 언론이 공개한 실제 사례입니다. 원문에 있는 사실만
+              옮겼고, 출처를 누르면 원문을 볼 수 있습니다. 비슷한 상황이라도
+              사정에 따라 결과는 달라질 수 있습니다.
+            </p>
+            <div className="space-y-5">
+              {cases.map((c) => (
+                <article
+                  key={c.source.url + c.title}
+                  className="border-l-2 border-[#2a3a5a] pl-3"
+                >
+                  <h3 className="text-sm font-semibold leading-snug break-keep">
+                    {c.title}
+                  </h3>
+                  <p className="text-xs text-[#a0a0b0] leading-relaxed mt-2 break-keep">
+                    {c.what}
+                  </p>
+                  <p className="text-xs text-[#c8d0e0] leading-relaxed mt-2 break-keep">
+                    <span className="font-semibold text-accent">결과 </span>
+                    {c.result}
+                  </p>
+                  {c.takeaway && (
+                    <p className="text-xs text-[#c8d0e0] leading-relaxed mt-2 break-keep">
+                      <span className="font-semibold text-[#8fa8d0]">챙길 것 </span>
+                      {c.takeaway}
+                    </p>
+                  )}
+                  <p className="text-[11px] text-[#606070] mt-2 break-keep">
+                    {c.when && <>{c.when} · </>}
+                    <a
+                      href={c.source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-accent"
+                    >
+                      {c.source.org} {c.source.title} ↗
+                    </a>
+                  </p>
+                </article>
+              ))}
+            </div>
+            <p className="text-[11px] text-[#606070] mt-4">
+              사례 원문 대조: {CASES_CHECKED}
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* FAQ — 실제로 많이 묻는 질문 (FAQPage 구조화 데이터와 1:1) */}
       {topic.faq && topic.faq.length > 0 && (
