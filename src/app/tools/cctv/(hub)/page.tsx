@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
+import { HIGHWAYS } from "@/data/cctvHighwayList";
 import HlsPlayer from "@/components/tools/HlsPlayer";
 import {
   REGIONS,
@@ -130,6 +132,22 @@ export default function CctvPage() {
         <p className="text-[11px] text-[#606070] mt-2">
           {findRegion(regionId)?.hint}
         </p>
+      </div>
+
+      {/* 노선별 페이지 — 귀성길·폭설 때는 지역보다 '내가 탈 고속도로'로 찾습니다 */}
+      <div className="bg-card rounded-2xl p-4">
+        <p className="text-xs text-[#a0a0b0] mb-2">고속도로별로 보기</p>
+        <div className="flex flex-wrap gap-1.5">
+          {HIGHWAYS.map((h) => (
+            <Link
+              key={h.slug}
+              href={`/tools/cctv/${h.slug}`}
+              className="text-xs rounded-full px-3 py-1.5 border border-[#2a3a5a] bg-[#16213e] text-[#c0c8d8] hover:border-accent"
+            >
+              {h.name.replace(/고속도로$/, "")}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {picked && (

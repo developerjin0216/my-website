@@ -102,7 +102,13 @@ export default function CctvMap({
     layerRef.current.forEach((dot, i) => {
       const cam = cams[i];
       if (!cam) return;
-      const on = picked?.url === cam.url;
+      // 영상 주소가 아니라 이름·좌표로 비교합니다. 노선 페이지는 누르기 전까지
+      // 주소가 비어 있어서, 주소로 비교하면 모든 점이 강조됩니다.
+      const on =
+        !!picked &&
+        picked.name === cam.name &&
+        picked.lat === cam.lat &&
+        picked.lng === cam.lng;
       dot.setStyle({
         radius: on ? 8 : 4,
         fillColor: on ? "#ffd700" : ROAD_COLOR[cam.road],

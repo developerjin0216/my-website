@@ -12,6 +12,7 @@ import { viralCategories } from "@/data/promptsViral";
 import { enGuides } from "@/data/guidesEn";
 import { slangEntries } from "@/data/slangEn";
 import { isIndexableUrl } from "@/lib/indexPolicy";
+import { HIGHWAYS, SNAPSHOT_DATE } from "@/data/cctvHighways";
 import {
   ROOT_URL,
   ROOT_HOST,
@@ -169,6 +170,13 @@ function toolsEntries(): Entry[] {
       url: `${TOOLS_URL}/tools/${t.id}`,
       changefreq: "monthly" as const,
       priority: 0.9,
+    })),
+    // 고속도로 노선별 CCTV — lastmod 는 지점 스냅샷을 받은 날
+    ...HIGHWAYS.map((h) => ({
+      url: `${TOOLS_URL}/tools/cctv/${h.slug}`,
+      lastmod: SNAPSHOT_DATE,
+      changefreq: "monthly" as const,
+      priority: 0.8,
     })),
   ];
 }

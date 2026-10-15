@@ -22,6 +22,7 @@ node server/test/omok-directions.test.js # vertical / both diagonals
 # Data generators — never hand-edit their output files
 node scripts/gen-prompts.mjs <workflow-output.json>       # → src/data/prompts.ts
 node scripts/gen-viral-prompts.mjs <workflow-output.json> # → src/data/promptsViral.ts
+node scripts/gen-cctv-highways.mjs                        # → src/data/cctvHighways.json (run in Korea; ITS key in .env.local)
 
 # Push 사이트맵 URLs to IndexNow (Bing·Naver·Yandex; Google does NOT participate)
 node scripts/indexnow.mjs --dry   # inspect targets
@@ -106,6 +107,7 @@ Indexed sections first; the rest are live but noindexed.
 | `/calculators/<id>` | yes, except `bmi`·`calorie` | `data/calculators.ts` | Server layout + client page |
 | `/en`, `/en/<id>` | yes | `data/guidesEn.ts` | English emergency guides for foreigners in Korea |
 | `/tools/cctv` | yes | `data/cctvRegions.ts` | **The only feature with an external dependency.** Browser calls ITS directly — see below |
+| `/tools/cctv/<road>` | yes | `data/cctvHighways.json` (generated) | 20 expressway pages for "OO고속도로 cctv" searches (snow, 명절) |
 | `/en/slang/<id>` | no | `slangEn.ts` | 53 per-item pages — the pattern that already failed for memes |
 | `/quiz-bank/<cat>/<page>` | no | `lib/quizBank.ts` over `data/categories/` | Paginated Q&A archive |
 | `/quiz`, `/quiz/<cat>`, `/quiz-home` | no | `data/quizData.ts` | 11 categories, 1,168 questions (맞춤법 has 168, the rest 100) |
@@ -186,6 +188,18 @@ Consequences to keep in mind:
 - Fetch 고속 and 국도 separately and render as each lands; waiting for both leaves large
   regions blank for seconds.
 - Stream tokens last 120 minutes, so a page left open needs a refresh.
+
+**Highway pages** (`/tools/cctv/<road>`) render the camera list on the server from a committed
+snapshot (`scripts/gen-cctv-highways.mjs` → names + coordinates only; ITS prefixes every name with
+`[경부선]`, which is how cameras are grouped). Nothing calls ITS on page load. Clicking a camera
+queries ±0.003° around it (≈1 s, 1–2 results) for a fresh stream URL.
+- The hub lives in the route group `tools/cctv/(hub)/` so its `ToolShell` layout (h1, intro,
+  FAQ) does not wrap the 20 highway pages — otherwise each would get two h1s and the same prose.
+- With one result, ITS JSON returns `data` as an **object, not an array**. Normalise it.
+- `data/cctvHighwayList.ts` holds the route list without the 173 KB JSON so client components
+  (the hub) can link to highways without bundling the snapshot. Import the JSON only server-side.
+- Re-run the generator every few months; `data/cctvHighways.ts` fails the build if a configured
+  line comes back nearly empty (renamed by ITS).
 
 ### Real cases on /help, never invented experience (`data/helpCases.ts`)
 
