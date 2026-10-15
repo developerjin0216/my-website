@@ -10,7 +10,13 @@ export async function GET(request: NextRequest) {
     return Response.json({ products: [] }, { status: 400 });
   }
 
-  const products = await searchProducts(keyword, 4);
+  // must=알카라인,9V — 상품명에 반드시 있어야 하는 단어 (쉼표 구분)
+  const must = (request.nextUrl.searchParams.get("must") ?? "")
+    .split(",")
+    .map((m) => m.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+  const products = await searchProducts(keyword, 4, must);
   return Response.json(
     { products },
     {

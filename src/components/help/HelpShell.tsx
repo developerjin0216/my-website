@@ -1,8 +1,10 @@
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
+import CoupangProducts from "@/components/CoupangProducts";
 import { getHelp } from "@/data/help";
 import { CASES_CHECKED } from "@/data/helpCases";
+import { helpGear, NO_SHOPPING } from "@/data/helpGear";
 import { casesFor } from "@/lib/helpCases";
 import { ROOT_URL, INFO_SITE_NAME } from "@/lib/site";
 
@@ -18,6 +20,7 @@ export default function HelpShell({
   const topic = getHelp(id);
   const url = `${ROOT_URL}/help/${id}`;
   const cases = casesFor(id);
+  const gear = helpGear[id];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -213,10 +216,24 @@ export default function HelpShell({
         </div>
       </section>
 
-      {/* 광고·제휴는 콘텐츠가 끝난 뒤에 — 애드센스 심사 대비 배치 */}
+      {/* 광고·제휴는 콘텐츠가 끝난 뒤에 — 애드센스 심사 대비 배치.
+          쇼핑 블록은 페이지당 하나: 상황에 맞는 물건이 정해진 주제는 그 상품만(data/helpGear.ts),
+          위기 상황 주제는 없음, 나머지는 범용 배너. */}
       <div className="px-5 pb-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
-        <CoupangBanner className="mt-4" />
+        {gear ? (
+          <div className="mt-4">
+            <CoupangProducts
+              keywords={gear.map((g) => g.keyword)}
+              notes={gear.map((g) => g.note)}
+              must={gear.map((g) => g.must)}
+              title="🧰 이 상황에 미리 있으면 좋은 것"
+              placement={`help_gear_${id}`}
+            />
+          </div>
+        ) : (
+          !NO_SHOPPING.has(id) && <CoupangBanner className="mt-4" />
+        )}
       </div>
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">

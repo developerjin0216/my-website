@@ -16,9 +16,18 @@ interface Product {
 export default function CoupangProducts({
   keywords,
   title = "🛒 관련 상품 최저가 비교",
+  notes,
+  must,
+  placement = "coupang_products",
 }: {
   keywords: string[];
   title?: string;
+  /** 탭별 설명 — 왜 이 상황에 이 물건인지 (keywords 와 같은 순서) */
+  notes?: string[];
+  /** 탭별 필수 단어 — 상품명에 전부 있어야 표시 (예: ["알카라인"]) */
+  must?: (string[] | undefined)[];
+  /** GA4 affiliate_click 의 placement — 어느 페이지 블록이 팔리는지 구분 */
+  placement?: string;
 }) {
   const [selected, setSelected] = useState(0);
   const [products, setProducts] = useState<Product[] | null>(null);
@@ -29,7 +38,8 @@ export default function CoupangProducts({
     const t = setTimeout(async () => {
       try {
         const res = await fetch(
-          `/api/coupang/products?keyword=${encodeURIComponent(keywords[selected])}`
+          `/api/coupang/products?keyword=${encodeURIComponent(keywords[selected])}` +
+            (must?.[selected]?.length ? `&must=${encodeURIComponent(must[selected]!.join(","))}` : "")
         );
         const json = await res.json();
         if (cancelled) return;
@@ -49,14 +59,14 @@ export default function CoupangProducts({
       cancelled = true;
       clearTimeout(t);
     };
-  }, [selected, keywords]);
+  }, [selected, keywords, must]);
 
   if (!available) return null;
 
   return (
     <div className="bg-card rounded-2xl p-5">
       <h2 className="text-base font-bold text-accent mb-3">{title}</h2>
-      <div className="flex flex-wrap gap-1.5 mb-4">
+      <div className={`flex flex-wrap gap-1.5 ${notes?.[selected] ? "mb-2" : "mb-4"} ${keywords.length > 1 ? "" : "hidden"}`}>
         {keywords.map((k, i) => (
           <button
             key={k}
@@ -72,6 +82,15 @@ export default function CoupangProducts({
           </button>
         ))}
       </div>
+
+      {notes?.[selected] && (
+        <p className="text-xs text-[#a0a0b0] leading-relaxed mb-4 break-keep">
+          {keywords.length === 1 && (
+            <strong className="text-[#e8e8f0]">{keywords[0]} — </strong>
+          )}
+          {notes[selected]}
+        </p>
+      )}
 
       {products === null ? (
         <p className="text-xs text-[#606070] py-4 text-center">불러오는 중…</p>
@@ -91,7 +110,7 @@ export default function CoupangProducts({
               onClick={() =>
                 trackAffiliateClick({
                   network: "coupang",
-                  placement: "coupang_products",
+                  placement,
                   label: `${keywords[selected]} / ${p.name}`,
                 })
               }
