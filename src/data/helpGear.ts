@@ -59,6 +59,16 @@ export const helpGear: Record<string, GearItem[]> = {
       note: "단수 안내가 나오면 마실 물부터 확보해야 합니다.",
     },
   ],
+  "frozen-pipes": [
+    {
+      keyword: "수도계량기 보온덮개",
+      note: "본문의 '채우기' — 계량기함을 마른 보온재로 채우고 뚜껑을 덮어 찬 공기를 막습니다. 서울시는 아파트·연립주택에 보온덮개를 나눠 주기도 합니다.",
+    },
+    {
+      keyword: "배관 보온재",
+      note: "노출된 수도관과 보일러 배관도 보온재로 감싸라는 것이 서울시 안내입니다.",
+    },
+  ],
   "natural-disaster": [
     {
       keyword: "재난 생존가방",
