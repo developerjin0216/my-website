@@ -9,6 +9,7 @@
 //
 //   node scripts/indexnow.mjs            # 사이트맵 전체 제출
 //   node scripts/indexnow.mjs --dry      # 실제 전송 없이 대상만 확인
+//   node scripts/indexnow.mjs /help/x /tools/cctv   # 바뀐 경로만 제출 (사이트맵에 있어야 함)
 //
 // 주의: 같은 URL을 하루에 몇 번씩 던지면 남용으로 간주될 수 있습니다.
 // 콘텐츠를 실제로 추가·수정한 뒤에만 돌리세요.
@@ -20,6 +21,8 @@ const SITEMAP = `https://${HOST}/sitemap.xml`;
 const ENDPOINT = "https://api.indexnow.org/indexnow";
 
 const dry = process.argv.includes("--dry");
+// 경로를 주면 그것만 보냅니다. 페이지 하나 추가했다고 사이트맵 전체를 다시 던지지 않기 위해서입니다.
+const only = process.argv.slice(2).filter((a) => a.startsWith("/"));
 
 function fail(msg) {
   console.error("✗ " + msg);
@@ -35,14 +38,24 @@ console.log(`✓ 키 파일 확인 ${KEY_LOCATION}`);
 
 // 2) 사이트맵에서 URL 수집
 const xml = await (await fetch(SITEMAP)).text();
-const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-if (urls.length === 0) fail("사이트맵에서 URL을 찾지 못했습니다");
+const all = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+if (all.length === 0) fail("사이트맵에서 URL을 찾지 못했습니다");
+let urls = all;
+if (only.length) {
+  // 사이트맵에 없는 경로는 noindex 이거나 오타입니다 — 보내지 않습니다
+  const wanted = only.map((p) => `https://${HOST}${p === "/" ? "" : p}`);
+  const missing = wanted.filter((u) => !all.includes(u));
+  if (missing.length) fail(`사이트맵에 없는 경로: ${missing.join(", ")}`);
+  urls = wanted;
+}
 
 // 다른 호스트가 섞이면 전체 요청이 거부됩니다
 const foreign = urls.filter((u) => new URL(u).host !== HOST);
 if (foreign.length) fail(`호스트가 다른 URL ${foreign.length}건: ${foreign[0]}`);
 
-console.log(`✓ 사이트맵 URL ${urls.length}건 수집`);
+console.log(
+  only.length ? `✓ 지정한 ${urls.length}건 (사이트맵에 있음)` : `✓ 사이트맵 URL ${urls.length}건 수집`
+);
 
 if (dry) {
   console.log("\n--dry 모드 — 전송하지 않습니다. 앞 5건:");

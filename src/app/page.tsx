@@ -147,7 +147,7 @@ export default function InfoHome() {
           <span className="text-sm text-[#a0a0b0]">
             <span aria-hidden="true">📹</span>{" "}
             <span className="font-semibold text-[#e8e8f0]">전국 도로 CCTV</span>
-            {" — "}폭설·폭우 때 가는 길 상황을 실시간 영상으로
+            {" — "}가는 길 도로와 국립공원 산 위 날씨를 실시간 영상으로
           </span>
           <span className="text-[#5B86E5] text-sm shrink-0 ml-2">→</span>
         </Link>

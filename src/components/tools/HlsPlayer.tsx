@@ -16,9 +16,12 @@ type State = "idle" | "loading" | "playing" | "error";
 export default function HlsPlayer({
   src,
   label,
+  failText = "영상을 불러오지 못했습니다. 주소가 만료됐을 수 있습니다.",
 }: {
   src: string;
   label: string;
+  /** 스트림을 못 받았을 때 문구 — 출처마다 흔한 원인이 다릅니다 */
+  failText?: string;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [state, setState] = useState<State>("idle");
@@ -56,8 +59,7 @@ export default function HlsPlayer({
           }
           hls = new Hls({ liveDurationInfinity: true, lowLatencyMode: false });
           hls.on(Hls.Events.ERROR, (_e: unknown, data: { fatal: boolean }) => {
-            if (data.fatal)
-              fail("영상을 불러오지 못했습니다. 주소가 만료됐을 수 있습니다.");
+            if (data.fatal) fail(failText);
           });
           hls.loadSource(src);
           hls.attachMedia(video);
@@ -78,7 +80,7 @@ export default function HlsPlayer({
       video.removeAttribute("src");
       video.load();
     };
-  }, [src]);
+  }, [src, failText]);
 
   return (
     <div>

@@ -171,6 +171,13 @@ function toolsEntries(): Entry[] {
       changefreq: "monthly" as const,
       priority: 0.9,
     })),
+    // 국립공원 CCTV — 목록은 data/cctvParks.ts (2026-10-20 공단 페이지 기준)
+    {
+      url: `${TOOLS_URL}/tools/cctv/national-parks`,
+      lastmod: "2026-10-20",
+      changefreq: "monthly" as const,
+      priority: 0.8,
+    },
     // 고속도로 노선별 CCTV — lastmod 는 지점 스냅샷을 받은 날
     ...HIGHWAYS.map((h) => ({
       url: `${TOOLS_URL}/tools/cctv/${h.slug}`,

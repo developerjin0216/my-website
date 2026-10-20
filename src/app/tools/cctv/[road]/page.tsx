@@ -156,7 +156,11 @@ export default async function HighwayPage({
             <Link href="/tools/cctv" className="underline hover:text-accent">
               전국 도로 CCTV
             </Link>
-            에서 지역을 고르세요.
+            에서 지역을 고르세요. 산 위 날씨는{" "}
+            <Link href="/tools/cctv/national-parks" className="underline hover:text-accent">
+              국립공원 실시간 CCTV
+            </Link>
+            에 있습니다.
           </p>
         </section>
 

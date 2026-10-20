@@ -26,7 +26,8 @@ node scripts/gen-cctv-highways.mjs                        # → src/data/cctvHig
 
 # Push 사이트맵 URLs to IndexNow (Bing·Naver·Yandex; Google does NOT participate)
 node scripts/indexnow.mjs --dry   # inspect targets
-node scripts/indexnow.mjs         # submit — only after content actually changed
+node scripts/indexnow.mjs         # submit all — only after content actually changed
+node scripts/indexnow.mjs /path …  # submit just these paths (must be in the sitemap)
 
 # Indexability audit — fetches every sitemap URL, reports blockers + body-text length
 node scripts/seo-audit.mjs                        # production
@@ -108,6 +109,7 @@ Indexed sections first; the rest are live but noindexed.
 | `/en`, `/en/<id>` | yes | `data/guidesEn.ts` | English emergency guides for foreigners in Korea |
 | `/tools/cctv` | yes | `data/cctvRegions.ts` | **The only feature with an external dependency.** Browser calls ITS directly — see below |
 | `/tools/cctv/<road>` | yes | `data/cctvHighways.json` (generated) | 20 expressway pages for "OO고속도로 cctv" searches (snow, 명절) |
+| `/tools/cctv/national-parks` | yes | `data/cctvParks.ts` (hand-copied) | 18 국립공원공단 cameras — 단풍·눈꽃·일출 season |
 | `/en/slang/<id>` | no | `slangEn.ts` | 53 per-item pages — the pattern that already failed for memes |
 | `/quiz-bank/<cat>/<page>` | no | `lib/quizBank.ts` over `data/categories/` | Paginated Q&A archive |
 | `/quiz`, `/quiz/<cat>`, `/quiz-home` | no | `data/quizData.ts` | 11 categories, 1,168 questions (맞춤법 has 168, the rest 100) |
@@ -200,6 +202,19 @@ queries ±0.003° around it (≈1 s, 1–2 results) for a fresh stream URL.
   (the hub) can link to highways without bundling the snapshot. Import the JSON only server-side.
 - Re-run the generator every few months; `data/cctvHighways.ts` fails the build if a configured
   line comes back nearly empty (renamed by ITS).
+
+**National-park cameras** (`/tools/cctv/national-parks`) come from 국립공원공단's own live page
+(`knps.or.kr … menuNo=8000168`), which plays `live.knps.or.kr/cctv/hls/<id>.m3u8`. No token, no
+expiry, `Access-Control-Allow-Origin: *`, and the site is 공공누리 제1유형 — so the browser plays
+them directly with an on-page credit. There is no API: the ids and spot names in `cctvParks.ts`
+were copied from that page on 2026-10-20; re-check it when cameras stop or new ones appear.
+Several are often offline (현장 기상·통신, per the 공단), so `ParkViewer` fetches each playlist on
+load and labels it 재생 중 / 잠시 멈춤. **Beach cameras were rejected:** 해양수산부's coastal
+service serves 4-second still JPEGs over plain http through its own internal proxy — not an
+interface offered to outsiders, and mixed content on an https page. No public API for tourist-spot
+video exists on data.go.kr (only installation inventories).
+The page's autumn trail-closure section uses 2022 (official) and 2025 (news) dates; replace it
+when 공단 announces the 2026 closures (usually early November).
 
 ### Real cases on /help, never invented experience (`data/helpCases.ts`)
 

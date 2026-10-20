@@ -134,6 +134,19 @@ export default function CctvPage() {
         </p>
       </div>
 
+      {/* 국립공원 — 단풍·눈꽃 때는 도로보다 '산 위 날씨'를 찾습니다 */}
+      <Link
+        href="/tools/cctv/national-parks"
+        className="flex items-center justify-between rounded-2xl px-4 py-3 bg-card border border-[#2a3a5a] hover:border-accent transition-colors"
+      >
+        <span className="text-sm text-[#a0a0b0]">
+          <span aria-hidden="true">⛰️</span>{" "}
+          <span className="font-semibold text-[#e8e8f0]">국립공원 실시간 CCTV</span>
+          {" — "}설악산·지리산·북한산·내장산 등
+        </span>
+        <span className="text-accent text-sm shrink-0 ml-2">→</span>
+      </Link>
+
       {/* 노선별 페이지 — 귀성길·폭설 때는 지역보다 '내가 탈 고속도로'로 찾습니다 */}
       <div className="bg-card rounded-2xl p-4">
         <p className="text-xs text-[#a0a0b0] mb-2">고속도로별로 보기</p>
