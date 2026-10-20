@@ -22,7 +22,19 @@ const ENDPOINT = "https://api.indexnow.org/indexnow";
 
 const dry = process.argv.includes("--dry");
 // 경로를 주면 그것만 보냅니다. 페이지 하나 추가했다고 사이트맵 전체를 다시 던지지 않기 위해서입니다.
-const only = process.argv.slice(2).filter((a) => a.startsWith("/"));
+// Git Bash(MSYS)는 "/로 시작하는 인자"를 "C:/Program Files/Git/…"로 바꿔 넘깁니다 — 되돌립니다.
+// 전체 URL(https://8282114.xyz/…)을 넘겨도 됩니다.
+function toPath(a) {
+  if (/^https?:\/\//.test(a)) return new URL(a).pathname.replace(/\/$/, "") || "/";
+  const msys = a.match(/^[A-Za-z]:[\\/].*?[\\/]Git([\\/].*)?$/);
+  if (msys) return (msys[1] || "/").replace(/\\/g, "/");
+  return a;
+}
+const only = process.argv
+  .slice(2)
+  .filter((a) => !a.startsWith("--"))
+  .map(toPath)
+  .filter((p) => p.startsWith("/"));
 
 function fail(msg) {
   console.error("✗ " + msg);
