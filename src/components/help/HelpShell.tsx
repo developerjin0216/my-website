@@ -1,10 +1,10 @@
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
-import CoupangBanner from "@/components/CoupangBanner";
+import CoupangGoldbox from "@/components/CoupangGoldbox";
 import CoupangProducts from "@/components/CoupangProducts";
 import { getHelp } from "@/data/help";
 import { CASES_CHECKED } from "@/data/helpCases";
-import { helpGear, NO_SHOPPING } from "@/data/helpGear";
+import { helpGear, NO_SHOPPING, OWN_SHOPPING } from "@/data/helpGear";
 import { casesFor } from "@/lib/helpCases";
 import { ROOT_URL, INFO_SITE_NAME } from "@/lib/site";
 
@@ -218,7 +218,10 @@ export default function HelpShell({
 
       {/* 광고·제휴는 콘텐츠가 끝난 뒤에 — 애드센스 심사 대비 배치.
           쇼핑 블록은 페이지당 하나: 상황에 맞는 물건이 정해진 주제는 그 상품만(data/helpGear.ts),
-          위기 상황 주제는 없음, 나머지는 범용 배너. */}
+          위기 상황 주제(NO_SHOPPING)와 본문이 자체 블록을 가진 주제(OWN_SHOPPING)는 없음,
+          나머지 11개는 프로모션 배너.
+          2026-10: 범용 캐러셀(CoupangBanner)에서 CoupangGoldbox 로 교체했습니다 —
+          캐러셀은 쿠팡 iframe 이라 클릭 추적이 아예 안 돼 성과를 알 수 없었습니다. */}
       <div className="px-5 pb-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
         {gear ? (
@@ -232,7 +235,10 @@ export default function HelpShell({
             />
           </div>
         ) : (
-          !NO_SHOPPING.has(id) && <CoupangBanner className="mt-4" />
+          !NO_SHOPPING.has(id) &&
+          !OWN_SHOPPING.has(id) && (
+            <CoupangGoldbox className="mt-4" placement="help_promo" />
+          )
         )}
       </div>
 

@@ -123,10 +123,18 @@ export const NO_SHOPPING = new Set([
   "secondhand-scam",
 ]);
 
+/** 페이지 본문이 자체 쇼핑 블록(CoupangProducts)을 이미 렌더하는 주제.
+ *  셸이 배너를 또 붙이면 한 페이지에 쇼핑 블록이 둘이 됩니다. */
+export const OWN_SHOPPING = new Set(["chuseok-gift", "supplement-guide"]);
+
 // 빌드 때 검사 — 오타 난 주제 id 는 조용히 무시되므로 여기서 막습니다.
 const known = new Set(helpTopics.map((t) => t.id));
-const bad = [...Object.keys(helpGear), ...NO_SHOPPING].filter((id) => !known.has(id));
-const both = Object.keys(helpGear).filter((id) => NO_SHOPPING.has(id));
+const bad = [...Object.keys(helpGear), ...NO_SHOPPING, ...OWN_SHOPPING].filter(
+  (id) => !known.has(id)
+);
+const both = Object.keys(helpGear).filter(
+  (id) => NO_SHOPPING.has(id) || OWN_SHOPPING.has(id)
+);
 if (bad.length || both.length) {
   throw new Error(
     `helpGear 검사 실패 — 없는 주제: ${bad.join(", ") || "없음"} / 양쪽에 다 있음: ${both.join(", ") || "없음"}`
