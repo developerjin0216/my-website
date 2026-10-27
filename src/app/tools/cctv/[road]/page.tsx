@@ -164,6 +164,38 @@ export default async function HighwayPage({
           </p>
         </section>
 
+        {/* 영상을 보고 나서 필요해지는 것들 — 노선 이름을 넣어 20개 페이지가
+            같은 문장을 복제하지 않게 합니다. */}
+        <section className="bg-card rounded-2xl p-5">
+          <h2 className="text-base font-bold text-accent mb-3">
+            {h.name}에서 일이 생겼다면
+          </h2>
+          <ul className="text-sm text-[#c0c8d8] leading-relaxed space-y-2 break-keep">
+            <li>
+              ·{" "}
+              <Link href="/help/car-accident" className="text-accent underline">
+                교통사고 직후 순서
+              </Link>{" "}
+              — 고속도로에서는 현장 보존보다 갓길 대피가 먼저입니다
+            </li>
+            <li>
+              ·{" "}
+              <Link href="/help/natural-disaster" className="text-accent underline">
+                대설·호우 행동요령
+              </Link>{" "}
+              — 통제된 구간에 진입하지 않는 것이 핵심입니다
+            </li>
+            <li>
+              ·{" "}
+              <Link href="/help/emergency-numbers" className="text-accent underline">
+                긴급 전화번호
+              </Link>{" "}
+              — 사고·구조 119, 경찰 112, 고속도로에서 차가 안 움직이면
+              한국도로공사 1588-2504
+            </li>
+          </ul>
+        </section>
+
         <p className="text-[11px] text-[#606070] leading-relaxed px-1 break-keep">
           지점에 따라 점검·장애로 재생되지 않을 수 있습니다. 영상 주소는 2시간이 지나면
           만료되니, 페이지를 오래 열어 두었다면 지점을 다시 눌러 주세요.

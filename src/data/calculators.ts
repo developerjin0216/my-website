@@ -329,7 +329,9 @@ export const calculators: CalculatorInfo[] = [
     metaDescription:
       "연봉·월급 실수령액 계산기. 국민연금, 건강보험, 장기요양, 고용보험 4대보험과 소득세·지방소득세를 공제한 월 실수령액을 바로 확인하세요. 연봉 3,000만~1억원 실수령액 표 제공.",
     keywords: ["연봉 실수령액", "월급 실수령액", "실수령액 계산기", "4대보험 계산", "세후 월급", "연봉 5000 실수령액"],
-    related: ["severance", "freelancer-tax", "overtime-pay"],
+    // card-deduction 은 salary 를 가리키는데 돌아오는 링크가 없어 클러스터에서 고아였습니다.
+    // 실수령액을 본 다음에 오는 질문이 "그럼 연말정산에서 얼마 돌려받나"라 맥락도 맞습니다.
+    related: ["severance", "freelancer-tax", "overtime-pay", "card-deduction"],
     seo: {
       heading: "연봉 실수령액 계산 방법",
       paragraphs: [

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import HelpShell from "@/components/help/HelpShell";
 import DecisionFlow from "@/components/help/DecisionFlow";
 import { Sec, GuideTable } from "@/components/guides/GuideShell";
@@ -157,6 +158,23 @@ export default function NaturalDisasterPage() {
             ["119 / 지역번호+120", "구조 요청 / 지자체 재난 민원"],
           ]}
         />
+        <p>
+          특보가 떴는데 이동해야 한다면, 가는 길 노면을 글이 아니라 영상으로 보는
+          편이 빠릅니다.{" "}
+          <Link href="/tools/cctv" className="text-accent underline">
+            전국 도로 CCTV
+          </Link>
+          는 국토교통부가 공개하는 고속도로·국도 카메라를 지역별로 모아 둔
+          페이지이고,{" "}
+          <Link href="/tools/cctv/gyeongbu" className="text-accent underline">
+            고속도로는 노선별
+          </Link>
+          로도 볼 수 있습니다. 산에 있다면{" "}
+          <Link href="/tools/cctv/national-parks" className="text-accent underline">
+            국립공원 CCTV
+          </Link>
+          로 정상 부근 상황을 확인하세요.
+        </p>
       </Sec>
 
       <Sec title="피해 후 도움받는 법 — 아는 만큼 받습니다">

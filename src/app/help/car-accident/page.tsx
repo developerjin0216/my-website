@@ -1,3 +1,4 @@
+import Link from "next/link";
 import HelpShell from "@/components/help/HelpShell";
 import DecisionFlow from "@/components/help/DecisionFlow";
 import { Sec, GuideTable } from "@/components/guides/GuideShell";
@@ -80,6 +81,18 @@ export default function CarAccidentPage() {
           뒤에 서 있는 것이 가장 위험합니다. 야간 고장 시에는 멀리서도 보이는
           적색 섬광·불꽃신호 표지가 규정이지만, 표지를 설치하러 도로를 걷는 것
           자체가 위험하니 대피가 우선입니다.
+        </p>
+        <p>
+          눈·비가 오는 날이라면 출발 전에 노면부터 보는 것이 2차사고를 피하는 가장
+          싼 방법입니다.{" "}
+          <Link href="/tools/cctv" className="text-accent underline">
+            전국 도로 CCTV
+          </Link>
+          에서 지역을, 고속도로는{" "}
+          <Link href="/tools/cctv/gyeongbu" className="text-accent underline">
+            노선별 페이지
+          </Link>
+          에서 지점을 골라 지금 영상을 볼 수 있습니다.
         </p>
       </Sec>
 

@@ -54,7 +54,10 @@ export default function HelpShell({
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: INFO_SITE_NAME, item: ROOT_URL },
-          { "@type": "ListItem", position: 2, name: topic.title, item: url },
+          // 2단계였습니다 — /help 허브가 빠져 있어 28편이 홈 바로 밑에 매달린 것처럼
+          // 보였고, 섹션이 하나의 묶음이라는 신호가 없었습니다.
+          { "@type": "ListItem", position: 2, name: "급할 때 생활안내", item: `${ROOT_URL}/help` },
+          { "@type": "ListItem", position: 3, name: topic.title, item: url },
         ],
       },
     ],
@@ -70,9 +73,25 @@ export default function HelpShell({
       />
 
       <header className="bg-header px-5 py-5">
-        <Link href="/" className="text-sm text-[#a0a0b0] hover:text-accent">
-          ← 급할때 생활안내
-        </Link>
+        {/* 홈이 아니라 /help 허브로 — 28편이 허브로 되돌아가는 길이 없어
+            크롤러에게도 사용자에게도 막다른 길이었습니다. 홈 링크는 푸터에 있습니다. */}
+        <div className="flex items-center justify-between gap-3">
+          <Link href="/help" className="text-sm text-[#a0a0b0] hover:text-accent">
+            ← 상황별 대처법 전체
+          </Link>
+          {/* 영문판이 있는 10편은 메타데이터로 hreflang 만 선언하고 화면에는 링크가
+              없었습니다. hreflang 은 신호일 뿐 크롤 경로가 아니라, /en 10편이
+              허브 말고는 들어오는 길이 거의 없는 상태였습니다. */}
+          {topic.enId && (
+            <Link
+              href={`/en/${topic.enId}`}
+              hrefLang="en"
+              className="shrink-0 text-xs rounded-full px-2.5 py-1 border border-[#2a3a5a] text-[#a0a0b0] hover:border-accent hover:text-accent"
+            >
+              English
+            </Link>
+          )}
+        </div>
         <h1 className="text-2xl font-bold text-accent mt-2">
           <span aria-hidden="true">{topic.icon}</span> {topic.title}
         </h1>
