@@ -1,3 +1,4 @@
+import Link from "next/link";
 import HelpShell from "@/components/help/HelpShell";
 import DecisionFlow from "@/components/help/DecisionFlow";
 import { Sec, GuideTable } from "@/components/guides/GuideShell";
@@ -73,6 +74,11 @@ export default function PrivacyLeakPage() {
         <p>❌ <strong className="text-[#e8e8f0]">&ldquo;보안 앱을 설치하라&rdquo;는 원격 지원 요구</strong> — 공공기관·금융사는 전화로 앱 설치를 시키지 않습니다.</p>
         <p>❌ <strong className="text-[#e8e8f0]">유출된 비밀번호 한 곳만 변경</strong> — 같은 비밀번호를 쓰는 모든 사이트가 이미 뚫린 것과 같습니다.</p>
         <p>❌ <strong className="text-[#e8e8f0]">신분증 사진을 채팅·메일에 계속 보관</strong> — 이번 기회에 보낸 기록을 삭제하고, 제출할 땐 &ldquo;OO 제출용&rdquo; 워터마크를 넣는 습관을 들이세요.</p>
+        <p>❌ <strong className="text-[#e8e8f0]">SNS 아이디·비밀번호를 외부 서비스에 입력</strong> — &ldquo;언팔한 사람 확인&rdquo;, &ldquo;내 팔로워 분석&rdquo; 같은 앱이 대표적입니다. 계정 정보를 통째로 넘기는 것이라 약관 위반으로 계정이 잠길 수 있고, 비밀번호가 제3자 서버에 남습니다. 같은 일은{" "}
+          <Link href="/tools/insta-follow-check" className="text-accent underline">
+            공식 내보내기 파일로 로그인 없이
+          </Link>{" "}
+          할 수 있습니다. 이미 입력한 적이 있다면 비밀번호 변경과 연동 해제를 먼저 하세요.</p>
       </Sec>
 
       <Sec title="피해가 이미 생겼다면">

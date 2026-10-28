@@ -33,8 +33,10 @@ export default async function Image() {
         <div style={{ fontSize: 38, color: "#c0c8d8", marginTop: 24 }}>
           인스타 언팔 확인 · 로그인 없이 · 서버 전송 없이
         </div>
+        {/* 2026-09 에 서브도메인을 접었는데 공유 카드에 tools.8282114.xyz 가
+            남아 있었습니다 — 지금은 열리지 않는 주소입니다. */}
         <div style={{ fontSize: 28, color: "#606070", marginTop: 18 }}>
-          tools.8282114.xyz
+          8282114.xyz
         </div>
       </div>
     ),

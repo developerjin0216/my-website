@@ -48,7 +48,15 @@ export default function ToolShell({
             name: TOOLS_SITE_NAME,
             item: TOOLS_URL,
           },
-          { "@type": "ListItem", position: 2, name: tool.name, item: url },
+          // 2단계였습니다 — /tools 허브가 빠져 도구가 루트 바로 밑에 매달린 것처럼
+          // 보였습니다. /help 와 같은 이유로 허브를 거치게 합니다.
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "모두의 도구",
+            item: `${ROOT_URL}/tools`,
+          },
+          { "@type": "ListItem", position: 3, name: tool.name, item: url },
         ],
       },
     ],
@@ -129,6 +137,31 @@ export default function ToolShell({
             ))}
           </div>
         </section>
+
+        {/* 이어서 볼 곳 — 도구 페이지가 막다른 길이면 크롤러도 사용자도 여기서 끝납니다 */}
+        {tool.related && tool.related.length > 0 && (
+          <section className="bg-card rounded-2xl p-5">
+            <h2 className="text-base font-bold text-accent mb-3">
+              이어서 보면 좋은 것
+            </h2>
+            <div className="space-y-2">
+              {tool.related.map((r) => (
+                <Link
+                  key={r.href}
+                  href={r.href}
+                  className="block rounded-xl px-4 py-3 bg-[#16213e] border border-[#2a3a5a] hover:border-accent transition-colors"
+                >
+                  <p className="text-sm font-semibold text-[#e8e8f0]">
+                    {r.label}
+                  </p>
+                  <p className="text-xs text-[#a0a0b0] mt-0.5 leading-relaxed break-keep">
+                    {r.desc}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         <AdBanner slot="XXXXXXXXXX" format="auto" />
 

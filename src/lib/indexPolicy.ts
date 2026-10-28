@@ -25,7 +25,17 @@ const NOINDEX_SECTIONS = [
 ];
 
 /** 위 섹션 안이지만 주제에 맞아 남기는 페이지 (폭설·폭우 때 도로 확인) */
-const INDEX_EXCEPTIONS = ["/tools/cctv"];
+const INDEX_EXCEPTIONS = [
+  "/tools/cctv",
+  // 2026-10-28 추가. /tools 를 통째로 뺀 이유는 단일 목적 도메인(ilovepdf 등)과
+  // 경쟁이 안 되는 범용 유틸리티였기 때문인데, 이 하나는 성격이 다릅니다.
+  // 시중 언팔 확인 앱은 인스타 비밀번호를 받아갑니다(Meta 약관 위반·계정 정지 위험).
+  // 이 도구는 공식 내보내기 파일을 브라우저에서만 분석해 그 위험 자체가 없고,
+  // "비번 넣는 앱 말고 안전하게 확인하는 법"은 /help/privacy-leak 과 같은 질문입니다.
+  // 위성 2개(insta-hidden·insta-dm)는 얇아서 색인에 넣지 않습니다 —
+  // 주제 밖 페이지를 벌크로 넣는 것이 2026-10 에 사이트를 끌어내린 바로 그 패턴입니다.
+  "/tools/insta-follow-check",
+];
 
 /** 남기는 섹션 안이지만 주제 밖인 개별 페이지 (건강 계산기) */
 const NOINDEX_PAGES = ["/calculators/bmi", "/calculators/calorie"];
