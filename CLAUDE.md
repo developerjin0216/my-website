@@ -50,7 +50,9 @@ curl -H "Host: quiz.8282114.xyz" localhost:3000/mbti   # expect 308 → 8282114.
 ## Architecture
 
 Korean-language personal site on **Next.js 16** (App Router) + a standalone **Socket.IO** server.
-**72 URLs are indexed; ~170 more stay live but noindexed** (see *Index scope* below).
+**95 URLs are in the sitemap; ~160 more stay live but noindexed** (see *Index scope* below).
+That 95 is the *policy* count — what Google has actually indexed is a separate number, read from
+Search Console, and the two have never matched here.
 Deployed on Vercel; realtime server on Render.
 
 ### Single domain — do not re-split
@@ -114,6 +116,7 @@ Indexed sections first; the rest are live but noindexed.
 | `/quiz-bank/<cat>/<page>` | no | `lib/quizBank.ts` over `data/categories/` | Paginated Q&A archive |
 | `/quiz`, `/quiz/<cat>`, `/quiz-home` | no | `data/quizData.ts` | 11 categories, 1,168 questions (맞춤법 has 168, the rest 100) |
 | `/mbti/<type>`, `/mbti/test` | no | `data/mbti.ts` | |
+| `/tools/insta-follow-check` | yes | `data/tools.ts` | The one indexed utility — see below |
 | `/tools/<id>` | no | `data/tools.ts` | Browser-only utilities (no upload) |
 | `/prompts/<cat>`, `/prompts/viral/<cat>` | no | `data/prompts.ts`, `promptsViral.ts` | 37 original + 41 sourced |
 | `/meme/<category>` | no | `data/memes.ts`, `memeUsage.ts` | |
@@ -132,8 +135,19 @@ Client-only routes (`/quiz`, `/omok`, `/battle`, `/mbti/test`) render nothing fo
 their `layout.tsx` must carry the server-rendered prose — that is the whole reason those layouts
 exist. Every page needs an `<h1>`; `/quiz` had none because its body is a client component.
 
-`/tools/*` (except CCTV) is noindexed now, so padding it is moot — they compete with
-single-purpose domains (ilovepdf, TinyPNG) anyway. Don't delete them; they still serve users.
+`/tools/*` is noindexed apart from two exceptions, so padding the rest is moot — they compete
+with single-purpose domains (ilovepdf, TinyPNG) anyway. Don't delete them; they still serve users.
+
+The exceptions are `/tools/cctv` and, since 2026-10-28, **`/tools/insta-follow-check`**. The
+Instagram one is not a generic utility: every competing 언팔 확인 app asks for the user's
+Instagram password, which violates Meta's terms and gets accounts locked. This tool reads the
+official export file in the browser instead, so the risk does not exist — and "how to check
+without handing over your password" is the same question as `/help/privacy-leak`, which is why
+it is not purely off-topic. It was deepened from 2,025 to 3,853 chars first, entirely from what
+`parser.ts` actually does (which filenames it reads, the 10-entry exclude list, why JSON not
+HTML) — no invented claims. The two thin satellites (`insta-hidden` 1,365, `insta-dm` 1,228)
+stay noindexed and are linked from it via `ToolInfo.related`. **Do not promote them too** —
+adding off-topic pages in bulk is exactly what dragged the site down in 2026-10.
 
 Shared layout prose is duplicated across every child route. `app/quiz/layout.tsx` wraps `/quiz`
 **and** all 11 `/quiz/<cat>` pages, so a long block there ships 12 identical copies and gives each
