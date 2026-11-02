@@ -34,8 +34,11 @@ export async function generateMetadata({
   const h = getHighway(road);
   if (!h) return {};
   const n = camsOf(h).length;
-  const title = `${h.name} 실시간 CCTV ${n}곳 - 눈·비 올 때 도로 상황 확인`;
-  const description = `${h.name}에 설치된 CCTV ${n}곳을 노선 순서대로 정리했습니다. 지점을 누르면 실시간 영상이 나옵니다. 폭설·폭우·명절 귀성길에 가는 길 상황을 미리 확인하세요.`;
+  // 제목에 '교통상황'을 넣는 이유: 이 질의로 1페이지를 차지한 글은 거의 전부
+  // 제목에 '교통상황'을 쓰는데 우리만 '도로 상황'이었습니다(2026-11 SERP 확인).
+  // 뜻은 같지만 사람들이 치는 말이 아니었습니다. 과장이 아니라 표현만 맞춘 것입니다.
+  const title = `${h.name} 교통상황 실시간 CCTV ${n}곳 - 영상으로 바로 확인`;
+  const description = `${h.name}에 설치된 CCTV ${n}곳을 노선 순서대로 정리했습니다. 지점을 누르면 실시간 영상이 바로 나옵니다 — 어디로 들어가는지 찾을 필요 없이 이 페이지에서 봅니다. 폭설·폭우·명절 귀성길에 가는 길 교통상황과 노면을 미리 확인하세요.`;
   const url = `${ROOT_URL}${pathOf(h.slug)}`;
   return {
     title: { absolute: title },
