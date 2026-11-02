@@ -217,6 +217,38 @@ export default function AboutPage() {
               이용해 주세요.
             </p>
           </section>
+
+          {/* 2026-11: 홈 푸터에 있던 '쉬어가기' 줄을 여기로 옮겼습니다.
+              홈이 긴급안내 사이트인 동시에 퀴즈·MBTI·밈 사이트라고 선언하고 있어서,
+              주제를 좁힌 2026-10 결정과 어긋났습니다. 페이지는 그대로 열리므로
+              쓰던 사람이 찾아갈 길은 여기 남깁니다(원래 의도 유지). */}
+          <section className="bg-card rounded-2xl p-5">
+            <h2 className="text-base font-bold text-accent mb-2">
+              예전에 만든 것들
+            </h2>
+            <p className="text-sm text-[#a0a0b0] leading-relaxed break-keep mb-2">
+              사이트 주제를 &lsquo;급할 때 생활 안내&rsquo;로 좁히면서 검색
+              결과에서는 뺐지만, 페이지는 그대로 열립니다. 쓰시던 분들을 위해
+              길만 남겨 둡니다.
+            </p>
+            <p className="text-sm text-[#a0a0b0] leading-relaxed">
+              {[
+                ["/quiz-home", "상식 퀴즈"],
+                ["/omok", "오목"],
+                ["/escape", "방탈출"],
+                ["/mbti", "MBTI"],
+                ["/meme", "밈 사전"],
+                ["/prompts", "AI 프롬프트"],
+              ].map(([href, label], i) => (
+                <span key={href}>
+                  {i > 0 && " · "}
+                  <Link href={href} className="text-accent hover:underline">
+                    {label}
+                  </Link>
+                </span>
+              ))}
+            </p>
+          </section>
         </div>
       </div>
 

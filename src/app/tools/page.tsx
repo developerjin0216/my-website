@@ -3,7 +3,6 @@ import Link from "next/link";
 import { tools } from "@/data/tools";
 import { CALC_COUNT } from "@/data/calculators";
 import { helpTopics } from "@/data/help";
-import { categories, quizzes } from "@/data/quizData";
 import {
   TOOLS_URL,
   TOOLS_SPLIT,
@@ -21,11 +20,6 @@ import CoupangGoldbox from "@/components/CoupangGoldbox";
 // 이제 ROOT_URL과 같으므로, 이 페이지를 가리킬 때는 반드시 경로를 붙여야 합니다.
 
 const TOOLS_HOME = TOOLS_SPLIT ? TOOLS_URL : `${TOOLS_URL}/tools`;
-
-const TOTAL_QUESTIONS = Object.values(quizzes).reduce(
-  (n, list) => n + list.length,
-  0
-);
 
 const FAQ = [
   {
@@ -142,18 +136,20 @@ export default function ToolsHubPage() {
           ))}
         </div>
 
-        {/* 도구를 찾아온 사람은 'AI로 뭘 할 수 있나'에도 관심이 있습니다.
-            새 코너로 가는 내부 링크가 홈 하나뿐이면 크롤러가 중요하게 보지 않습니다. */}
+        {/* 2026-11: AI 프롬프트 카드를 뺐습니다. "내부 링크가 홈 하나뿐이면
+            크롤러가 중요하게 보지 않는다"고 달아둔 카드인데, /prompts 는 이제
+            색인 대상이 아니라 그 목적 자체가 사라졌습니다. 이 자리는 이 허브가
+            실제로 밀어야 하는 색인 도구로 바꿉니다. */}
         <Link
-          href="/prompts"
-          className="flex items-center justify-between rounded-xl px-4 py-3 mb-3 bg-card border border-[#2a3a5a] hover:border-[#8E7CC3] transition-colors"
+          href="/tools/insta-follow-check"
+          className="flex items-center justify-between rounded-xl px-4 py-3 mb-3 bg-card border border-[#2a3a5a] hover:border-[#E1306C] transition-colors"
         >
           <span className="text-sm text-[#a0a0b0]">
-            <span aria-hidden="true">🤖</span>{" "}
-            <span className="font-semibold text-[#e8e8f0]">AI 프롬프트 모음</span>
-            {" — "}복사해서 바로 쓰는 챗GPT 질문 78개
+            <span aria-hidden="true">🔍</span>{" "}
+            <span className="font-semibold text-[#e8e8f0]">인스타 언팔 확인</span>
+            {" — "}비밀번호 없이, 공식 내보내기 파일로 맞팔·언팔 체크
           </span>
-          <span className="text-[#8E7CC3] text-sm shrink-0 ml-2">→</span>
+          <span className="text-[#E1306C] text-sm shrink-0 ml-2">→</span>
         </Link>
 
         <AdBanner slot="XXXXXXXXXX" format="auto" />
@@ -199,12 +195,14 @@ export default function ToolsHubPage() {
             >
               🧮 생활 계산기 — 연봉·퇴직금·자동차세 등 {CALC_COUNT}종
             </Link>
+            {/* 2026-11: 상식왕 퀴즈 링크를 뺐습니다. 색인 대상이 아니라
+                이 허브의 링크가 그쪽으로 새고 있었습니다. 대신 이 허브가 실제로
+                책임지는 색인 페이지로 보냅니다. */}
             <Link
-              href="/quiz-home"
+              href="/tools/cctv"
               className="block text-[#c0c8d8] hover:text-accent"
             >
-              👑 상식왕 퀴즈 — {categories.length}개 카테고리{" "}
-              {TOTAL_QUESTIONS.toLocaleString()}문제
+              📹 전국 도로 CCTV — 고속도로·국도 교통상황 실시간 영상
             </Link>
           </div>
         </section>

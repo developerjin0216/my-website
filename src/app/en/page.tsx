@@ -56,17 +56,10 @@ export default function EnHubPage() {
         </p>
       </header>
 
-      {/* K-slang dictionary promo */}
-      <Link
-        href="/en/slang"
-        className="block w-full rounded-2xl p-5 text-center mb-6 transition-transform active:scale-[0.98] bg-gradient-to-r from-[#E91E63] to-[#9B59B6]"
-      >
-        <p className="text-lg font-bold text-white">📖 Korean Slang Dictionary</p>
-        <p className="text-sm text-white/70 mt-1">
-          Oppa? Daebak? Nunchi? — K-drama &amp; K-pop words explained
-        </p>
-      </Link>
-
+      {/* 2026-11: 슬랭 사전 배너를 이 자리에서 뺐습니다.
+          /en 에서 가장 눈에 띄는 요소가 색인 대상이 아닌 53개짜리 섹션으로
+          가고 있었습니다. /en 은 plan B 후보(구글 우선 독자)이고, 그 가치는
+          긴급 가이드에 있습니다. 슬랭으로 가는 길은 목록 아래 한 줄로 남깁니다. */}
       <div className="flex flex-col gap-3 mb-6">
         {enGuides.map((g) => (
           <Link
@@ -82,6 +75,13 @@ export default function EnHubPage() {
             </p>
           </Link>
         ))}
+        <p className="text-xs text-[#606070] leading-relaxed px-1">
+          Not an emergency?{" "}
+          <Link href="/en/slang" className="text-accent hover:underline">
+            Korean slang dictionary
+          </Link>{" "}
+          — oppa, daebak, nunchi and other words K-dramas never explain.
+        </p>
       </div>
 
       <div className="mb-6">

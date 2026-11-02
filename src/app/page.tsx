@@ -204,25 +204,21 @@ export default function InfoHome() {
             🌐 English
           </Link>
         </div>
-        {/* 검색 색인에서는 뺐지만 페이지는 그대로 열립니다. 쓰던 사람이 찾아갈 길만 남깁니다. */}
+        {/* 2026-11: 퀴즈·오목·방탈출·MBTI·밈·프롬프트 링크를 여기서 뺐습니다.
+            페이지는 그대로 열리고 /sitemap 에서 찾아갈 수 있습니다.
+
+            이유: 홈이 구글에게 "나는 긴급안내이자 퀴즈이자 MBTI이자 밈 사이트"라고
+            말하고 있었습니다. 2026-10 에 본문 카드를 내린 이유가 정확히 그건데
+            푸터가 남아 같은 신호를 계속 보냈습니다. 색인 265개 중 170개가 noindex
+            인데 그 입구가 사실상 이 줄 하나였습니다. 애드센스 심사도 사이트 전체를
+            봅니다 — 저품질로 한 번 거절당한 그 콘텐츠로 가는 길이 홈에 있었습니다.
+
+            /tools 는 남깁니다. /tools/cctv 와 /tools/insta-follow-check 가 색인
+            대상이고 그 허브입니다. 나머지로 가는 길은 /about 에 한 줄로 옮겼습니다. */}
         <p className="text-[11px] text-[#606070] mb-2">
-          쉬어가기:{" "}
-          {[
-            ["/quiz-home", "상식 퀴즈"],
-            ["/omok", "오목"],
-            ["/escape", "방탈출"],
-            ["/mbti", "MBTI"],
-            ["/meme", "밈 사전"],
-            ["/prompts", "AI 프롬프트"],
-            ["/tools", "생활 도구"],
-          ].map(([href, label], i) => (
-            <span key={href}>
-              {i > 0 && " · "}
-              <Link href={href} className="hover:text-[#a0a0b0]">
-                {label}
-              </Link>
-            </span>
-          ))}
+          <Link href="/tools" className="hover:text-[#a0a0b0]">
+            생활 도구
+          </Link>
         </p>
         <p className="text-xs text-[#606070]">
           © 2026 8282114 — 기관 번호·제도는 변경될 수 있으니 참고용으로
