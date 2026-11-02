@@ -48,6 +48,19 @@ function renderFeed(
   channel: { title: string; link: string; description: string },
   items: FeedItem[]
 ): string {
+  // 가장 최근 글의 날짜 — 네이버 서치어드바이저가 RSS 를 수집 경로로 쓰는데
+  // lastBuildDate 가 없으면 "언제부터 다시 볼지" 판단할 근거가 없습니다.
+  // 빌드 시각(new Date())이 아니라 콘텐츠 날짜를 쓰는 이유: 내용이 그대로인데
+  // 배포만 했다고 갱신됐다고 말하면 거짓 신호입니다.
+  const latest = items
+    .map((i) => i.date)
+    .filter((d): d is string => Boolean(d))
+    .sort()
+    .pop();
+  const lastBuild = latest
+    ? `\n    <lastBuildDate>${new Date(`${latest}T09:00:00+09:00`).toUTCString()}</lastBuildDate>`
+    : "";
+
   const body = items
     .map((i) => {
       const pubDate = i.date
@@ -68,7 +81,7 @@ function renderFeed(
     <title>${escapeXml(channel.title)}</title>
     <link>${channel.link}</link>
     <description>${escapeXml(channel.description)}</description>
-    <language>ko</language>
+    <language>ko</language>${lastBuild}
 ${body}
   </channel>
 </rss>`;
