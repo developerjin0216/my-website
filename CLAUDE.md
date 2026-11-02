@@ -15,9 +15,12 @@ npx tsc --noEmit # Type check
 # Realtime server — separate Node process, port 3001 (PORT env)
 cd server && npm start
 
-# Integration tests (the only tests in the repo) — start the server first
+# Integration tests — start the server first
 node server/test/omok.test.js            # 17 assertions: rooms, turns, win, resign, rematch, leave
 node server/test/omok-directions.test.js # vertical / both diagonals
+
+# Unit test — the Instagram export parser / unfollow diff (no server needed)
+node --experimental-strip-types scripts/insta-parser.test.mts  # 15 assertions
 
 # Data generators — never hand-edit their output files
 node scripts/gen-prompts.mjs <workflow-output.json>       # → src/data/prompts.ts

@@ -6,6 +6,8 @@
 export interface Person {
   username: string;
   href: string;
+  /** 내보내기에 들어 있는 팔로우 시각(unix 초). 없을 수도 있습니다. */
+  timestamp?: number;
 }
 
 export interface ParseResult {
@@ -32,6 +34,8 @@ export function collectPeople(node: unknown, out: Person[]): void {
             out.push({
               username: e.value,
               href: typeof e.href === "string" ? e.href : "",
+              timestamp:
+                typeof e.timestamp === "number" ? e.timestamp : undefined,
             });
           }
         }
@@ -125,6 +129,40 @@ export function compare(followers: Person[], following: Person[]): Comparison {
       followerSet.has(p.username.toLowerCase())
     ),
   };
+}
+
+export interface FollowerDiff {
+  /** 예전 명단에는 있는데 지금 명단에 없는 계정 = 그 사이 나를 언팔 */
+  unfollowedMe: Person[];
+  /** 지금 명단에만 있는 계정 = 그 사이 새로 팔로우 */
+  newFollowers: Person[];
+}
+
+/**
+ * 서로 다른 시점의 내보내기 두 개를 맞대어 "누가 나를 언팔했는지"를 냅니다.
+ *
+ * 내보내기 하나로는 알 수 없는 값입니다. 파일에는 '지금 내 팔로워가 누구인지'만
+ * 들어 있고 '언제 누가 떠났는지'는 들어 있지 않기 때문입니다. 두 시점을 빼야
+ * 비로소 나옵니다 — 그래서 이 도구는 예전 ZIP 을 따로 받습니다.
+ */
+export function diffFollowers(
+  previous: Person[],
+  current: Person[]
+): FollowerDiff {
+  const key = (p: Person) => p.username.toLowerCase();
+  const prevSet = new Set(previous.map(key));
+  const currSet = new Set(current.map(key));
+  return {
+    unfollowedMe: previous.filter((p) => !currSet.has(key(p))),
+    newFollowers: current.filter((p) => !prevSet.has(key(p))),
+  };
+}
+
+/** 명단에서 가장 늦은 팔로우 시각 — 두 파일 중 어느 쪽이 최근인지 가늠용 */
+export function latestTimestamp(list: Person[]): number | null {
+  let max = 0;
+  for (const p of list) if (p.timestamp && p.timestamp > max) max = p.timestamp;
+  return max || null;
 }
 
 export function toCsv(list: Person[]): string {

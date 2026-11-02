@@ -4,19 +4,28 @@ import { useRef, useState } from "react";
 import {
   parseExportFiles,
   compare,
+  diffFollowers,
+  latestTimestamp,
   toCsv,
   type Comparison,
+  type FollowerDiff,
   type Person,
 } from "./parser";
 
 type Tab = "notBack" | "notMine" | "mutual";
+type DiffTab = "unfollowedMe" | "newFollowers";
 
 interface Analysis {
   followers: number;
   following: number;
   filesUsed: string[];
   result: Comparison;
+  /** 맞팔 판정에 쓴 현재 팔로워 명단 — 예전 내보내기와 빼기 위해 들고 있습니다 */
+  followerList: Person[];
 }
+
+const fmtDate = (ts: number | null) =>
+  ts ? new Date(ts * 1000).toLocaleDateString("ko-KR") : null;
 
 // ZIP이면 jszip(동적 import)으로 풀고, JSON이면 그대로 — (파일명, 텍스트) 목록으로 정규화
 async function readInputFiles(
@@ -55,6 +64,51 @@ export default function InstaFollowCheckPage() {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [tab, setTab] = useState<Tab>("notBack");
 
+  // 예전 내보내기와의 비교 — 실제 '언팔'은 두 시점을 빼야만 나옵니다
+  const prevInputRef = useRef<HTMLInputElement>(null);
+  const [prevBusy, setPrevBusy] = useState(false);
+  const [diff, setDiff] = useState<
+    (FollowerDiff & { prevCount: number; prevDate: string | null }) | null
+  >(null);
+  const [diffError, setDiffError] = useState<string | null>(null);
+  const [diffTab, setDiffTab] = useState<DiffTab>("unfollowedMe");
+
+  const handlePrevFiles = async (fileList: FileList | File[]) => {
+    if (!analysis) return;
+    setPrevBusy(true);
+    setDiffError(null);
+    try {
+      const parsed = parseExportFiles(await readInputFiles([...fileList]));
+      if (parsed.followers.length === 0) {
+        setDiffError(
+          "예전 파일에서 팔로워 명단을 찾지 못했습니다. 같은 '내 정보 다운로드' ZIP(또는 followers_1.json)인지 확인해 주세요."
+        );
+        setDiff(null);
+        return;
+      }
+      const prevLatest = latestTimestamp(parsed.followers);
+      const currLatest = latestTimestamp(analysis.followerList);
+      if (prevLatest && currLatest && prevLatest > currLatest) {
+        setDiffError(
+          "올리신 파일이 처음 올린 것보다 더 최근으로 보입니다. 두 칸의 파일을 서로 바꿔 올려 주세요 — 위쪽이 지금, 아래쪽이 예전입니다."
+        );
+        setDiff(null);
+        return;
+      }
+      setDiff({
+        ...diffFollowers(parsed.followers, analysis.followerList),
+        prevCount: parsed.followers.length,
+        prevDate: fmtDate(prevLatest),
+      });
+      setDiffTab("unfollowedMe");
+    } catch {
+      setDiffError("예전 파일을 읽는 중 오류가 났습니다.");
+      setDiff(null);
+    } finally {
+      setPrevBusy(false);
+    }
+  };
+
   const handleFiles = async (fileList: FileList | File[]) => {
     setBusy(true);
     setError(null);
@@ -80,8 +134,11 @@ export default function InstaFollowCheckPage() {
         following: parsed.following.length,
         filesUsed: parsed.filesUsed,
         result: compare(parsed.followers, parsed.following),
+        followerList: parsed.followers,
       });
       setTab("notBack");
+      setDiff(null);
+      setDiffError(null);
     } catch {
       setError("파일을 읽는 중 오류가 났습니다. 손상되지 않은 원본 ZIP인지 확인해 주세요.");
       setAnalysis(null);
@@ -246,6 +303,141 @@ export default function InstaFollowCheckPage() {
           <p className="text-xs text-[#606070] mt-3">
             인식된 파일: {analysis.filesUsed.join(", ")} · 내보내기 신청 시점
             기준 스냅샷입니다.
+          </p>
+        </div>
+      )}
+
+      {/* 예전 내보내기와 비교 — '누가 나를 언팔했나'는 한 파일로는 알 수 없습니다 */}
+      {analysis && (
+        <div className="bg-card rounded-2xl p-5">
+          <h2 className="text-base font-bold text-accent mb-2">
+            🔄 누가 나를 언팔했는지 보기
+          </h2>
+          <p className="text-xs text-[#a0a0b0] leading-relaxed break-keep mb-3">
+            위 결과는 <strong className="text-[#e8e8f0]">지금</strong> 맞팔이
+            아닌 계정입니다. &ldquo;그 사이 나를 끊은 사람&rdquo;은 파일 하나로는
+            알 수 없습니다 — 내보내기에는 지금 팔로워가 누구인지만 들어 있고,
+            누가 언제 떠났는지는 없기 때문입니다. 예전에 받아둔 ZIP이 있으면
+            아래에 올리세요. 두 시점을 빼서 보여드립니다.
+          </p>
+
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => prevInputRef.current?.click()}
+            onKeyDown={(e) => e.key === "Enter" && prevInputRef.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (e.dataTransfer.files.length)
+                handlePrevFiles(e.dataTransfer.files);
+            }}
+            className="rounded-xl border-2 border-dashed border-[#2a3a5a] bg-[#16213e] p-5 text-center cursor-pointer hover:border-accent/60 transition-colors"
+          >
+            <p className="text-sm font-semibold">
+              {prevBusy ? "비교 중..." : "📁 예전에 받아둔 내보내기 ZIP"}
+            </p>
+            <p className="text-xs text-[#606070] mt-1">
+              지금 것보다 먼저 받은 파일이어야 합니다
+            </p>
+            <input
+              ref={prevInputRef}
+              type="file"
+              accept=".zip,.json,application/zip,application/json"
+              multiple
+              className="hidden"
+              onChange={(e) =>
+                e.target.files?.length && handlePrevFiles(e.target.files)
+              }
+            />
+          </div>
+
+          {diffError && (
+            <div className="mt-3 bg-[#2a1a1a] border border-[#EF4444]/40 rounded-xl px-4 py-3 text-xs text-[#ffb0b0] leading-relaxed">
+              ⚠️ {diffError}
+            </div>
+          )}
+
+          {diff && (
+            <div className="mt-4">
+              <div className="grid grid-cols-2 gap-2 mb-1">
+                {(
+                  [
+                    { key: "unfollowedMe", label: "나를 언팔함", list: diff.unfollowedMe },
+                    { key: "newFollowers", label: "새로 팔로우함", list: diff.newFollowers },
+                  ] as const
+                ).map((t) => (
+                  <button
+                    key={t.key}
+                    type="button"
+                    onClick={() => setDiffTab(t.key)}
+                    className={`rounded-xl px-1 py-2.5 text-xs font-semibold border transition-colors ${
+                      diffTab === t.key
+                        ? "bg-accent text-[#1a1a2e] border-accent"
+                        : "bg-[#16213e] text-[#a0a0b0] border-[#2a3a5a]"
+                    }`}
+                  >
+                    {t.label}
+                    <span className="block text-sm font-bold mt-0.5">
+                      {t.list.length.toLocaleString()}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-[#606070] mb-3">
+                예전 파일 팔로워 {diff.prevCount.toLocaleString()}명
+                {diff.prevDate ? ` · 가장 최근 팔로우 ${diff.prevDate}` : ""} →
+                지금 {analysis.followers.toLocaleString()}명
+              </p>
+
+              {(diffTab === "unfollowedMe" ? diff.unfollowedMe : diff.newFollowers)
+                .length === 0 ? (
+                <p className="text-sm text-[#a0a0b0] text-center py-6">
+                  해당하는 계정이 없습니다 🎉
+                </p>
+              ) : (
+                <>
+                  <ul className="max-h-96 overflow-y-auto divide-y divide-[#2a3a5a]/60">
+                    {(diffTab === "unfollowedMe"
+                      ? diff.unfollowedMe
+                      : diff.newFollowers
+                    ).map((p) => (
+                      <li key={p.username}>
+                        <a
+                          href={p.href || `https://www.instagram.com/${p.username}/`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between py-2.5 text-sm hover:text-accent"
+                        >
+                          <span>@{p.username}</span>
+                          <span className="text-xs text-[#606070]">프로필 열기 ↗</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      downloadCsv(
+                        diffTab === "unfollowedMe"
+                          ? diff.unfollowedMe
+                          : diff.newFollowers,
+                        `insta-${diffTab}`
+                      )
+                    }
+                    className="w-full mt-3 py-2.5 rounded-xl bg-[#16213e] border border-[#2a3a5a] text-sm font-semibold text-accent hover:border-accent transition-colors"
+                  >
+                    ⬇️ 이 목록 CSV로 저장
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          <p className="text-xs text-[#606070] leading-relaxed break-keep mt-3">
+            💡 예전 ZIP이 없다면, 지금 받은 파일을 지우지 말고 보관해 두세요.
+            다음에 내보내기를 한 번 더 받아 여기에 올리면 그 사이 언팔한 계정이
+            그대로 나옵니다.
           </p>
         </div>
       )}
