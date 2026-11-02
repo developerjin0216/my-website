@@ -209,11 +209,13 @@ export default function HelpShell({
               🙋 자주 묻는 질문
             </h2>
             <div className="space-y-4">
-              {topic.faq.map((f) => (
-                <div key={f.q}>
-                  <p className="text-sm font-semibold mb-1 break-keep">
+              {/* 질문은 h3 입니다 — p 였습니다. 문서 구조상 소제목이 맞고,
+                  id 가 있어야 "이 질문" 하나를 가리킬 주소가 생깁니다. */}
+              {topic.faq.map((f, i) => (
+                <div key={f.q} id={`faq-${i + 1}`} className="scroll-mt-4">
+                  <h3 className="text-sm font-semibold mb-1 break-keep">
                     Q. {f.q}
-                  </p>
+                  </h3>
                   <p className="text-xs text-[#a0a0b0] leading-relaxed break-keep">
                     {f.a}
                   </p>

@@ -184,7 +184,7 @@ export default function CalcShell({
           </h2>
           <div className="space-y-4">
             {calc.faq.map((f, i) => (
-              <div key={i}>
+              <div key={i} id={`faq-${i + 1}`} className="scroll-mt-4">
                 <h3 className="text-sm font-bold mb-1.5">Q. {f.q}</h3>
                 <p className="text-sm text-[#a0a0b0] leading-relaxed">{f.a}</p>
               </div>

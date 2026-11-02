@@ -127,9 +127,9 @@ export default function ToolShell({
         <section className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold text-accent mb-3">자주 묻는 질문</h2>
           <div className="space-y-4">
-            {tool.faq.map((f) => (
-              <div key={f.q}>
-                <p className="text-sm font-semibold mb-1">Q. {f.q}</p>
+            {tool.faq.map((f, i) => (
+              <div key={f.q} id={`faq-${i + 1}`} className="scroll-mt-4">
+                <h3 className="text-sm font-semibold mb-1">Q. {f.q}</h3>
                 <p className="text-xs text-[#a0a0b0] leading-relaxed break-keep">
                   {f.a}
                 </p>
