@@ -1,7 +1,9 @@
+import { Children, isValidElement } from "react";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import CoupangGoldbox from "@/components/CoupangGoldbox";
 import CoupangProducts from "@/components/CoupangProducts";
+import { Sec, secSlug } from "@/components/guides/GuideShell";
 import { getHelp } from "@/data/help";
 import { CASES_CHECKED } from "@/data/helpCases";
 import { helpGear, NO_SHOPPING, OWN_SHOPPING } from "@/data/helpGear";
@@ -21,6 +23,19 @@ export default function HelpShell({
   const url = `${ROOT_URL}/help/${id}`;
   const cases = casesFor(id);
   const gear = helpGear[id];
+
+  // 본문의 Sec 제목을 모아 목차를 만듭니다. 클라이언트에서 DOM 을 훑지 않는 이유:
+  // 이 목차의 목적 절반이 크롤러에게 하위 주제를 보여주는 것이라 서버 HTML 에
+  // 들어 있어야 합니다. 최상위 Sec 만 셉니다(조건부·중첩은 대상 아님).
+  const sections = Children.toArray(children)
+    .filter(
+      (c): c is React.ReactElement<{ title: string; id?: string }> =>
+        isValidElement(c) && c.type === Sec
+    )
+    .map((c) => ({
+      title: c.props.title,
+      anchor: c.props.id ?? secSlug(c.props.title),
+    }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -101,7 +116,34 @@ export default function HelpShell({
         </p>
       </header>
 
-      <main className="px-5 py-5 flex-1 space-y-4">{children}</main>
+      <main className="px-5 py-5 flex-1 space-y-4">
+        {/* 목차 — 급해서 들어온 사람이 자기 상황으로 바로 뛸 수 있게.
+            검색 쪽 효과도 같습니다: 이 페이지가 다루는 하위 주제가 따로 주소를
+            갖게 됩니다(h2 의 id). 2개 이하면 스크롤이 더 빠르니 내지 않습니다. */}
+        {sections.length > 2 && (
+          <nav
+            aria-label="이 글의 차례"
+            className="bg-card rounded-2xl p-5"
+          >
+            <h2 className="text-sm font-bold text-accent mb-2.5">
+              무엇이 궁금하신가요
+            </h2>
+            <ul className="space-y-1.5">
+              {sections.map((s) => (
+                <li key={s.anchor}>
+                  <a
+                    href={`#${s.anchor}`}
+                    className="text-sm text-[#c0c8d8] hover:text-accent leading-relaxed break-keep"
+                  >
+                    {s.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+        {children}
+      </main>
 
       {/* 실제로 있었던 일 — 공공기관·언론이 공개한 사례만. 원문 대조는
           scripts/check-help-cases.mjs. 사례가 없는 주제는 이 블록을 그리지 않습니다. */}

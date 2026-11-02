@@ -1,3 +1,4 @@
+import { Children, isValidElement } from "react";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import { getGuide } from "@/data/guides";
@@ -10,16 +11,41 @@ import {
   ROOT_SITE_NAME,
 } from "@/lib/site";
 
+/**
+ * 섹션 제목 → 앵커 id.
+ *
+ * 한 페이지가 하위 주제 여럿을 다루는데 각각에 주소가 없으면, 검색엔진이 보기엔
+ * 그 주제들이 따로 존재하지 않습니다. /help/medical-cost 가 '병원비 없을 때'로는
+ * 뜨는데 그 안에서 다루는 '응급실 대지급 제도'로는 안 뜨는 것이 그 증상입니다
+ * (2026-11 실측). 밈을 카테고리 문서로 합칠 때 쓴 '문서 + 앵커' 방식을 여기에도
+ * 적용합니다 — 페이지를 쪼개는 것은 이 저장소가 이미 실패한 길입니다.
+ *
+ * 이모지·문장부호는 버리고 한글·영숫자만 남깁니다. 제목을 바꾸면 앵커도 바뀝니다.
+ */
+export function secSlug(title: string): string {
+  return (
+    title
+      .replace(/[^0-9a-zA-Z가-힣\s]/g, " ")
+      .trim()
+      .replace(/\s+/g, "-")
+      .toLowerCase() || "section"
+  );
+}
+
 // 가이드 본문 섹션 (h2 + 프로즈)
 export function Sec({
   title,
+  id,
   children,
 }: {
   title: string;
+  /** 생략하면 제목에서 만듭니다 */
+  id?: string;
   children: React.ReactNode;
 }) {
+  const anchor = id ?? secSlug(title);
   return (
-    <section className="bg-card rounded-2xl p-5">
+    <section id={anchor} className="bg-card rounded-2xl p-5 scroll-mt-4">
       <h2 className="text-base font-bold mb-3 text-accent">{title}</h2>
       <div className="text-sm text-[#a0a0b0] leading-relaxed space-y-3">
         {children}
@@ -83,6 +109,17 @@ export default function GuideShell({
 }) {
   const guide = getGuide(id);
   const url = `${CALC_URL}/guides/${id}`;
+
+  // 본문 Sec 제목으로 목차 — HelpShell 과 같은 이유입니다(하위 주제에 주소 주기).
+  const sections = Children.toArray(children)
+    .filter(
+      (c): c is React.ReactElement<{ title: string; id?: string }> =>
+        isValidElement(c) && c.type === Sec
+    )
+    .map((c) => ({
+      title: c.props.title,
+      anchor: c.props.id ?? secSlug(c.props.title),
+    }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -163,7 +200,26 @@ export default function GuideShell({
         </p>
       </header>
 
-      <main className="px-5 py-5 flex-1 space-y-4">{children}</main>
+      <main className="px-5 py-5 flex-1 space-y-4">
+        {sections.length > 2 && (
+          <nav aria-label="이 글의 차례" className="bg-card rounded-2xl p-5">
+            <h2 className="text-sm font-bold text-accent mb-2.5">이 글의 차례</h2>
+            <ul className="space-y-1.5">
+              {sections.map((s) => (
+                <li key={s.anchor}>
+                  <a
+                    href={`#${s.anchor}`}
+                    className="text-sm text-[#c0c8d8] hover:text-accent leading-relaxed break-keep"
+                  >
+                    {s.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+        {children}
+      </main>
 
       <div className="px-5 pb-4">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
