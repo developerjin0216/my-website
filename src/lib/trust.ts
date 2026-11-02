@@ -24,7 +24,6 @@ export const REVIEWED = {
   tools: "2026-08-20", // src/data/tools.ts
   guides: "2026-07-29", // src/data/guides.ts
   help: "2026-09-09", // src/data/help.ts
-  escape: "2026-09-15", // src/data/escape.ts
 } as const;
 
 /** 모든 페이지가 공유하는 발행 주체 */

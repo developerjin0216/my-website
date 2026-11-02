@@ -235,7 +235,6 @@ export default function AboutPage() {
               {[
                 ["/quiz-home", "상식 퀴즈"],
                 ["/omok", "오목"],
-                ["/escape", "방탈출"],
                 ["/mbti", "MBTI"],
                 ["/meme", "밈 사전"],
                 ["/prompts", "AI 프롬프트"],

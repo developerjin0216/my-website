@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm run dev      # Next.js dev server (localhost:3000)
-npm run build    # Production build — also runs the escape-story validator (see below)
+npm run build    # Production build — content validators run at module load (see below)
 npm run lint     # ESLint flat config (next/core-web-vitals + typescript); server/** is excluded
 npx tsc --noEmit # Type check
 
@@ -123,7 +123,7 @@ Indexed sections first; the rest are live but noindexed.
 | `/tools/<id>` | no | `data/tools.ts` | Browser-only utilities (no upload) |
 | `/prompts/<cat>`, `/prompts/viral/<cat>` | no | `data/prompts.ts`, `promptsViral.ts` | 37 original + 41 sourced |
 | `/meme/<category>` | no | `data/memes.ts`, `memeUsage.ts` | |
-| `/escape`, `/omok`, `/battle` | no | `data/escape.ts` / — | Games; omok and battle need the Socket.IO server |
+| `/omok`, `/battle` | no | — | Games; both need the Socket.IO server |
 
 ### Body-text length is the live indexing constraint
 
@@ -273,16 +273,17 @@ into 7 category documents (3,000–6,500 chars each), with old term URLs 308ing 
 
 ### Build-time content validators
 
-`src/lib/escapeValidate.ts` runs at module load of `/escape/page.tsx`, so a violation **fails
-`npm run build`**. It enforces story structure that reviewers kept missing by eye:
+The pattern: validate content at module load of the page that uses it, so a violation **fails
+`npm run build`** instead of shipping. Live examples — `/help` hub throws on an unassigned,
+duplicated or unknown topic id; `data/helpGear.ts` throws on an unknown topic id or one listed in
+two buckets; `lib/helpCases.ts` throws on a case with fewer than two evidence excerpts;
+`data/cctvHighways.ts` fails if a configured line comes back nearly empty.
 
-- Clue planted before payoff; `Clue.payoffIn` ↔ `Scene.resolves` must agree both ways
-- ≥4 clues resolved in the final scene; every clue planted by a `SceneObject`, not narration
-- A puzzle's `needs` must already be available at that point in the story
-- ≤40% standalone puzzles; the last three scenes must all require earlier rooms
-- Prose floors: ≥3 objects/scene, ≥700 chars/scene, ≥60 chars per puzzle lead, ≥8,000 total
-
-Changing escape content means re-running the build; the error message names every violation.
+The web escape room (`/escape`, `data/escape.ts`, `lib/escapeValidate.ts`) was **removed
+2026-11-02** at the owner's request. Its story-structure validator was the original example here.
+It rendered 34 characters of server HTML on `/escape/play` — the only page on the whole site under
+1,000 characters — which reads as a broken page to an AdSense reviewer, and AdSense sees the whole
+site, not just the indexed part.
 
 ### Trust signals (`src/lib/trust.ts`)
 

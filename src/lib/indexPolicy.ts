@@ -18,7 +18,6 @@ const NOINDEX_SECTIONS = [
   "/meme",
   "/prompts",
   "/en/slang",
-  "/escape",
   "/omok",
   "/battle",
   "/tools",

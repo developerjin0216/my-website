@@ -167,9 +167,6 @@ export default function OmokLayout({ children }: { children: React.ReactNode }) 
           <Link href="/battle" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
             퀴즈 배틀
           </Link>
-          <Link href="/escape" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
-            웹 방탈출
-          </Link>
         </div>
       </section>
     </>
