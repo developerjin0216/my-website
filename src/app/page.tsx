@@ -110,7 +110,7 @@ export default function InfoHome() {
       {/* Ad */}
       <div className="px-5 pb-4">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
-        <CoupangGoldbox className="mt-3" />
+        <CoupangGoldbox className="mt-3" placement="home" />
       </div>
 
       {/* 돈·제도 — 급한 상황 다음에 오는 질문("얼마 받나", "얼마 나가나")에 답하는 곳.

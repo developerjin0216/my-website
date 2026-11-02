@@ -11,18 +11,40 @@ import { trackAffiliateClick } from "@/utils/analytics";
 
 const GOLDBOX_URL = "https://link.coupang.com/a/gE3FnczeLc";
 
-// 기간 한정 행사 — url 을 비우면 평소 골드박스로 돌아갑니다.
-// until 이 지나면 마운트 직후 자동으로 골드박스로 전환되므로, 원복 배포를
-// 잊어도 끝난 행사 링크가 남지 않습니다. (첫 렌더 값은 서버·클라이언트가
-// 같아야 하므로 expired 판정은 useEffect 에서만 합니다 — 하이드레이션 불일치 방지)
-const WOW = {
-  /** 와우멤버십데이 (~2026. 11. 01.) */
-  url: "https://link.coupang.com/a/ibaCJeJJSe",
+// 기간 한정 행사 — 아래 목록이 비거나 url 이 비면 평소 골드박스가 나갑니다.
+// until 이 지나면 마운트 직후 자동으로 골드박스로 돌아가므로 원복을 잊어도
+// 끝난 링크가 살아남지 않습니다. 다만 정적 HTML 에는 재배포 전까지 행사 내용이
+// 남아 첫 페인트에 잠깐 보이니, 끝나면 그 항목을 지우고 배포하세요.
+// (첫 렌더 값이 서버·클라이언트에서 같아야 하므로 만료 판정은 useEffect 에서만
+//  합니다 — 하이드레이션 불일치 방지)
+//
+// only = 이 행사를 띄울 자리. 비우면 전부.
+//   이 컴포넌트가 들어가는 자리는 네 종류입니다:
+//     home        홈
+//     calculators /calculators 허브
+//     tools       /tools 허브
+//     help_promo  /help 11편 (상황 맞춤 상품도 위기 주제도 아닌 나머지)
+//
+//   **주제와 이어지지 않는 상품 행사는 help_promo 에 넣지 마세요.**
+//   "카드 분실했을 때" 페이지에 노트북 광고가 뜨는 건 애드센스 심사에서 가장 비싼
+//   실수이고, 급한 일로 들어온 사람에게 팔리지도 않습니다. 와우멤버십데이는
+//   "비상용품 미리 채워두기"로 묶이니 /help 에 둘 수 있지만, 맥북 사전예약처럼
+//   묶을 각도가 없는 행사는 홈·도구 쪽으로만 좁힙니다.
+//
+//   위에서부터 먼저 맞는 항목 하나가 선택되므로, 자리가 겹치면 순서가 우선순위입니다.
+interface Campaign {
+  /** GA4 placement 접미사 — 어느 행사가 팔렸는지 구분 */
+  key: string;
+  /** 파트너스 → 링크 생성 → 이벤트/프로모션에서 발급한 link.coupang.com */
+  url: string;
   /** 행사 종료 다음날 0시 (KST) */
-  until: "2026-11-02T00:00:00+09:00",
-  title: "🧰 쿠팡 와우멤버십데이 — 비상용품 미리 채워두기",
-  sub: "손전등·보조배터리·건전지는 급할 때 사면 비쌉니다 (와우회원 전용, 11/1까지)",
-};
+  until: string;
+  title: string;
+  sub: string;
+  only?: string[];
+}
+
+const CAMPAIGNS: Campaign[] = [];
 
 export default function CoupangGoldbox({
   className = "",
@@ -32,21 +54,28 @@ export default function CoupangGoldbox({
   className?: string;
   placement?: string;
 }) {
-  const [expired, setExpired] = useState(false);
+  // 0 = 아직 모름(서버 렌더와 첫 클라이언트 렌더). 마운트 후에만 만료를 따집니다.
+  const [now, setNow] = useState(0);
 
   useEffect(() => {
-    if (!WOW.url) return;
+    if (CAMPAIGNS.length === 0) return;
     // 동기 setState 캐스케이드 방지를 위해 태스크로 지연 (CoupangBanner 와 같은 패턴)
-    const t = setTimeout(() => setExpired(Date.now() >= Date.parse(WOW.until)), 0);
+    const t = setTimeout(() => setNow(Date.now()), 0);
     return () => clearTimeout(t);
   }, []);
 
-  const wow = Boolean(WOW.url) && !expired;
-  const url = wow ? WOW.url : GOLDBOX_URL;
+  const campaign = CAMPAIGNS.find(
+    (c) =>
+      c.url &&
+      (!c.only || c.only.includes(placement)) &&
+      (now === 0 || now < Date.parse(c.until))
+  );
+
+  const url = campaign ? campaign.url : GOLDBOX_URL;
   if (!url) return null;
 
-  const title = wow ? WOW.title : "⚡ 쿠팡 골드박스 — 오늘만 이 가격";
-  const sub = wow ? WOW.sub : "매일 아침 7시 갱신되는 초특가 상품 모음";
+  const title = campaign ? campaign.title : "⚡ 쿠팡 골드박스 — 오늘만 이 가격";
+  const sub = campaign ? campaign.sub : "매일 아침 7시 갱신되는 초특가 상품 모음";
 
   return (
     <div className={className}>
@@ -58,7 +87,8 @@ export default function CoupangGoldbox({
         onClick={() =>
           trackAffiliateClick({
             network: "coupang",
-            placement: wow ? `${placement}_wowday` : placement,
+            // 행사분은 접미사를 달아 평소 골드박스와, 행사끼리도 갈라 봅니다
+            placement: campaign ? `${placement}_${campaign.key}` : placement,
           })
         }
         className="block rounded-2xl p-4 bg-gradient-to-r from-[#3d2e00] to-[#5a4500] border border-[#ffd700]/40 hover:border-[#ffd700] transition-colors active:scale-[0.99]"

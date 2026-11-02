@@ -158,7 +158,7 @@ export default function ToolsHubPage() {
 
         <AdBanner slot="XXXXXXXXXX" format="auto" />
 
-        <CoupangGoldbox />
+        <CoupangGoldbox placement="tools" />
 
         <CoupangBanner />
 

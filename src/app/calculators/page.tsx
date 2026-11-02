@@ -71,7 +71,7 @@ export default function CalculatorsPage() {
 
       <div className="px-5 pt-4 pb-2">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
-        <CoupangGoldbox className="mt-3" />
+        <CoupangGoldbox className="mt-3" placement="calculators" />
       </div>
 
       {/* 계산기 그리드 — 서버 렌더링 */}
