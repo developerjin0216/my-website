@@ -1,5 +1,7 @@
+import { Children, isValidElement } from "react";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
+import { Sec, secSlug } from "@/components/guides/GuideShell";
 import { enGuides, getEnGuide, EN_SITE_NAME } from "@/data/guidesEn";
 import { ROOT_URL } from "@/lib/site";
 
@@ -16,6 +18,16 @@ export default function EnShell({
 }) {
   const g = getEnGuide(id);
   const url = `${ROOT_URL}/en/${g.id}`;
+
+  const sections = Children.toArray(children)
+    .filter(
+      (c): c is React.ReactElement<{ title: string; id?: string }> =>
+        isValidElement(c) && c.type === Sec
+    )
+    .map((c) => ({
+      title: c.props.title,
+      anchor: c.props.id ?? secSlug(c.props.title),
+    }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -78,6 +90,30 @@ export default function EnShell({
         </p>
       </header>
 
+      {/* On this page — four of these guides run past 11,000 characters and had
+          no way to skip to the part that applies. The section anchors already
+          existed (Sec derives them from the heading); nothing pointed at them. */}
+      {sections.length > 2 && (
+        <nav
+          aria-label="On this page"
+          className="bg-card rounded-2xl p-5 mb-4"
+        >
+          <h2 className="text-sm font-bold text-accent mb-2.5">On this page</h2>
+          <ul className="flex flex-col gap-1.5">
+            {sections.map((s) => (
+              <li key={s.anchor}>
+                <a
+                  href={`#${s.anchor}`}
+                  className="text-sm text-[#c0c8d8] hover:text-accent leading-relaxed"
+                >
+                  {s.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+
       <div className="flex flex-col gap-4">{children}</div>
 
       <div className="my-6">
@@ -90,11 +126,13 @@ export default function EnShell({
           Frequently asked questions
         </h2>
         <div className="flex flex-col gap-4">
-          {g.faq.map((f) => (
-            <div key={f.q}>
-              <p className="text-sm font-semibold text-[#e8e8f0] mb-1">
+          {/* 질문은 h3 — p 였습니다. 다른 셸과 같은 이유로 소제목이 맞고,
+              id 가 있어야 질문 하나를 가리킬 주소가 생깁니다. */}
+          {g.faq.map((f, i) => (
+            <div key={f.q} id={`faq-${i + 1}`} className="scroll-mt-4">
+              <h3 className="text-sm font-semibold text-[#e8e8f0] mb-1">
                 Q. {f.q}
-              </p>
+              </h3>
               <p className="text-xs text-[#a0a0b0] leading-relaxed">{f.a}</p>
             </div>
           ))}
