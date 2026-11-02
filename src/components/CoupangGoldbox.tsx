@@ -44,7 +44,26 @@ interface Campaign {
   only?: string[];
 }
 
-const CAMPAIGNS: Campaign[] = [];
+const CAMPAIGNS: Campaign[] = [
+  {
+    key: "wowday",
+    // 쿠팡 파트너스 프로모션 딥링크. lptag=AF1870954 가 우리 트래킹 코드입니다.
+    // 확인(2026-11-02): link.coupang.com/re/AFPROMO10 → 쿠팡 MLP 랜딩(landingId=5508).
+    // 랜딩 내용 자체는 확인하지 못했습니다 — 쿠팡이 데이터센터 IP 를 403 으로 막습니다
+    // (CLAUDE.md 의 ITS 건과 같은 이유). 사용자가 파트너스에서 받은 와멤데 링크입니다.
+    url: "https://link.coupang.com/re/AFPROMO10?lptag=AF1870954",
+    // ⚠️ 임시값 — 실제 종료일을 받으면 바꿔야 합니다. 내부 안전장치일 뿐이고
+    //    화면에는 날짜를 쓰지 않으므로, 틀려도 사용자에게 거짓 날짜가 보이진 않습니다.
+    until: "2026-11-16T00:00:00+09:00",
+    // 문구에 "11/X까지"를 쓰지 않는 이유: 종료일을 모르는 채로 날짜를 쓰면
+    // 그게 곧 지어낸 숫자입니다. 기간은 쿠팡 랜딩이 알려 줍니다.
+    title: "🧰 쿠팡 와우멤버십데이 — 비상용품 미리 채워두기",
+    sub: "손전등·보조배터리·건전지는 급할 때 사면 비쌉니다 (와우회원 전용)",
+    // only 없음 = 네 자리 전부. 와멤데는 '비상용품' 각도로 /help 까지 묶입니다.
+    // 맥북 사전예약 링크가 오면 이 위에 only: ["home","tools"] 로 넣으세요 —
+    // 위에서부터 먼저 맞는 항목이 이기므로 홈·도구만 맥북으로 갈립니다.
+  },
+];
 
 export default function CoupangGoldbox({
   className = "",
