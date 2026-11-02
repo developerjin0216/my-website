@@ -1,3 +1,4 @@
+import Link from "next/link";
 import HelpShell from "@/components/help/HelpShell";
 import DecisionFlow from "@/components/help/DecisionFlow";
 import { Sec, GuideTable } from "@/components/guides/GuideShell";
@@ -27,6 +28,14 @@ export default function FlightDelayPage() {
           환급 + 배상입니다. 단 이 기준은 권고 성격이라{" "}
           <strong className="text-[#e8e8f0]">증거를 갖춰 절차대로 요구하는 사람</strong>이
           받아냅니다 — 그 절차가 아래입니다.
+        </p>
+        <p>
+          배상 기준이 달러로 적혀 있어 원화로 얼마인지 가늠이 안 되면{" "}
+          <Link href="/calculators/exchange" className="text-accent underline">
+            환율 계산기
+          </Link>
+          에서 확인하세요. 실제 지급은 항공사 정책과 환율 적용 시점에 따라
+          달라질 수 있습니다.
         </p>
       </Sec>
 

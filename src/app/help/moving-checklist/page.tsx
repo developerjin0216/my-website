@@ -1,3 +1,4 @@
+import Link from "next/link";
 import HelpShell from "@/components/help/HelpShell";
 import { Sec, GuideTable } from "@/components/guides/GuideShell";
 import { buildHelpMetadata } from "@/data/help";
@@ -104,6 +105,14 @@ export default function MovingChecklistPage() {
             ["아이 전학", "초등: 전입신고 시 배정 안내 / 중고등: 교육청·학교 방문"],
           ]}
         />
+        <p>
+          차를 가지고 이사하면 자동차세 고지서도 새 주소로 갑니다. 연납 신청
+          시기나 세액이 궁금하면{" "}
+          <Link href="/calculators/car-tax" className="text-accent underline">
+            자동차세 계산기
+          </Link>
+          에서 배기량·연식으로 확인할 수 있습니다.
+        </p>
       </Sec>
 
       <Sec title="도움받을 곳 한눈에">

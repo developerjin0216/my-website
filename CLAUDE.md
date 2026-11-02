@@ -36,6 +36,10 @@ node scripts/indexnow.mjs /path …  # submit just these paths (must be in the s
 node scripts/seo-audit.mjs                        # production
 node scripts/seo-audit.mjs http://localhost:3131  # a local `next start`
 
+# Internal-link + meta audit — reads the build, not HTTP. Duplicate titles/descriptions,
+# missing or doubled h1, orphans, and pages with a single inbound link. Exits 1 on a finding.
+npm run build && node scripts/link-audit.mjs
+
 # CCTV tool end-to-end check against production (key in bundle → ITS → m3u8)
 node scripts/cctv-check.mjs
 

@@ -103,6 +103,16 @@ export default function AboutPage() {
                 — 폭설·폭우 때 고속도로·국도 상황을 실시간 영상으로 확인
               </li>
               <li>
+                <Link
+                  href="/tools/insta-follow-check"
+                  className="text-white font-bold hover:text-accent"
+                >
+                  인스타 맞팔·언팔 확인
+                </Link>{" "}
+                — 비밀번호를 받아가는 앱 대신, 공식 내보내기 파일을 브라우저
+                안에서만 분석합니다
+              </li>
+              <li>
                 <Link href="/en" className="text-white font-bold hover:text-accent">
                   English guides
                 </Link>{" "}
