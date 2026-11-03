@@ -12,8 +12,57 @@ import { trackAffiliateClick } from "@/utils/analytics";
 // 2026-11 디자인 — 눌리게 만드는 세 가지만 넣었습니다: 마감(D-day 배지), 왜 지금인지
 // 한 줄(sub), 분명한 버튼. 움직이는 효과는 넣지 않았습니다 — 애드센스 심사관 눈에
 // 광고 농장처럼 보이고, 급한 일로 들어온 사람에게는 방해입니다.
+//
+// 색은 행사마다 테마로 갈라 둡니다. 첫 판은 테두리·배지·버튼·타일·번짐이 전부
+// 금색이라 촌스러웠습니다(사장님 지적). 금색은 사이트 포인트색이라 한 군데(배지나
+// 버튼)에만 쓰고, 바탕은 사이트 카드와 같은 남색 계열로 둡니다.
 
 const GOLDBOX_URL = "https://link.coupang.com/a/gE3FnczeLc";
+
+/** Tailwind 클래스는 여기 문자열로 적혀 있어야 빌드에 포함됩니다 — 런타임 조합 금지 */
+interface Theme {
+  card: string;
+  border: string;
+  glow: string;
+  eyebrow: string;
+  badge: string;
+  tile: string;
+  title: string;
+  sub: string;
+  note: string;
+  cta: string;
+}
+
+const THEMES = {
+  // 와우멤버십데이 — 딥 인디고에서 바이올렛으로. 멤버십·프리미엄 느낌, 금색 없음.
+  wow: {
+    card: "bg-gradient-to-br from-[#1b1f4b] via-[#2a2370] to-[#4b2a9e]",
+    border:
+      "border-white/15 hover:border-[#a78bfa]/70 hover:shadow-[0_0_28px_rgba(124,58,237,0.35)]",
+    glow: "bg-[radial-gradient(circle,rgba(167,139,250,0.35),transparent_65%)]",
+    eyebrow: "text-[#c4b5fd]",
+    badge: "bg-white text-[#1b1f4b]",
+    tile: "border-white/15 bg-white/10",
+    title: "text-white",
+    sub: "text-[#ddd6fe]",
+    note: "text-[#a5a0c8]",
+    cta: "bg-white text-[#2a2370] shadow-[0_2px_12px_rgba(255,255,255,0.25)]",
+  },
+  // 골드박스 — 사이트 카드와 같은 남색 바탕. 금색은 배지와 버튼에만.
+  goldbox: {
+    card: "bg-gradient-to-br from-[#16213e] via-[#1f2a4a] to-[#2b3a63]",
+    border:
+      "border-[#2a3a5a] hover:border-[#ffd700]/70 hover:shadow-[0_0_24px_rgba(255,215,0,0.15)]",
+    glow: "bg-[radial-gradient(circle,rgba(255,215,0,0.18),transparent_65%)]",
+    eyebrow: "text-[#a0a0b0]",
+    badge: "bg-[#ffd700] text-[#1a1a2e]",
+    tile: "border-[#2a3a5a] bg-[#1a1a2e]",
+    title: "text-[#e8e8f0]",
+    sub: "text-[#a0a0b0]",
+    note: "text-[#606070]",
+    cta: "bg-[#ffd700] text-[#1a1a2e] shadow-[0_2px_12px_rgba(255,215,0,0.3)]",
+  },
+} satisfies Record<string, Theme>;
 
 // 기간 한정 행사 — 아래 목록이 비거나 url 이 비면 평소 골드박스가 나갑니다.
 // until 이 지나면 마운트 직후 자동으로 골드박스로 돌아가므로 원복을 잊어도
@@ -44,6 +93,7 @@ interface Campaign {
   url: string;
   /** 행사 종료 다음날 0시 (KST) */
   until: string;
+  theme: Theme;
   /** 왼쪽 타일에 들어가는 이모지 하나 */
   emoji: string;
   /** 제목 위 작은 라벨 — 누구 대상인지 */
@@ -68,6 +118,7 @@ const CAMPAIGNS: Campaign[] = [
     // 이 시각이 지나면 마운트 직후 평소 골드박스로 돌아갑니다. 다만 정적 HTML 에는
     // 재배포 전까지 남으니, 9일에 이 항목을 지우고 배포하는 편이 깔끔합니다.
     until: "2026-11-09T00:00:00+09:00",
+    theme: THEMES.wow,
     emoji: "🧰",
     eyebrow: "쿠팡 와우멤버십데이 · 와우회원 전용",
     badge: "11/8까지",
@@ -81,6 +132,7 @@ const CAMPAIGNS: Campaign[] = [
 ];
 
 const GOLDBOX = {
+  theme: THEMES.goldbox,
   emoji: "⚡",
   eyebrow: "쿠팡 골드박스 · 오늘의 특가",
   badge: "매일 07시 갱신",
@@ -120,6 +172,7 @@ export default function CoupangGoldbox({
   if (!url) return null;
 
   const view = campaign ?? GOLDBOX;
+  const t = view.theme;
 
   // 남은 날짜 — 마운트 뒤에만. until 은 종료 다음날 0시라 floor 가 "마감일까지 며칠"이 됩니다.
   let badge = view.badge;
@@ -143,19 +196,19 @@ export default function CoupangGoldbox({
             placement: campaign ? `${placement}_${campaign.key}` : placement,
           })
         }
-        className="group relative block overflow-hidden rounded-2xl border border-[#ffd700]/45 bg-gradient-to-br from-[#1c2444] via-[#2a2518] to-[#4d3b00] p-4 transition-all hover:border-[#ffd700] hover:shadow-[0_0_28px_rgba(255,215,0,0.22)] active:scale-[0.99]"
+        className={`group relative block overflow-hidden rounded-2xl border p-4 transition-all active:scale-[0.99] ${t.card} ${t.border}`}
       >
-        {/* 오른쪽 위 금빛 번짐 — 장식, 클릭 방해 안 함 */}
+        {/* 오른쪽 위 번짐 — 장식, 클릭 방해 안 함 */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-[radial-gradient(circle,rgba(255,215,0,0.30),transparent_65%)]"
+          className={`pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full ${t.glow}`}
         />
 
         <div className="relative flex items-center justify-between gap-2">
-          <span className="truncate text-[10px] font-bold tracking-wide text-[#ffd700]/85">
+          <span className={`truncate text-[10px] font-bold tracking-wide ${t.eyebrow}`}>
             {view.eyebrow}
           </span>
-          <span className="shrink-0 rounded-full bg-[#ffd700] px-2 py-0.5 text-[10px] font-extrabold text-[#1a1a2e]">
+          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-extrabold ${t.badge}`}>
             {badge}
           </span>
         </div>
@@ -163,23 +216,25 @@ export default function CoupangGoldbox({
         <div className="relative mt-2.5 flex items-center gap-3.5">
           <div
             aria-hidden="true"
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#ffd700]/30 bg-[#ffd700]/10 text-3xl leading-none transition-transform group-hover:scale-105"
+            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border text-3xl leading-none transition-transform group-hover:scale-105 ${t.tile}`}
           >
             {view.emoji}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[15px] font-extrabold leading-snug text-[#fff3c4] break-keep">
+            <p className={`text-[15px] font-extrabold leading-snug break-keep ${t.title}`}>
               {view.title}
             </p>
-            <p className="mt-1 text-xs leading-relaxed text-[#d9cc90] break-keep">
+            <p className={`mt-1 text-xs leading-relaxed break-keep ${t.sub}`}>
               {view.sub}
             </p>
           </div>
         </div>
 
         <div className="relative mt-3.5 flex items-center justify-between gap-3">
-          <span className="text-[11px] text-[#a89a5a]">쿠팡으로 이동합니다</span>
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#ffd700] px-4 py-2 text-xs font-extrabold text-[#1a1a2e] shadow-[0_2px_12px_rgba(255,215,0,0.35)] transition-transform group-hover:translate-x-0.5">
+          <span className={`text-[11px] ${t.note}`}>쿠팡으로 이동합니다</span>
+          <span
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-xs font-extrabold transition-transform group-hover:translate-x-0.5 ${t.cta}`}
+          >
             {view.cta}
             <span aria-hidden="true">→</span>
           </span>
