@@ -23,7 +23,7 @@ export const REVIEWED = {
   cardDeduction: "2026-10-15", // src/utils/cardDeduction.ts — 국회예산정책처 2025 개정세법 보고서와 대조
   tools: "2026-08-20", // src/data/tools.ts
   guides: "2026-07-29", // src/data/guides.ts
-  help: "2026-09-09", // src/data/help.ts
+  help: "2026-11-03", // src/data/help.ts
 } as const;
 
 /** 모든 페이지가 공유하는 발행 주체 */
