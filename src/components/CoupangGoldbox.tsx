@@ -9,13 +9,14 @@ import { trackAffiliateClick } from "@/utils/analytics";
 // 링크는 파트너스 대시보드 → 링크 생성 → 이벤트/프로모션에서 발급받은
 // link.coupang.com 단축링크입니다. (빈 문자열이면 아무것도 렌더링하지 않음)
 //
-// 2026-11 디자인 — 눌리게 만드는 세 가지만 넣었습니다: 마감(D-day 배지), 왜 지금인지
-// 한 줄(sub), 분명한 버튼. 움직이는 효과는 넣지 않았습니다 — 애드센스 심사관 눈에
-// 광고 농장처럼 보이고, 급한 일로 들어온 사람에게는 방해입니다.
+// 2026-11 디자인 — 눌리게 만드는 세 가지만 넣었습니다: 기간(큰 D-day 블록), 왜
+// 지금인지 한 줄(sub), 분명한 버튼. 움직이는 효과는 넣지 않았습니다 — 애드센스
+// 심사관 눈에 광고 농장처럼 보이고, 급한 일로 들어온 사람에게는 방해입니다.
 //
-// 색은 행사마다 테마로 갈라 둡니다. 첫 판은 테두리·배지·버튼·타일·번짐이 전부
-// 금색이라 촌스러웠습니다(사장님 지적). 금색은 사이트 포인트색이라 한 군데(배지나
-// 버튼)에만 쓰고, 바탕은 사이트 카드와 같은 남색 계열로 둡니다.
+// 위계: 행사 중에는 "행사명 + 기간"이 제목이고 상품 이야기는 그 아래입니다
+// (사장님 요청: 기간을 강조). 색은 행사마다 테마로 갈라 둡니다. 첫 판은 테두리·배지·
+// 버튼·타일·번짐이 전부 금색이라 촌스러웠습니다. 금색은 사이트 포인트색이라 한두
+// 군데에만 쓰고, 바탕은 사이트 카드와 같은 남색 계열로 둡니다.
 
 const GOLDBOX_URL = "https://link.coupang.com/a/gE3FnczeLc";
 
@@ -25,7 +26,10 @@ interface Theme {
   border: string;
   glow: string;
   eyebrow: string;
+  /** 작은 알약 배지(골드박스) 또는 큰 D-day 블록(행사) */
   badge: string;
+  /** 제목 아래 기간 줄의 강조 배경 */
+  period: string;
   tile: string;
   title: string;
   sub: string;
@@ -42,6 +46,7 @@ const THEMES = {
     glow: "bg-[radial-gradient(circle,rgba(167,139,250,0.35),transparent_65%)]",
     eyebrow: "text-[#c4b5fd]",
     badge: "bg-white text-[#1b1f4b]",
+    period: "bg-white/15 text-white",
     tile: "border-white/15 bg-white/10",
     title: "text-white",
     sub: "text-[#ddd6fe]",
@@ -56,6 +61,7 @@ const THEMES = {
     glow: "bg-[radial-gradient(circle,rgba(255,215,0,0.18),transparent_65%)]",
     eyebrow: "text-[#a0a0b0]",
     badge: "bg-[#ffd700] text-[#1a1a2e]",
+    period: "bg-[#ffd700]/15 text-[#ffd700]",
     tile: "border-[#2a3a5a] bg-[#1a1a2e]",
     title: "text-[#e8e8f0]",
     sub: "text-[#a0a0b0]",
@@ -69,8 +75,8 @@ const THEMES = {
 // 끝난 링크가 살아남지 않습니다. 다만 정적 HTML 에는 재배포 전까지 행사 내용이
 // 남아 첫 페인트에 잠깐 보이니, 끝나면 그 항목을 지우고 배포하세요.
 // (첫 렌더 값이 서버·클라이언트에서 같아야 하므로 만료 판정과 D-day 계산은
-//  useEffect 뒤에만 합니다 — 하이드레이션 불일치 방지. 서버 HTML 에는 badge 문구가,
-//  마운트 뒤에는 D-5 같은 남은 날짜가 보입니다.)
+//  useEffect 뒤에만 합니다 — 하이드레이션 불일치 방지. 서버 HTML 에는 마감일이,
+//  마운트 뒤에는 D-5 같은 남은 날짜가 큰 블록에 보입니다.)
 //
 // only = 이 행사를 띄울 자리. 비우면 전부.
 //   이 컴포넌트가 들어가는 자리는 네 종류입니다:
@@ -98,9 +104,14 @@ interface Campaign {
   emoji: string;
   /** 제목 위 작은 라벨 — 누구 대상인지 */
   eyebrow: string;
-  /** 마감 배지의 서버 렌더 문구. 마운트 뒤에는 D-day 로 바뀝니다 */
-  badge: string;
+  /** 제목 = 행사명. "진행 중"까지 붙여 지금 열려 있음을 말합니다 */
   title: string;
+  /** 제목 아래 강조 줄 — 기간. 서버 HTML 에 그대로 보입니다 */
+  period: string;
+  /** D-day 블록의 마감일 짧은 표기(서버 렌더용), 예: "11/8" */
+  deadline: string;
+  /** 마감일 요일 — 데이터로 적습니다(서버 시간대에 따라 계산이 틀어지는 것을 피함) */
+  deadlineDay: string;
   sub: string;
   cta: string;
   only?: string[];
@@ -114,16 +125,18 @@ const CAMPAIGNS: Campaign[] = [
     // 랜딩 내용 자체는 확인하지 못했습니다 — 쿠팡이 데이터센터 IP 를 403 으로 막습니다
     // (CLAUDE.md 의 ITS 건과 같은 이유). 사용자가 파트너스에서 받은 와멤데 링크입니다.
     url: "https://link.coupang.com/re/AFPROMO10?lptag=AF1870954",
-    // 11/8 종료 (사장님 확인, 2026-11-03) → 다음날 0시까지 노출.
+    // 11/8(일) 종료 (사장님 확인, 2026-11-03) → 다음날 0시까지 노출.
     // 이 시각이 지나면 마운트 직후 평소 골드박스로 돌아갑니다. 다만 정적 HTML 에는
     // 재배포 전까지 남으니, 9일에 이 항목을 지우고 배포하는 편이 깔끔합니다.
     until: "2026-11-09T00:00:00+09:00",
     theme: THEMES.wow,
     emoji: "🧰",
-    eyebrow: "쿠팡 와우멤버십데이 · 와우회원 전용",
-    badge: "11/8까지",
-    title: "비상용품, 급할 때 사면 제일 비쌉니다",
-    sub: "손전등 · 보조배터리 · 건전지 · 핫팩 — 한파 오기 전에 할인가로 채워두세요",
+    eyebrow: "쿠팡 파트너스 · 와우회원 전용",
+    title: "와우멤버십데이 진행 중",
+    period: "11월 8일(일)까지 · 기간 한정",
+    deadline: "11/8",
+    deadlineDay: "일",
+    sub: "비상용품은 급할 때 사면 제일 비쌉니다 — 손전등 · 보조배터리 · 건전지 · 핫팩, 지금 할인가로",
     cta: "할인가 보기",
     // only 없음 = 네 자리 전부. 와멤데는 '비상용품' 각도로 /help 까지 묶입니다.
     // 맥북 사전예약 링크가 오면 이 위에 only: ["home","tools"] 로 넣으세요 —
@@ -171,15 +184,32 @@ export default function CoupangGoldbox({
   const url = campaign ? campaign.url : GOLDBOX_URL;
   if (!url) return null;
 
-  const view = campaign ?? GOLDBOX;
-  const t = view.theme;
+  const t = campaign ? campaign.theme : GOLDBOX.theme;
 
-  // 남은 날짜 — 마운트 뒤에만. until 은 종료 다음날 0시라 floor 가 "마감일까지 며칠"이 됩니다.
-  let badge = view.badge;
-  if (campaign && now) {
-    const daysLeft = Math.floor((Date.parse(campaign.until) - now) / DAY_MS);
-    badge = daysLeft >= 2 ? `D-${daysLeft}` : daysLeft === 1 ? "내일 마감" : "오늘 마감";
+  // D-day 블록 — 서버 HTML: 마감일. 마운트 뒤: 남은 날짜.
+  // until 은 종료 다음날 0시라 floor 가 "마감일까지 며칠"이 됩니다.
+  let dayBig = "";
+  let daySmall = "";
+  if (campaign) {
+    dayBig = campaign.deadline;
+    daySmall = `(${campaign.deadlineDay}) 마감`;
+    if (now) {
+      const daysLeft = Math.floor((Date.parse(campaign.until) - now) / DAY_MS);
+      if (daysLeft >= 1) {
+        dayBig = `D-${daysLeft}`;
+        daySmall = daysLeft === 1 ? "내일 마감" : `${campaign.deadline} 마감`;
+      } else {
+        dayBig = "오늘";
+        daySmall = "마감";
+      }
+    }
   }
+
+  const eyebrow = campaign ? campaign.eyebrow : GOLDBOX.eyebrow;
+  const title = campaign ? campaign.title : GOLDBOX.title;
+  const sub = campaign ? campaign.sub : GOLDBOX.sub;
+  const cta = campaign ? campaign.cta : GOLDBOX.cta;
+  const emoji = campaign ? campaign.emoji : GOLDBOX.emoji;
 
   return (
     <div className={className}>
@@ -188,7 +218,11 @@ export default function CoupangGoldbox({
         target="_blank"
         rel="nofollow sponsored noopener"
         referrerPolicy="unsafe-url"
-        aria-label={`${view.eyebrow} — ${view.title}. ${view.cta}`}
+        aria-label={
+          campaign
+            ? `${title}, ${campaign.period}. ${sub}. ${cta}`
+            : `${eyebrow} — ${title}. ${cta}`
+        }
         onClick={() =>
           trackAffiliateClick({
             network: "coupang",
@@ -204,38 +238,58 @@ export default function CoupangGoldbox({
           className={`pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full ${t.glow}`}
         />
 
-        <div className="relative flex items-center justify-between gap-2">
-          <span className={`truncate text-[10px] font-bold tracking-wide ${t.eyebrow}`}>
-            {view.eyebrow}
-          </span>
-          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-extrabold ${t.badge}`}>
-            {badge}
-          </span>
-        </div>
-
-        <div className="relative mt-2.5 flex items-center gap-3.5">
+        <div className="relative flex items-start gap-3.5">
           <div
             aria-hidden="true"
-            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border text-3xl leading-none transition-transform group-hover:scale-105 ${t.tile}`}
+            className={`mt-0.5 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border text-3xl leading-none transition-transform group-hover:scale-105 ${t.tile}`}
           >
-            {view.emoji}
+            {emoji}
           </div>
+
           <div className="min-w-0 flex-1">
-            <p className={`text-[15px] font-extrabold leading-snug break-keep ${t.title}`}>
-              {view.title}
+            <p className={`truncate text-[10px] font-bold tracking-wide ${t.eyebrow}`}>
+              {eyebrow}
             </p>
-            <p className={`mt-1 text-xs leading-relaxed break-keep ${t.sub}`}>
-              {view.sub}
+            <p className={`mt-0.5 text-[17px] font-black leading-tight break-keep ${t.title}`}>
+              {title}
             </p>
+            {campaign && (
+              <p className="mt-1.5">
+                <span
+                  className={`inline-block rounded-md px-1.5 py-0.5 text-[11px] font-bold leading-none ${t.period}`}
+                >
+                  ⏰ {campaign.period}
+                </span>
+              </p>
+            )}
           </div>
+
+          {campaign ? (
+            <div
+              className={`flex min-w-[64px] shrink-0 flex-col items-center justify-center rounded-xl px-2.5 py-2 ${t.badge}`}
+            >
+              <span className="text-xl font-black leading-none tabular-nums">{dayBig}</span>
+              <span className="mt-1 text-[10px] font-bold leading-none opacity-80">
+                {daySmall}
+              </span>
+            </div>
+          ) : (
+            <span
+              className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-extrabold ${t.badge}`}
+            >
+              {GOLDBOX.badge}
+            </span>
+          )}
         </div>
 
-        <div className="relative mt-3.5 flex items-center justify-between gap-3">
+        <p className={`relative mt-3 text-xs leading-relaxed break-keep ${t.sub}`}>{sub}</p>
+
+        <div className="relative mt-3 flex items-center justify-between gap-3">
           <span className={`text-[11px] ${t.note}`}>쿠팡으로 이동합니다</span>
           <span
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-xs font-extrabold transition-transform group-hover:translate-x-0.5 ${t.cta}`}
           >
-            {view.cta}
+            {cta}
             <span aria-hidden="true">→</span>
           </span>
         </div>
