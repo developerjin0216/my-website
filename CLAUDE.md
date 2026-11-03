@@ -180,6 +180,13 @@ Rules that follow from this:
   where the result legitimately differs from a payslip, who decides the real determination.
 - Leaving a page thin is better than publishing a wrong rate. `/guides/pension-reform` and
   `/guides/minimum-wage-2027` were deliberately left short for this reason.
+- **Recorded exception: `/help/report-rewards`** (신고 포상금 총정리, added 2026-11-03). Its whole
+  point is amounts, so it uses the `medianIncome.ts` rule instead — every figure was verified on
+  the date shown at the top of the page against the agency page or multiple reports, each listed
+  in the topic's `sources`, and anything at 개정안/입법예고/의견수렴 stage is labelled 추진 중,
+  not stated as current. Do not strip its numbers to "comply"; re-verify and update the
+  `CHECKED` date instead. Caps moved three times in 2026 alone (공정위 6/18, 권익위 9/29
+  abolished theirs; 현금영수증 포상금 was *cut* 2025-02), which is exactly why the date is visible.
 
 ### The CCTV tool must call ITS from the browser, not the server
 
