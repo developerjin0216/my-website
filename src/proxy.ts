@@ -36,6 +36,20 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(target + search, ROOT_URL), 308);
   }
 
+  // Vercel 기본 도메인(moducalc.vercel.app 등)도 본 도메인으로 — 2026-11 추가.
+  // 그 주소가 살아서 사이트 전체를 200으로 내보내고 있었고, 거기로 들어오는 사람이
+  // 실제로 있었습니다. 검색엔진에는 중복 사이트이고, 사람에게는 주소가 둘인 셈입니다.
+  // 프로덕션 배포에서만 겁니다 — 프리뷰 배포(브랜치별 *.vercel.app)는 테스트용이라
+  // 건드리면 미리보기가 전부 본 도메인으로 튀어 버립니다. VERCEL_ENV 는 Vercel 이
+  // 런타임에 넣어 주는 값이고 로컬·프리뷰에서는 "production" 이 아닙니다.
+  if (
+    host.endsWith(".vercel.app") &&
+    process.env.VERCEL_ENV === "production"
+  ) {
+    const { pathname, search } = request.nextUrl;
+    return NextResponse.redirect(new URL(pathname + search, ROOT_URL), 308);
+  }
+
   // 로컬 개발(localhost 등)은 건드리지 않습니다
   return NextResponse.next();
 }
