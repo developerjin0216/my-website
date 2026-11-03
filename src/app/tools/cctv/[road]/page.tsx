@@ -216,6 +216,33 @@ export default async function HighwayPage({
           </ul>
         </section>
 
+        {/* 공식 출처 — 영상과 지점 목록의 출처를 다른 섹션과 같은 블록으로 밝힙니다 */}
+        <section className="bg-card rounded-2xl p-5">
+          <h2 className="text-sm font-bold mb-2 text-accent">🏛 공식 출처·참고</h2>
+          <ul className="space-y-1.5 text-xs text-[#a0a0b0] leading-relaxed break-keep">
+            <li>
+              <a
+                href="https://www.its.go.kr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-accent"
+              >
+                국토교통부 국가교통정보센터(ITS) — 실시간 CCTV·교통정보 (지점 목록 기준일 {SNAPSHOT_DATE})
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.ex.co.kr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-accent"
+              >
+                한국도로공사 — 고속도로 교통정보·긴급 견인 1588-2504
+              </a>
+            </li>
+          </ul>
+        </section>
+
         <p className="text-[11px] text-[#606070] leading-relaxed px-1 break-keep">
           지점에 따라 점검·장애로 재생되지 않을 수 있습니다. 영상 주소는 2시간이 지나면
           만료되니, 페이지를 오래 열어 두었다면 지점을 다시 눌러 주세요.

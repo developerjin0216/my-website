@@ -1,6 +1,7 @@
 import { Children, isValidElement } from "react";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
+import { CALC_SOURCES } from "@/lib/trust";
 import { getGuide } from "@/data/guides";
 import { getCalc } from "@/data/calculators";
 import {
@@ -109,6 +110,14 @@ export default function GuideShell({
 }) {
   const guide = getGuide(id);
   const url = `${CALC_URL}/guides/${id}`;
+
+  // 공식 출처 — 가이드의 요율·기준은 관련 계산기의 utils 에서 오므로 출처도 같습니다.
+  // CALC_SOURCES 를 그대로 합쳐서(중복 URL 제거) 보여 줍니다. 가이드에만 따로 출처를
+  // 두면 계산기와 어긋나는 날이 옵니다.
+  const seen = new Set<string>();
+  const guideSources = guide.relatedCalcs
+    .flatMap((cid) => CALC_SOURCES[cid] ?? [])
+    .filter((s) => (seen.has(s.url) ? false : (seen.add(s.url), true)));
 
   // 본문 Sec 제목으로 목차 — HelpShell 과 같은 이유입니다(하위 주제에 주소 주기).
   const sections = Children.toArray(children)
@@ -224,6 +233,29 @@ export default function GuideShell({
       <div className="px-5 pb-4">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
       </div>
+
+      {/* 공식 출처 — 법률·요율 글이라 근거 기관을 밝힙니다 (help·calculators 와 같은 블록) */}
+      {guideSources.length > 0 && (
+        <section className="px-5 pb-4">
+          <div className="bg-card rounded-2xl p-5">
+            <h2 className="text-sm font-bold mb-2 text-accent">🏛 계산 근거·공식 출처</h2>
+            <ul className="space-y-1.5">
+              {guideSources.map((s) => (
+                <li key={s.url} className="text-xs text-[#a0a0b0] leading-relaxed break-keep">
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-accent underline"
+                  >
+                    {s.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* 관련 계산기 — 내부 링크 */}
       <section className="px-5 pb-4">

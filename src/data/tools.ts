@@ -38,6 +38,8 @@ export interface ToolInfo {
    */
   gear?: { keyword: string; note: string; must?: string[] }[];
   gearTitle?: string;
+  /** 공식 출처·참고 — 외부 데이터를 쓰는 도구(CCTV)에만. help·calculators 와 같은 블록으로 렌더 */
+  sources?: { name: string; url: string }[];
 }
 
 export const tools: ToolInfo[] = [
@@ -779,6 +781,11 @@ const CCTV: ToolInfo = {
   color: "#0891B2",
   // 2026-11: 캐러셀 → 맥락 상품. 이 페이지를 보는 사람은 눈·비 오는 날 길을 나서려는
   // 사람이라, 본문(car-wont-start·car-accident)이 권하는 겨울 차량 용품으로 좁힙니다.
+  sources: [
+    { name: "국토교통부 국가교통정보센터(ITS) — 전국 실시간 CCTV·교통정보", url: "https://www.its.go.kr" },
+    { name: "한국도로공사 — 고속도로 교통정보", url: "https://www.ex.co.kr" },
+    { name: "국립공원공단 — 국립공원 실시간 영상 (공공누리 제1유형)", url: "https://www.knps.or.kr" },
+  ],
   gearTitle: "🧰 눈길 가기 전에 트렁크에 있어야 하는 것",
   gear: [
     { keyword: "스노우체인", note: "눈길로 들어가기 전에 끼우는 물건입니다. 영상으로 노면을 확인했다면, 트렁크에 있어야 쓸 수 있습니다." },

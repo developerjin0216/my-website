@@ -40,6 +40,11 @@ node scripts/seo-audit.mjs http://localhost:3131  # a local `next start`
 # missing or doubled h1, orphans, and pages with a single inbound link. Exits 1 on a finding.
 npm run build && node scripts/link-audit.mjs
 
+# Content-review audit (AdSense/E-E-A-T checklist) — affiliate anchors without rel=sponsored
+# (exits 1), official-source block coverage per section, every phone number on the site with
+# context (eyeball for stale hotlines), and cross-page duplicate-sentence ratio.
+npm run build && node scripts/content-audit.mjs
+
 # CCTV tool end-to-end check against production (key in bundle → ITS → m3u8)
 node scripts/cctv-check.mjs
 

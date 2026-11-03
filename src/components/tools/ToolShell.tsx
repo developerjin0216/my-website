@@ -151,6 +151,27 @@ export default function ToolShell({
           </div>
         </section>
 
+        {/* 공식 출처 — 외부 데이터를 쓰는 도구만(tool.sources). 다른 섹션과 같은 블록 */}
+        {tool.sources && tool.sources.length > 0 && (
+          <section className="bg-card rounded-2xl p-5">
+            <h2 className="text-sm font-bold mb-2 text-accent">🏛 공식 출처·참고</h2>
+            <ul className="space-y-1.5">
+              {tool.sources.map((s) => (
+                <li key={s.url} className="text-xs text-[#a0a0b0] leading-relaxed break-keep">
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-accent"
+                  >
+                    {s.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {/* 이어서 볼 곳 — 도구 페이지가 막다른 길이면 크롤러도 사용자도 여기서 끝납니다 */}
         {tool.related && tool.related.length > 0 && (
           <section className="bg-card rounded-2xl p-5">
