@@ -31,6 +31,13 @@ export interface ToolInfo {
   related?: { href: string; label: string; desc: string }[];
   /** app/tools/<id>/opengraph-image.tsx 가 있으면 true — 공유 카드에 도구 이름이 박힙니다 */
   ownOgImage?: true;
+  /**
+   * 상황 맞춤 상품 탭 — 있으면 ToolShell 이 추적 안 되는 캐러셀(CoupangBanner) 대신
+   * CoupangProducts 를 붙입니다. helpGear 와 같은 원칙: 도구 맥락에 실제로 쓰이는 물건만,
+   * note 에는 효능·의무 주장 없이 왜 이 맥락인지만.
+   */
+  gear?: { keyword: string; note: string; must?: string[] }[];
+  gearTitle?: string;
 }
 
 export const tools: ToolInfo[] = [
@@ -770,6 +777,15 @@ const CCTV: ToolInfo = {
   name: "전국 실시간 도로 CCTV",
   icon: "📹",
   color: "#0891B2",
+  // 2026-11: 캐러셀 → 맥락 상품. 이 페이지를 보는 사람은 눈·비 오는 날 길을 나서려는
+  // 사람이라, 본문(car-wont-start·car-accident)이 권하는 겨울 차량 용품으로 좁힙니다.
+  gearTitle: "🧰 눈길 가기 전에 트렁크에 있어야 하는 것",
+  gear: [
+    { keyword: "스노우체인", note: "눈길로 들어가기 전에 끼우는 물건입니다. 영상으로 노면을 확인했다면, 트렁크에 있어야 쓸 수 있습니다." },
+    { keyword: "점프스타터", note: "추운 아침 시동이 안 걸릴 때 다른 차 없이 거는 용도입니다 — 겨울 차 시동 안내의 점프 순서와 같습니다." },
+    { keyword: "차량용 담요", note: "눈길에 갇혀 구조를 기다릴 때 차 안에서 체온을 지키는 용도입니다." },
+    { keyword: "블랙박스", note: "주차 중 긁힘과 사고 다툼에서 첫 번째 증거입니다 — 교통사고 안내가 권하는 그 물건." },
+  ],
   card: "지금 거기 비 오나 — 전국 1만여 대를 눈으로 확인",
   metaTitle: "전국 실시간 CCTV - 지금 그곳 날씨를 눈으로 확인 (고속도로·국도)",
   metaDescription:

@@ -4,6 +4,7 @@ import { TOOLS_URL, TOOLS_SITE_NAME, ROOT_URL, CONTACT_EMAIL } from "@/lib/site"
 import { authorship, REVIEWED } from "@/lib/trust";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
+import CoupangProducts from "@/components/CoupangProducts";
 
 // 도구 페이지 공용 셸 — JSON-LD·가이드·FAQ·광고·푸터를 서버 렌더링하고
 // children(클라이언트 도구 UI)을 상단에 배치합니다. CalcShell과 같은 패턴.
@@ -90,7 +91,19 @@ export default function ToolShell({
         {children}
 
         {/* 도구 사용 직후 — 노출·클릭 최적 지점 */}
-        <CoupangBanner />
+        {/* 맥락 상품(tool.gear)이 있으면 추적되는 상품 탭, 없으면 범용 캐러셀.
+            캐러셀은 쿠팡 iframe 이라 클릭이 잡히지 않아 어느 도구가 파는지 알 수 없습니다. */}
+        {tool.gear && tool.gear.length > 0 ? (
+          <CoupangProducts
+            keywords={tool.gear.map((g) => g.keyword)}
+            notes={tool.gear.map((g) => g.note)}
+            must={tool.gear.map((g) => g.must)}
+            title={tool.gearTitle ?? "🧰 이 도구와 같이 보면 좋은 것"}
+            placement={`tool_gear_${tool.id}`}
+          />
+        ) : (
+          <CoupangBanner />
+        )}
 
         <AdBanner slot="XXXXXXXXXX" format="rectangle" />
 

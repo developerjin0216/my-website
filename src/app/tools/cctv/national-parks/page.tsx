@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ParkViewer from "@/components/tools/ParkViewer";
+import CoupangProducts from "@/components/CoupangProducts";
 import { PARK_CAMS, PARK_SOURCE_URL } from "@/data/cctvParks";
 import { HIGHWAYS } from "@/data/cctvHighwayList";
 import { robotsFor } from "@/lib/indexPolicy";
@@ -65,6 +66,20 @@ export default function NationalParksCctvPage() {
 
       <main className="px-5 py-5 flex-1 space-y-4">
         <ParkViewer />
+
+        {/* 뷰어 바로 아래, 페이지당 하나. 이 페이지는 단풍·눈꽃·일출 전에 산 위 날씨를
+            보는 사람이 옵니다 — 겨울 산행에서 실제로 쓰는 물건으로 좁혔습니다. */}
+        <CoupangProducts
+          keywords={["등산 아이젠", "등산 장갑", "핫팩", "보온병"]}
+          notes={[
+            "영상에 눈꽃이 보이면 등산로는 이미 얼어 있습니다. 입구에서 못 사는 날이 많습니다.",
+            "정상 부근은 영상보다 춥습니다. 바람을 막는 장갑이 필요한 이유입니다.",
+            "산 위 기온은 아래와 다릅니다. 손·발용을 여유 있게 챙기는 용도입니다.",
+            "겨울 산행에서 따뜻한 물을 가지고 다니는 용도입니다.",
+          ]}
+          title="🥾 겨울 산에 올라가기 전에"
+          placement="cctv_parks"
+        />
 
         <section className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold text-accent mb-3">보기 전에 알아둘 것</h2>

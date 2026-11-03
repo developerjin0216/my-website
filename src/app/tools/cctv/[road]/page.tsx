@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import HighwayViewer from "@/components/tools/HighwayViewer";
+import CoupangProducts from "@/components/CoupangProducts";
 import {
   HIGHWAYS,
   SNAPSHOT_DATE,
@@ -117,6 +118,22 @@ export default async function HighwayPage({
 
       <main className="px-5 py-5 flex-1 space-y-4">
         <HighwayViewer line={h.line} name={h.name} cams={cams} />
+
+        {/* 뷰어 바로 아래 — ToolShell 이 도구 본체 직후에 배너를 두는 것과 같은 자리.
+            이 페이지에는 다른 쇼핑 블록이 없습니다(페이지당 하나). 노선 페이지를 보는
+            사람은 눈·비 오는 날 그 길을 가려는 사람이라 겨울 차량 용품으로 좁혔습니다.
+            키워드·문구는 helpGear 원칙과 같습니다 — 본문이 권하는 물건, 효능 주장 없음. */}
+        <CoupangProducts
+          keywords={["스노우체인", "점프스타터", "차량용 담요", "블랙박스"]}
+          notes={[
+            `${h.name}에 눈이 보이면 체인은 들어가기 전에 끼우는 물건입니다. 트렁크에 있어야 쓸 수 있습니다.`,
+            "추운 아침 시동이 안 걸릴 때 다른 차 없이 거는 용도입니다 — 겨울 차 시동 안내의 점프 순서와 같습니다.",
+            "눈길에 갇혀 구조를 기다릴 때 차 안에서 체온을 지키는 용도입니다.",
+            "주차 중 긁힘과 사고 다툼에서 첫 번째 증거입니다 — 교통사고 안내가 권하는 그 물건.",
+          ]}
+          title="🧰 눈길 가기 전에 트렁크에 있어야 하는 것"
+          placement="cctv_road"
+        />
 
         <section className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold text-accent mb-3">
