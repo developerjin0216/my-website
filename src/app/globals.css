@@ -33,34 +33,3 @@ body {
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
-
-/* 사이버 목탁(/moktak) — 터치 시 채가 내려치고(먼저) 몸통이 흔들립니다(살짝 늦게). */
-.moktak-stick {
-  transform-origin: 330px 44px;
-  transform: rotate(-18deg);
-}
-.moktak-hit .moktak-stick {
-  animation: moktak-strike 220ms ease-out both;
-}
-.moktak-hit .moktak-body {
-  transform-origin: 200px 200px;
-  animation: moktak-wobble 300ms ease-out 70ms both;
-}
-@keyframes moktak-strike {
-  0% { transform: rotate(-18deg); }
-  35% { transform: rotate(5deg); }
-  100% { transform: rotate(-18deg); }
-}
-@keyframes moktak-wobble {
-  0% { transform: translate(0, 0) rotate(0); }
-  25% { transform: translate(2px, 1px) rotate(1.6deg); }
-  50% { transform: translate(-2px, 0) rotate(-1.3deg); }
-  75% { transform: translate(1px, 0) rotate(0.6deg); }
-  100% { transform: translate(0, 0) rotate(0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .moktak-hit .moktak-stick,
-  .moktak-hit .moktak-body {
-    animation: none;
-  }
-}

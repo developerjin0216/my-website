@@ -15,17 +15,52 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "moktak_count";
 
-type Tone = "deep" | "bright";
+type Tone = "ref" | "deep";
 
 // 음색 — [주파수, 세기, 감쇠 초]. 울림은 사인파, 타격은 노이즈.
-// deep: 실제 목탁처럼 기음을 300Hz 대로 내리고 저음 울림(165Hz)을 깔아 무게를 줍니다.
-//       감쇠를 0.3초까지 늘려 "딱"이 아니라 "툭 — 하고 남는" 소리가 되게 했습니다.
-//       타격 노이즈는 500Hz 대를 Q 높게 걸러 속이 빈 나무가 울리는 느낌을 냅니다.
-// bright: 첫 판의 가벼운 소리(690Hz 대). 비교용으로 남깁니다.
-const TONES: Record<
-  Tone,
-  { partials: [number, number, number][]; knock: [number, number, number]; edge: [number, number, number]; lowpass: number }
-> = {
+//
+// ref(기본): 참고 샘플(woodenfish.online/sound.mp3, 0.363s)을 2026-11-05 에 실측해 맞춘 값.
+//   측정: 기음은 낮지 않고 600~655Hz 에 가까운 모드가 여럿 겹쳐 있음(655·637·596·567·548Hz),
+//   1,150Hz 와 737Hz 가 -25dB, 460Hz 가 -30dB. 에너지 90% 가 400~1,500Hz, 1.5kHz 위는 6%뿐.
+//   감쇠는 -20dB 33ms·-40dB 49ms 로 매우 짧은 "톡"이고, 150ms 뒤에도 633Hz 여운이 -40dB
+//   아래로 남음. 어택 6ms. → 가까운 사인파 다섯을 겹쳐 두툼하게, 고역은 2.5kHz 에서 자르고,
+//   포락선을 "짧은 타격 + 긴 꼬리" 두 단계로.
+//   첫 판이 가볍게 들린 이유가 여기서 보입니다 — 1.8kHz 노이즈 클릭과 2.3kHz 배음이 원인.
+// deep: 기음을 330Hz 로 내리고 165Hz 를 깐 무거운 음색. 참고와는 다르지만 선택지로 남깁니다.
+interface ToneSpec {
+  /** [Hz, 세기, 꼬리 길이 s] */
+  partials: [number, number, number][];
+  /** 타격 세기가 1/10 로 떨어지는 시각(s) — 참고 샘플은 0.033 */
+  hit: number;
+  /** 치고 난 뒤 음이 내려가는 비율 */
+  drift: number;
+  knock: [number, number, number];
+  knockLen: number;
+  edge: [number, number, number];
+  lowpass: number;
+  gain: number;
+}
+
+const TONES: Record<Tone, ToneSpec> = {
+  ref: {
+    partials: [
+      [655, 1.0, 0.28],
+      [637, 0.75, 0.24],
+      [596, 0.7, 0.26],
+      [567, 0.3, 0.16],
+      [548, 0.2, 0.14],
+      [460, 0.08, 0.05],
+      [737, 0.07, 0.06],
+      [1150, 0.06, 0.04],
+    ],
+    hit: 0.035,
+    drift: 0.97,
+    knock: [720, 1.6, 0.55],
+    knockLen: 0.02,
+    edge: [1300, 1, 0.07],
+    lowpass: 2500,
+    gain: 1.1,
+  },
   deep: {
     partials: [
       [165, 0.55, 0.09],
@@ -34,19 +69,13 @@ const TONES: Record<
       [820, 0.3, 0.12],
       [1650, 0.1, 0.05],
     ],
+    hit: 0.12,
+    drift: 0.92,
     knock: [520, 5, 0.9],
+    knockLen: 0.035,
     edge: [1400, 1, 0.22],
     lowpass: 3800,
-  },
-  bright: {
-    partials: [
-      [690, 0.9, 0.16],
-      [1140, 0.45, 0.1],
-      [2300, 0.2, 0.05],
-    ],
-    knock: [1800, 0.8, 0.5],
-    edge: [3200, 1, 0.15],
-    lowpass: 9000,
+    gain: 1,
   },
 };
 
@@ -82,27 +111,30 @@ function strike(ctx: AudioContext, volume: number, tone: Tone) {
   comp.attack.value = 0.001;
   comp.release.value = 0.12;
   const out = ctx.createGain();
-  out.gain.value = volume;
+  out.gain.value = volume * p.gain;
   lp.connect(comp).connect(out).connect(ctx.destination);
 
-  const detune = 1 + (Math.random() - 0.5) * 0.04;
+  const detune = 1 + (Math.random() - 0.5) * 0.03;
   for (const [f, g, d] of p.partials) {
     const o = ctx.createOscillator();
     o.type = "sine";
     o.frequency.setValueAtTime(f * detune, t);
-    o.frequency.exponentialRampToValueAtTime(f * detune * 0.92, t + d);
+    o.frequency.exponentialRampToValueAtTime(f * detune * p.drift, t + d);
     const env = ctx.createGain();
+    // 두 단계 포락선 — 어택 6ms → 타격(hit 시각에 1/10) → 긴 꼬리(-40dB 아래로 d 초까지)
     env.gain.setValueAtTime(0.0001, t);
-    env.gain.exponentialRampToValueAtTime(g, t + 0.004);
+    env.gain.exponentialRampToValueAtTime(g, t + 0.006);
+    env.gain.exponentialRampToValueAtTime(g * 0.1, t + p.hit);
+    env.gain.exponentialRampToValueAtTime(g * 0.012, t + p.hit * 2);
     env.gain.exponentialRampToValueAtTime(0.0001, t + d);
     o.connect(env).connect(lp);
     o.start(t);
     o.stop(t + d + 0.03);
   }
 
-  // 타격 — 속이 빈 나무의 "툭"(knock)과 채가 닿는 순간의 짧은 "딱"(edge)
-  noiseBurst(ctx, t, 0.035, p.knock, lp);
-  noiseBurst(ctx, t, 0.008, p.edge, lp);
+  // 타격 — 나무가 울리는 "툭"(knock)과 채가 닿는 순간의 아주 짧은 "딱"(edge)
+  noiseBurst(ctx, t, p.knockLen, p.knock, lp);
+  noiseBurst(ctx, t, 0.005, p.edge, lp);
 }
 
 // 몸통 외곽선 — 위가 둥글고 아래가 살짝 눌린 구. clipPath 와 본체가 같은 경로를 씁니다.
@@ -111,10 +143,13 @@ const BODY =
 
 export default function MoktakClient() {
   const ctxRef = useRef<AudioContext | null>(null);
+  // 모션은 CSS 가 아니라 SVG 자체 애니메이션(SMIL)으로 — SVG <g> 에 건 CSS transform 은
+  // 브라우저(특히 사파리)에 따라 먹지 않습니다. beginElement() 로 매번 처음부터 재생합니다.
+  const stickAnim = useRef<SVGAnimateTransformElement>(null);
+  const bodyAnim = useRef<SVGAnimateTransformElement>(null);
   const [count, setCount] = useState(0);
-  const [hitKey, setHitKey] = useState(0);
   const [muted, setMuted] = useState(false);
-  const [tone, setTone] = useState<Tone>("deep");
+  const [tone, setTone] = useState<Tone>("ref");
 
   useEffect(() => {
     // 저장된 타수 복원 — 동기 setState 캐스케이드 방지를 위해 태스크로 지연 (CoupangBanner 와 같은 패턴)
@@ -140,7 +175,16 @@ export default function MoktakClient() {
         /* Web Audio 미지원 — 소리 없이 동작만 */
       }
     }
-    setHitKey(Date.now());
+    // 채가 먼저 내려치고(0.24s), 몸통은 채가 닿는 시점(≈70ms)부터 흔들립니다
+    try {
+      const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      if (!reduce) {
+        stickAnim.current?.beginElement();
+        bodyAnim.current?.beginElementAt(0.07);
+      }
+    } catch {
+      /* SMIL 미지원 — 소리와 카운트만 */
+    }
     setCount((c) => {
       const next = c + 1;
       try {
@@ -183,8 +227,7 @@ export default function MoktakClient() {
         aria-label="목탁 치기"
         className="rounded-full outline-none focus-visible:ring-4 focus-visible:ring-[#c9a15a]/35 active:brightness-110 touch-manipulation"
       >
-        {/* key 가 바뀌면 다시 마운트돼 애니메이션이 처음부터 재생됩니다 */}
-        <div key={hitKey} className={hitKey ? "moktak-hit" : ""}>
+        <div>
           <svg
             viewBox="0 0 400 400"
             width="320"
@@ -269,8 +312,19 @@ export default function MoktakClient() {
             <ellipse cx="200" cy="320" rx="138" ry="20" fill="none" stroke="#c9a15a" strokeWidth="1" opacity="0.35" />
             <ellipse cx="200" cy="312" rx="90" ry="9" fill="#fff" opacity="0.05" />
 
-            {/* 몸통 */}
-            <g className="moktak-body">
+            {/* 몸통 — 맞으면 중심을 축으로 좌우로 흔들립니다 */}
+            <g>
+              <animateTransform
+                ref={bodyAnim}
+                attributeName="transform"
+                attributeType="XML"
+                type="rotate"
+                values="0 200 200; 2.6 200 200; -2 200 200; 1 200 200; -0.4 200 200; 0 200 200"
+                keyTimes="0; 0.2; 0.45; 0.7; 0.88; 1"
+                dur="0.36s"
+                begin="indefinite"
+                fill="remove"
+              />
               {/* 몸통이 방석에 드리우는 그림자 */}
               <ellipse cx="206" cy="304" rx="120" ry="22" fill="#000" opacity="0.5" filter="url(#mk-blur-md)" />
               <path d={BODY} fill="url(#mk-body)" />
@@ -302,8 +356,21 @@ export default function MoktakClient() {
               </g>
             </g>
 
-            {/* 채 — 옻칠 막대, 황동 고리 하나. 회전축은 끈 바로 아래(330,44) */}
-            <g className="moktak-stick">
+            {/* 채 — 옻칠 막대, 황동 고리 하나. 끈 바로 아래(330,44)를 축으로 크게 휘둘러 내려칩니다 */}
+            <g transform="rotate(-26 330 44)">
+              <animateTransform
+                ref={stickAnim}
+                attributeName="transform"
+                attributeType="XML"
+                type="rotate"
+                values="-26 330 44; -34 330 44; 12 330 44; -26 330 44"
+                keyTimes="0; 0.18; 0.42; 1"
+                calcMode="spline"
+                keySplines="0.4 0 0.8 0.6; 0.1 0.9 0.2 1; 0.3 0 0.5 1"
+                dur="0.3s"
+                begin="indefinite"
+                fill="remove"
+              />
               <circle cx="330" cy="32" r="8" fill="none" stroke="#c9a15a" strokeWidth="1.8" opacity="0.6" />
               <rect x="324" y="40" width="12" height="150" rx="6" fill="url(#mk-stick)" />
               <path d="M327.5 48 V 178" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" opacity="0.13" />
@@ -332,11 +399,11 @@ export default function MoktakClient() {
         </button>
         <button
           type="button"
-          onClick={() => setTone((v) => (v === "deep" ? "bright" : "deep"))}
+          onClick={() => setTone((v) => (v === "ref" ? "deep" : "ref"))}
           className="rounded-full px-4 py-2 text-xs font-medium border border-[#3a3f5a] bg-transparent text-[#b8bdd0] hover:border-[#c9a15a] hover:text-[#e8dcc4] transition-colors"
           aria-label="음색 바꾸기"
         >
-          {tone === "deep" ? "음색: 묵직" : "음색: 맑음"}
+          {tone === "ref" ? "음색: 원음" : "음색: 묵직"}
         </button>
         <button
           type="button"
