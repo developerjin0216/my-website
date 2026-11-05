@@ -21,6 +21,7 @@ const NOINDEX_SECTIONS = [
   "/omok",
   "/battle",
   "/tools",
+  "/moktak", // 사이버 목탁 — 별도 서비스, 주제 밖
 ];
 
 /** 위 섹션 안이지만 주제에 맞아 남기는 페이지 (폭설·폭우 때 도로 확인) */

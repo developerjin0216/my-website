@@ -248,6 +248,7 @@ export default function AboutPage() {
                 ["/mbti", "MBTI"],
                 ["/meme", "밈 사전"],
                 ["/prompts", "AI 프롬프트"],
+                ["/moktak", "사이버 목탁"],
               ].map(([href, label], i) => (
                 <span key={href}>
                   {i > 0 && " · "}
