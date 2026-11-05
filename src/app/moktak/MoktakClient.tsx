@@ -15,18 +15,52 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "moktak_count";
 
-type Tone = "ref" | "deep";
+// 모션 키프레임 — [진행 0~1, 각도]. 구간마다 부드럽게(smoothstep) 잇습니다.
+// 채: 휴지 -26° → 뒤로 -42° 젖힘 → +16° 로 내려침 → 휴지. 몸통: 맞은 뒤 좌우로 잦아드는 흔들림.
+const STICK_KEYS: [number, number][] = [
+  [0, -26],
+  [0.2, -42],
+  [0.45, 16],
+  [0.62, 2],
+  [1, -26],
+];
+const BODY_KEYS: [number, number][] = [
+  [0, 0],
+  [0.18, 3.2],
+  [0.42, -2.6],
+  [0.66, 1.3],
+  [0.85, -0.5],
+  [1, 0],
+];
+const STICK_MS = 340;
+const BODY_DELAY_MS = 110;
+const BODY_MS = 400;
+
+function tween(keys: [number, number][], u: number): number {
+  if (u <= 0) return keys[0][1];
+  if (u >= 1) return keys[keys.length - 1][1];
+  for (let i = 1; i < keys.length; i++) {
+    const [t1, v1] = keys[i];
+    const [t0, v0] = keys[i - 1];
+    if (u <= t1) {
+      const p = (u - t0) / (t1 - t0);
+      const e = p * p * (3 - 2 * p);
+      return v0 + (v1 - v0) * e;
+    }
+  }
+  return keys[keys.length - 1][1];
+}
 
 // 음색 — [주파수, 세기, 감쇠 초]. 울림은 사인파, 타격은 노이즈.
 //
-// ref(기본): 참고 샘플(woodenfish.online/sound.mp3, 0.363s)을 2026-11-05 에 실측해 맞춘 값.
+// 참고 샘플(woodenfish.online/sound.mp3, 0.363s)을 2026-11-05 에 실측해 맞춘 값 하나입니다.
+// (330Hz 짜리 "묵직" 프리셋과 음색 버튼은 사장님 요청으로 제거 — 2026-11-05)
 //   측정: 기음은 낮지 않고 600~655Hz 에 가까운 모드가 여럿 겹쳐 있음(655·637·596·567·548Hz),
 //   1,150Hz 와 737Hz 가 -25dB, 460Hz 가 -30dB. 에너지 90% 가 400~1,500Hz, 1.5kHz 위는 6%뿐.
 //   감쇠는 -20dB 33ms·-40dB 49ms 로 매우 짧은 "톡"이고, 150ms 뒤에도 633Hz 여운이 -40dB
 //   아래로 남음. 어택 6ms. → 가까운 사인파 다섯을 겹쳐 두툼하게, 고역은 2.5kHz 에서 자르고,
 //   포락선을 "짧은 타격 + 긴 꼬리" 두 단계로.
 //   첫 판이 가볍게 들린 이유가 여기서 보입니다 — 1.8kHz 노이즈 클릭과 2.3kHz 배음이 원인.
-// deep: 기음을 330Hz 로 내리고 165Hz 를 깐 무거운 음색. 참고와는 다르지만 선택지로 남깁니다.
 interface ToneSpec {
   /** [Hz, 세기, 꼬리 길이 s] */
   partials: [number, number, number][];
@@ -41,42 +75,24 @@ interface ToneSpec {
   gain: number;
 }
 
-const TONES: Record<Tone, ToneSpec> = {
-  ref: {
-    partials: [
-      [655, 1.0, 0.28],
-      [637, 0.75, 0.24],
-      [596, 0.7, 0.26],
-      [567, 0.3, 0.16],
-      [548, 0.2, 0.14],
-      [460, 0.08, 0.05],
-      [737, 0.07, 0.06],
-      [1150, 0.06, 0.04],
-    ],
-    hit: 0.035,
-    drift: 0.97,
-    knock: [720, 1.6, 0.55],
-    knockLen: 0.02,
-    edge: [1300, 1, 0.07],
-    lowpass: 2500,
-    gain: 1.1,
-  },
-  deep: {
-    partials: [
-      [165, 0.55, 0.09],
-      [330, 1.0, 0.3],
-      [495, 0.55, 0.22],
-      [820, 0.3, 0.12],
-      [1650, 0.1, 0.05],
-    ],
-    hit: 0.12,
-    drift: 0.92,
-    knock: [520, 5, 0.9],
-    knockLen: 0.035,
-    edge: [1400, 1, 0.22],
-    lowpass: 3800,
-    gain: 1,
-  },
+const TONE: ToneSpec = {
+  partials: [
+    [655, 1.0, 0.28],
+    [637, 0.75, 0.24],
+    [596, 0.7, 0.26],
+    [567, 0.3, 0.16],
+    [548, 0.2, 0.14],
+    [460, 0.08, 0.05],
+    [737, 0.07, 0.06],
+    [1150, 0.06, 0.04],
+  ],
+  hit: 0.035,
+  drift: 0.97,
+  knock: [720, 1.6, 0.55],
+  knockLen: 0.02,
+  edge: [1300, 1, 0.07],
+  lowpass: 2500,
+  gain: 1.1,
 };
 
 function noiseBurst(ctx: AudioContext, t: number, seconds: number, [freq, q, gain]: [number, number, number], out: AudioNode) {
@@ -97,8 +113,8 @@ function noiseBurst(ctx: AudioContext, t: number, seconds: number, [freq, q, gai
   src.start(t);
 }
 
-function strike(ctx: AudioContext, volume: number, tone: Tone) {
-  const p = TONES[tone];
+function strike(ctx: AudioContext, volume: number) {
+  const p = TONE;
   const t = ctx.currentTime;
 
   // 마스터 — 고역을 깎아 쇳소리를 빼고, 리미터 역할의 컴프레서로 클리핑을 막습니다
@@ -143,13 +159,15 @@ const BODY =
 
 export default function MoktakClient() {
   const ctxRef = useRef<AudioContext | null>(null);
-  // 모션은 CSS 가 아니라 SVG 자체 애니메이션(SMIL)으로 — SVG <g> 에 건 CSS transform 은
-  // 브라우저(특히 사파리)에 따라 먹지 않습니다. beginElement() 로 매번 처음부터 재생합니다.
-  const stickAnim = useRef<SVGAnimateTransformElement>(null);
-  const bodyAnim = useRef<SVGAnimateTransformElement>(null);
+  // 모션은 자바스크립트가 프레임마다 transform 속성을 직접 써넣습니다.
+  // CSS transform(SVG <g> 에선 브라우저별로 무시됨)도, SMIL(환경에 따라 안 돎)도 거쳤는데
+  // 실제 기기에서 움직임이 보이지 않았습니다. requestAnimationFrame + setAttribute 는
+  // 어디서나 같은 결과를 냅니다.
+  const stickRef = useRef<SVGGElement>(null);
+  const bodyRef = useRef<SVGGElement>(null);
+  const rafRef = useRef(0);
   const [count, setCount] = useState(0);
   const [muted, setMuted] = useState(false);
-  const [tone, setTone] = useState<Tone>("ref");
 
   useEffect(() => {
     // 저장된 타수 복원 — 동기 setState 캐스케이드 방지를 위해 태스크로 지연 (CoupangBanner 와 같은 패턴)
@@ -161,7 +179,10 @@ export default function MoktakClient() {
         /* 저장소 없음 — 0부터 */
       }
     }, 0);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   const hit = useCallback(() => {
@@ -170,21 +191,28 @@ export default function MoktakClient() {
         if (!ctxRef.current) ctxRef.current = new AudioContext();
         const ctx = ctxRef.current;
         if (ctx.state === "suspended") void ctx.resume();
-        strike(ctx, 1, tone);
+        strike(ctx, 1);
       } catch {
         /* Web Audio 미지원 — 소리 없이 동작만 */
       }
     }
-    // 채가 먼저 내려치고(0.24s), 몸통은 채가 닿는 시점(≈70ms)부터 흔들립니다
-    try {
-      const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-      if (!reduce) {
-        stickAnim.current?.beginElement();
-        bodyAnim.current?.beginElementAt(0.07);
+    // 채가 뒤로 젖혔다가 내려치고(0.34s), 몸통은 채가 닿는 시점(≈110ms)부터 흔들립니다(0.4s)
+    cancelAnimationFrame(rafRef.current);
+    const start = performance.now();
+    const frame = (now: number) => {
+      const t = now - start;
+      const s = stickRef.current;
+      const b = bodyRef.current;
+      if (s) s.setAttribute("transform", `rotate(${tween(STICK_KEYS, t / STICK_MS).toFixed(2)} 330 44)`);
+      if (b) {
+        const u = (t - BODY_DELAY_MS) / BODY_MS;
+        const a = u < 0 ? 0 : tween(BODY_KEYS, u);
+        const dip = u < 0 || u > 1 ? 0 : Math.sin(Math.PI * Math.min(u, 1)) * 3;
+        b.setAttribute("transform", `translate(0 ${dip.toFixed(2)}) rotate(${a.toFixed(2)} 200 200)`);
       }
-    } catch {
-      /* SMIL 미지원 — 소리와 카운트만 */
-    }
+      if (t < Math.max(STICK_MS, BODY_DELAY_MS + BODY_MS)) rafRef.current = requestAnimationFrame(frame);
+    };
+    rafRef.current = requestAnimationFrame(frame);
     setCount((c) => {
       const next = c + 1;
       try {
@@ -199,7 +227,7 @@ export default function MoktakClient() {
     } catch {
       /* silent */
     }
-  }, [muted, tone]);
+  }, [muted]);
 
   const reset = () => {
     setCount(0);
@@ -225,7 +253,7 @@ export default function MoktakClient() {
           }
         }}
         aria-label="목탁 치기"
-        className="rounded-full outline-none focus-visible:ring-4 focus-visible:ring-[#c9a15a]/35 active:brightness-110 touch-manipulation"
+        className="rounded-full outline-none focus-visible:ring-4 focus-visible:ring-[#c9a15a]/35 touch-manipulation"
       >
         <div>
           <svg
@@ -312,19 +340,8 @@ export default function MoktakClient() {
             <ellipse cx="200" cy="320" rx="138" ry="20" fill="none" stroke="#c9a15a" strokeWidth="1" opacity="0.35" />
             <ellipse cx="200" cy="312" rx="90" ry="9" fill="#fff" opacity="0.05" />
 
-            {/* 몸통 — 맞으면 중심을 축으로 좌우로 흔들립니다 */}
-            <g>
-              <animateTransform
-                ref={bodyAnim}
-                attributeName="transform"
-                attributeType="XML"
-                type="rotate"
-                values="0 200 200; 2.6 200 200; -2 200 200; 1 200 200; -0.4 200 200; 0 200 200"
-                keyTimes="0; 0.2; 0.45; 0.7; 0.88; 1"
-                dur="0.36s"
-                begin="indefinite"
-                fill="remove"
-              />
+            {/* 몸통 — 맞으면 중심을 축으로 좌우로 흔들립니다 (transform 은 JS 가 씁니다) */}
+            <g ref={bodyRef}>
               {/* 몸통이 방석에 드리우는 그림자 */}
               <ellipse cx="206" cy="304" rx="120" ry="22" fill="#000" opacity="0.5" filter="url(#mk-blur-md)" />
               <path d={BODY} fill="url(#mk-body)" />
@@ -356,21 +373,8 @@ export default function MoktakClient() {
               </g>
             </g>
 
-            {/* 채 — 옻칠 막대, 황동 고리 하나. 끈 바로 아래(330,44)를 축으로 크게 휘둘러 내려칩니다 */}
-            <g transform="rotate(-26 330 44)">
-              <animateTransform
-                ref={stickAnim}
-                attributeName="transform"
-                attributeType="XML"
-                type="rotate"
-                values="-26 330 44; -34 330 44; 12 330 44; -26 330 44"
-                keyTimes="0; 0.18; 0.42; 1"
-                calcMode="spline"
-                keySplines="0.4 0 0.8 0.6; 0.1 0.9 0.2 1; 0.3 0 0.5 1"
-                dur="0.3s"
-                begin="indefinite"
-                fill="remove"
-              />
+            {/* 채 — 옻칠 막대, 황동 고리 하나. 끈 바로 아래(330,44)를 축으로 휘둘러 내려칩니다 (JS 가 각도를 씁니다) */}
+            <g ref={stickRef} transform="rotate(-26 330 44)">
               <circle cx="330" cy="32" r="8" fill="none" stroke="#c9a15a" strokeWidth="1.8" opacity="0.6" />
               <rect x="324" y="40" width="12" height="150" rx="6" fill="url(#mk-stick)" />
               <path d="M327.5 48 V 178" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" opacity="0.13" />
@@ -396,14 +400,6 @@ export default function MoktakClient() {
           className="rounded-full px-4 py-2 text-xs font-medium border border-[#3a3f5a] bg-transparent text-[#b8bdd0] hover:border-[#c9a15a] hover:text-[#e8dcc4] transition-colors"
         >
           {muted ? "🔇 소리 꺼짐" : "🔊 소리 켜짐"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setTone((v) => (v === "ref" ? "deep" : "ref"))}
-          className="rounded-full px-4 py-2 text-xs font-medium border border-[#3a3f5a] bg-transparent text-[#b8bdd0] hover:border-[#c9a15a] hover:text-[#e8dcc4] transition-colors"
-          aria-label="음색 바꾸기"
-        >
-          {tone === "ref" ? "음색: 원음" : "음색: 묵직"}
         </button>
         <button
           type="button"
