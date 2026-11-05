@@ -15,48 +15,94 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "moktak_count";
 
-function strike(ctx: AudioContext, volume: number) {
-  const t = ctx.currentTime;
-  const out = ctx.createGain();
-  out.gain.value = volume;
-  out.connect(ctx.destination);
+type Tone = "deep" | "bright";
 
-  const detune = 1 + (Math.random() - 0.5) * 0.04;
-  const partials: [number, number, number][] = [
-    [690, 0.9, 0.16],
-    [1140, 0.45, 0.1],
-    [2300, 0.2, 0.05],
-  ];
-  for (const [f, g, d] of partials) {
-    const o = ctx.createOscillator();
-    o.type = "sine";
-    o.frequency.setValueAtTime(f * detune, t);
-    o.frequency.exponentialRampToValueAtTime(f * detune * 0.88, t + d);
-    const env = ctx.createGain();
-    env.gain.setValueAtTime(0.0001, t);
-    env.gain.exponentialRampToValueAtTime(g, t + 0.003);
-    env.gain.exponentialRampToValueAtTime(0.0001, t + d);
-    o.connect(env).connect(out);
-    o.start(t);
-    o.stop(t + d + 0.02);
-  }
+// 음색 — [주파수, 세기, 감쇠 초]. 울림은 사인파, 타격은 노이즈.
+// deep: 실제 목탁처럼 기음을 300Hz 대로 내리고 저음 울림(165Hz)을 깔아 무게를 줍니다.
+//       감쇠를 0.3초까지 늘려 "딱"이 아니라 "툭 — 하고 남는" 소리가 되게 했습니다.
+//       타격 노이즈는 500Hz 대를 Q 높게 걸러 속이 빈 나무가 울리는 느낌을 냅니다.
+// bright: 첫 판의 가벼운 소리(690Hz 대). 비교용으로 남깁니다.
+const TONES: Record<
+  Tone,
+  { partials: [number, number, number][]; knock: [number, number, number]; edge: [number, number, number]; lowpass: number }
+> = {
+  deep: {
+    partials: [
+      [165, 0.55, 0.09],
+      [330, 1.0, 0.3],
+      [495, 0.55, 0.22],
+      [820, 0.3, 0.12],
+      [1650, 0.1, 0.05],
+    ],
+    knock: [520, 5, 0.9],
+    edge: [1400, 1, 0.22],
+    lowpass: 3800,
+  },
+  bright: {
+    partials: [
+      [690, 0.9, 0.16],
+      [1140, 0.45, 0.1],
+      [2300, 0.2, 0.05],
+    ],
+    knock: [1800, 0.8, 0.5],
+    edge: [3200, 1, 0.15],
+    lowpass: 9000,
+  },
+};
 
-  // 타격음 — 12ms 노이즈를 밴드패스로
-  const len = Math.floor(ctx.sampleRate * 0.012);
+function noiseBurst(ctx: AudioContext, t: number, seconds: number, [freq, q, gain]: [number, number, number], out: AudioNode) {
+  const len = Math.floor(ctx.sampleRate * seconds);
   const buf = ctx.createBuffer(1, len, ctx.sampleRate);
   const data = buf.getChannelData(0);
-  for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+  for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2;
   const src = ctx.createBufferSource();
   src.buffer = buf;
   const bp = ctx.createBiquadFilter();
   bp.type = "bandpass";
-  bp.frequency.value = 1800;
-  bp.Q.value = 0.8;
-  const ng = ctx.createGain();
-  ng.gain.setValueAtTime(0.5, t);
-  ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
-  src.connect(bp).connect(ng).connect(out);
+  bp.frequency.value = freq;
+  bp.Q.value = q;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(gain, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + seconds + 0.01);
+  src.connect(bp).connect(g).connect(out);
   src.start(t);
+}
+
+function strike(ctx: AudioContext, volume: number, tone: Tone) {
+  const p = TONES[tone];
+  const t = ctx.currentTime;
+
+  // 마스터 — 고역을 깎아 쇳소리를 빼고, 리미터 역할의 컴프레서로 클리핑을 막습니다
+  const lp = ctx.createBiquadFilter();
+  lp.type = "lowpass";
+  lp.frequency.value = p.lowpass;
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -12;
+  comp.ratio.value = 6;
+  comp.attack.value = 0.001;
+  comp.release.value = 0.12;
+  const out = ctx.createGain();
+  out.gain.value = volume;
+  lp.connect(comp).connect(out).connect(ctx.destination);
+
+  const detune = 1 + (Math.random() - 0.5) * 0.04;
+  for (const [f, g, d] of p.partials) {
+    const o = ctx.createOscillator();
+    o.type = "sine";
+    o.frequency.setValueAtTime(f * detune, t);
+    o.frequency.exponentialRampToValueAtTime(f * detune * 0.92, t + d);
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(0.0001, t);
+    env.gain.exponentialRampToValueAtTime(g, t + 0.004);
+    env.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(env).connect(lp);
+    o.start(t);
+    o.stop(t + d + 0.03);
+  }
+
+  // 타격 — 속이 빈 나무의 "툭"(knock)과 채가 닿는 순간의 짧은 "딱"(edge)
+  noiseBurst(ctx, t, 0.035, p.knock, lp);
+  noiseBurst(ctx, t, 0.008, p.edge, lp);
 }
 
 // 몸통 외곽선 — 위가 둥글고 아래가 살짝 눌린 구. clipPath 와 본체가 같은 경로를 씁니다.
@@ -68,6 +114,7 @@ export default function MoktakClient() {
   const [count, setCount] = useState(0);
   const [hitKey, setHitKey] = useState(0);
   const [muted, setMuted] = useState(false);
+  const [tone, setTone] = useState<Tone>("deep");
 
   useEffect(() => {
     // 저장된 타수 복원 — 동기 setState 캐스케이드 방지를 위해 태스크로 지연 (CoupangBanner 와 같은 패턴)
@@ -88,7 +135,7 @@ export default function MoktakClient() {
         if (!ctxRef.current) ctxRef.current = new AudioContext();
         const ctx = ctxRef.current;
         if (ctx.state === "suspended") void ctx.resume();
-        strike(ctx, 0.8);
+        strike(ctx, 1, tone);
       } catch {
         /* Web Audio 미지원 — 소리 없이 동작만 */
       }
@@ -108,7 +155,7 @@ export default function MoktakClient() {
     } catch {
       /* silent */
     }
-  }, [muted]);
+  }, [muted, tone]);
 
   const reset = () => {
     setCount(0);
@@ -265,6 +312,14 @@ export default function MoktakClient() {
           className="rounded-full px-4 py-2 text-xs font-semibold border border-[#2a3a5a] bg-[#16213e] text-[#c0c8d8] hover:border-accent"
         >
           {muted ? "🔇 소리 꺼짐" : "🔊 소리 켜짐"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setTone((v) => (v === "deep" ? "bright" : "deep"))}
+          className="rounded-full px-4 py-2 text-xs font-semibold border border-[#2a3a5a] bg-[#16213e] text-[#c0c8d8] hover:border-accent"
+          aria-label="음색 바꾸기"
+        >
+          {tone === "deep" ? "음색: 묵직" : "음색: 맑음"}
         </button>
         <button
           type="button"
