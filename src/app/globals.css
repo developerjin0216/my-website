@@ -36,20 +36,20 @@ body {
 
 /* 사이버 목탁(/moktak) — 터치 시 채가 내려치고(먼저) 몸통이 흔들립니다(살짝 늦게). */
 .moktak-stick {
-  transform-origin: 307px 40px;
-  transform: rotate(-22deg);
+  transform-origin: 330px 44px;
+  transform: rotate(-18deg);
 }
 .moktak-hit .moktak-stick {
   animation: moktak-strike 220ms ease-out both;
 }
 .moktak-hit .moktak-body {
-  transform-origin: 180px 200px;
+  transform-origin: 200px 200px;
   animation: moktak-wobble 300ms ease-out 70ms both;
 }
 @keyframes moktak-strike {
-  0% { transform: rotate(-22deg); }
-  35% { transform: rotate(6deg); }
-  100% { transform: rotate(-22deg); }
+  0% { transform: rotate(-18deg); }
+  35% { transform: rotate(5deg); }
+  100% { transform: rotate(-18deg); }
 }
 @keyframes moktak-wobble {
   0% { transform: translate(0, 0) rotate(0); }
