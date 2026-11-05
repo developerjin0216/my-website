@@ -181,7 +181,7 @@ export default function MoktakClient() {
           }
         }}
         aria-label="목탁 치기"
-        className="rounded-full outline-none focus-visible:ring-4 focus-visible:ring-[#ffd700]/40 active:brightness-110 touch-manipulation"
+        className="rounded-full outline-none focus-visible:ring-4 focus-visible:ring-[#c9a15a]/35 active:brightness-110 touch-manipulation"
       >
         {/* key 가 바뀌면 다시 마운트돼 애니메이션이 처음부터 재생됩니다 */}
         <div key={hitKey} className={hitKey ? "moktak-hit" : ""}>
@@ -193,130 +193,147 @@ export default function MoktakClient() {
             aria-hidden="true"
           >
             <defs>
-              {/* 몸통 — 왼쪽 위에서 빛이 오는 광택 나무 */}
-              <radialGradient id="mk-body" cx="36%" cy="30%" r="78%">
-                <stop offset="0" stopColor="#edb77c" />
-                <stop offset="0.3" stopColor="#c27a40" />
-                <stop offset="0.62" stopColor="#8a4d24" />
-                <stop offset="0.86" stopColor="#4f2b12" />
-                <stop offset="1" stopColor="#2b170a" />
+              {/* 은은한 조명 — 배경 가운데만 아주 조금 밝게 */}
+              <radialGradient id="mk-spot" cx="50%" cy="48%" r="50%">
+                <stop offset="0" stopColor="#ffffff" stopOpacity="0.07" />
+                <stop offset="0.7" stopColor="#ffffff" stopOpacity="0.02" />
+                <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
+              </radialGradient>
+              {/* 몸통 — 옻칠한 호두나무. 검정 테두리 없이 그라데이션만으로 윤곽을 만듭니다 */}
+              <radialGradient id="mk-body" cx="34%" cy="28%" r="80%">
+                <stop offset="0" stopColor="#b8804f" />
+                <stop offset="0.22" stopColor="#8e5a31" />
+                <stop offset="0.5" stopColor="#5c361a" />
+                <stop offset="0.78" stopColor="#33200e" />
+                <stop offset="1" stopColor="#170c05" />
               </radialGradient>
               <radialGradient id="mk-sheen" cx="50%" cy="50%" r="50%">
-                <stop offset="0" stopColor="#fff" stopOpacity="0.42" />
-                <stop offset="0.6" stopColor="#fff" stopOpacity="0.08" />
+                <stop offset="0" stopColor="#fff" stopOpacity="0.26" />
+                <stop offset="0.55" stopColor="#fff" stopOpacity="0.06" />
+                <stop offset="1" stopColor="#fff" stopOpacity="0" />
+              </radialGradient>
+              <radialGradient id="mk-spec" cx="50%" cy="50%" r="50%">
+                <stop offset="0" stopColor="#fff" stopOpacity="0.45" />
                 <stop offset="1" stopColor="#fff" stopOpacity="0" />
               </radialGradient>
               <linearGradient id="mk-handle" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stopColor="#a4663a" />
-                <stop offset="0.45" stopColor="#6c3e1c" />
-                <stop offset="1" stopColor="#371e0e" />
+                <stop offset="0" stopColor="#7a4a26" />
+                <stop offset="0.5" stopColor="#4a2a12" />
+                <stop offset="1" stopColor="#231207" />
               </linearGradient>
-              <linearGradient id="mk-stick" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="#dca66c" />
-                <stop offset="1" stopColor="#6a3f20" />
+              <linearGradient id="mk-stick" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stopColor="#4a2c16" />
+                <stop offset="0.5" stopColor="#2a170a" />
+                <stop offset="1" stopColor="#160b04" />
               </linearGradient>
-              <linearGradient id="mk-slit" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor="#090402" />
-                <stop offset="1" stopColor="#2a160a" />
+              <linearGradient id="mk-brass" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#e2c27a" />
+                <stop offset="0.5" stopColor="#a8823c" />
+                <stop offset="1" stopColor="#6e5222" />
               </linearGradient>
-              {/* 나뭇결 — 가로로 길게 늘인 노이즈 */}
+              {/* 방석 — 짙은 자주색 비단 */}
+              <radialGradient id="mk-cushion" cx="50%" cy="20%" r="80%">
+                <stop offset="0" stopColor="#6a2a3a" />
+                <stop offset="0.6" stopColor="#3e1522" />
+                <stop offset="1" stopColor="#240a12" />
+              </radialGradient>
+              {/* 나뭇결 — 아주 희미하게 */}
               <filter id="mk-grain" x="0" y="0" width="100%" height="100%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.012 0.42" numOctaves="3" seed="11" result="n" />
+                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.5" numOctaves="2" seed="5" result="n" />
                 <feColorMatrix in="n" type="saturate" values="0" result="g" />
                 <feComponentTransfer in="g">
-                  <feFuncA type="table" tableValues="0 0.28" />
+                  <feFuncA type="table" tableValues="0 0.1" />
                 </feComponentTransfer>
               </filter>
               <filter id="mk-blur-lg" x="-40%" y="-40%" width="180%" height="180%">
-                <feGaussianBlur stdDeviation="12" />
+                <feGaussianBlur stdDeviation="14" />
+              </filter>
+              <filter id="mk-blur-md" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="6" />
               </filter>
               <filter id="mk-blur-sm" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3" />
+                <feGaussianBlur stdDeviation="2.5" />
               </filter>
-              {/* 비늘 조각 — 목탁 몸통의 전통 문양 */}
-              <pattern id="mk-scales" width="30" height="24" patternUnits="userSpaceOnUse">
-                <path d="M0 24 a15 15 0 0 1 30 0" fill="none" stroke="#2a1608" strokeWidth="1.2" />
-                <path d="M-15 12 a15 15 0 0 1 30 0 M15 12 a15 15 0 0 1 30 0" fill="none" stroke="#2a1608" strokeWidth="1.2" />
-              </pattern>
               <clipPath id="mk-clip">
                 <path d={BODY} />
               </clipPath>
             </defs>
 
-            {/* 바닥 그림자 */}
-            <ellipse cx="200" cy="372" rx="118" ry="13" fill="#000" opacity="0.5" filter="url(#mk-blur-lg)" />
+            {/* 조명 */}
+            <circle cx="200" cy="196" r="196" fill="url(#mk-spot)" />
+
+            {/* 방석 — 두께, 윗면, 금실 테두리 */}
+            <ellipse cx="200" cy="352" rx="140" ry="16" fill="#000" opacity="0.55" filter="url(#mk-blur-lg)" />
+            <ellipse cx="200" cy="330" rx="148" ry="26" fill="#1c0810" />
+            <ellipse cx="200" cy="320" rx="148" ry="26" fill="url(#mk-cushion)" />
+            <ellipse cx="200" cy="320" rx="138" ry="20" fill="none" stroke="#c9a15a" strokeWidth="1" opacity="0.35" />
+            <ellipse cx="200" cy="312" rx="90" ry="9" fill="#fff" opacity="0.05" />
 
             {/* 몸통 */}
             <g className="moktak-body">
-              <path d={BODY} fill="url(#mk-body)" stroke="#20110a" strokeWidth="2.5" />
-              {/* 나뭇결 + 비늘 — 몸통 안에만 */}
+              {/* 몸통이 방석에 드리우는 그림자 */}
+              <ellipse cx="206" cy="304" rx="120" ry="22" fill="#000" opacity="0.5" filter="url(#mk-blur-md)" />
+              <path d={BODY} fill="url(#mk-body)" />
               <g clipPath="url(#mk-clip)">
-                <rect x="62" y="58" width="276" height="248" filter="url(#mk-grain)" style={{ mixBlendMode: "multiply" }} opacity="0.75" />
-                <rect x="62" y="130" width="276" height="176" fill="url(#mk-scales)" opacity="0.22" />
+                <rect x="62" y="58" width="276" height="248" filter="url(#mk-grain)" style={{ mixBlendMode: "multiply" }} opacity="0.7" />
                 {/* 아래쪽을 어둡게 — 구의 밑면 */}
-                <ellipse cx="200" cy="300" rx="150" ry="70" fill="#1a0d05" opacity="0.45" filter="url(#mk-blur-lg)" />
+                <ellipse cx="200" cy="312" rx="160" ry="74" fill="#0d0603" opacity="0.5" filter="url(#mk-blur-lg)" />
+                {/* 가장자리 안쪽을 살짝 어둡게 — 테두리 선 대신 */}
+                <path d={BODY} fill="none" stroke="#0d0603" strokeWidth="10" opacity="0.35" filter="url(#mk-blur-md)" />
               </g>
-              {/* 광택 — 왼쪽 위 */}
-              <ellipse cx="148" cy="112" rx="64" ry="36" fill="url(#mk-sheen)" />
-              {/* 가장자리 반사광 — 오른쪽 아래 */}
-              <path d="M312 118 A 140 136 0 0 1 262 282" fill="none" stroke="#ffd59a" strokeWidth="5" strokeLinecap="round" opacity="0.16" />
+              {/* 옻칠 광택 — 넓은 시인 하나, 작은 반사점 하나 */}
+              <ellipse cx="150" cy="114" rx="62" ry="34" fill="url(#mk-sheen)" />
+              <ellipse cx="134" cy="100" rx="16" ry="9" fill="url(#mk-spec)" />
+              {/* 반대편 가장자리에 아주 희미한 반사 */}
+              <path d="M316 126 A 138 136 0 0 1 270 280" fill="none" stroke="#e8c08a" strokeWidth="3" strokeLinecap="round" opacity="0.07" />
 
-              {/* 울림 틈 — 입 */}
-              <path d="M78 232 Q 200 318 322 232 Q 200 262 78 232 Z" fill="#000" opacity="0.6" filter="url(#mk-blur-sm)" />
-              <path d="M82 232 Q 200 312 318 232 Q 200 258 82 232 Z" fill="url(#mk-slit)" />
-              <path d="M86 233 Q 200 256 314 233" fill="none" stroke="#f1c28a" strokeWidth="1.8" opacity="0.5" />
-              <path d="M94 240 Q 200 302 306 240" fill="none" stroke="#000" strokeWidth="1.5" opacity="0.6" />
+              {/* 울림 틈 — 가늘고 깊게 */}
+              <path d="M98 238 Q 200 290 302 238 Q 200 256 98 238 Z" fill="#000" opacity="0.5" filter="url(#mk-blur-sm)" />
+              <path d="M100 238 Q 200 286 300 238 Q 200 254 100 238 Z" fill="#070301" />
+              <path d="M104 238.5 Q 200 251 296 238.5" fill="none" stroke="#d9a56a" strokeWidth="1" opacity="0.28" />
 
-              {/* 손잡이 밑 물고기 머리 조각 — 좌우 한 쌍 */}
-              <g opacity="0.95">
-                <path d="M150 294 C 150 280, 170 276, 182 288 L 182 304 C 168 310, 152 306, 150 294 Z" fill="#6c3e1c" stroke="#20110a" strokeWidth="1.5" />
-                <circle cx="163" cy="291" r="4.2" fill="#140903" />
-                <circle cx="164.5" cy="289.8" r="1.3" fill="#f1c28a" opacity="0.8" />
-                <path d="M171 300 q 5 -3 9 1" fill="none" stroke="#20110a" strokeWidth="1.2" />
-                <path d="M250 294 C 250 280, 230 276, 218 288 L 218 304 C 232 310, 248 306, 250 294 Z" fill="#6c3e1c" stroke="#20110a" strokeWidth="1.5" />
-                <circle cx="237" cy="291" r="4.2" fill="#140903" />
-                <circle cx="238.5" cy="289.8" r="1.3" fill="#f1c28a" opacity="0.8" />
-                <path d="M229 300 q -5 -3 -9 1" fill="none" stroke="#20110a" strokeWidth="1.2" />
+              {/* 손잡이 — 앞쪽 아래로 비스듬히. 밑동에 희미한 조각선과 고리 */}
+              <g transform="rotate(26 200 296)">
+                <ellipse cx="200" cy="300" rx="30" ry="9" fill="#1a0d05" opacity="0.9" />
+                <path d="M172 290 q 28 -12 56 0" fill="none" stroke="#e8c08a" strokeWidth="1" opacity="0.14" />
+                <rect x="183" y="298" width="34" height="62" rx="17" fill="url(#mk-handle)" />
+                <rect x="179" y="302" width="42" height="9" rx="4.5" fill="#2a160a" />
+                <path d="M191 318 V 348" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" opacity="0.1" />
               </g>
-
-              {/* 손잡이 */}
-              <rect x="176" y="300" width="48" height="68" rx="20" fill="url(#mk-handle)" stroke="#20110a" strokeWidth="2.5" />
-              <rect x="168" y="306" width="64" height="13" rx="6.5" fill="#4a2a12" stroke="#20110a" strokeWidth="1.5" />
-              <path d="M187 326 V 356" stroke="#f1c28a" strokeWidth="4" strokeLinecap="round" opacity="0.22" />
             </g>
 
-            {/* 채 — 터치하면 내려칩니다. 회전축은 끈 바로 아래(330,44) */}
+            {/* 채 — 옻칠 막대, 황동 고리 하나. 회전축은 끈 바로 아래(330,44) */}
             <g className="moktak-stick">
-              <circle cx="330" cy="30" r="10" fill="none" stroke="#b07a42" strokeWidth="3" />
-              <rect x="322" y="38" width="16" height="152" rx="8" fill="url(#mk-stick)" stroke="#20110a" strokeWidth="2" />
-              <rect x="320" y="62" width="20" height="44" rx="5" fill="#4e2d14" opacity="0.85" />
-              <path d="M324 66 h12 M324 76 h12 M324 86 h12 M324 96 h12" stroke="#2a1608" strokeWidth="1.2" opacity="0.7" />
-              <circle cx="330" cy="200" r="21" fill="url(#mk-stick)" stroke="#20110a" strokeWidth="2" />
-              <ellipse cx="322" cy="191" rx="7" ry="5" fill="#fff" opacity="0.28" />
+              <circle cx="330" cy="32" r="8" fill="none" stroke="#c9a15a" strokeWidth="1.8" opacity="0.6" />
+              <rect x="324" y="40" width="12" height="150" rx="6" fill="url(#mk-stick)" />
+              <path d="M327.5 48 V 178" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" opacity="0.13" />
+              <rect x="321" y="166" width="18" height="9" rx="3" fill="url(#mk-brass)" />
+              <circle cx="330" cy="199" r="18" fill="url(#mk-body)" />
+              <ellipse cx="324" cy="190" rx="6" ry="4" fill="url(#mk-spec)" />
             </g>
           </svg>
         </div>
       </button>
 
       <div className="text-center">
-        <p className="text-4xl font-black text-[#ffd700] tabular-nums leading-none">
+        <p className="text-3xl font-semibold text-[#e8dcc4] tabular-nums leading-none tracking-tight">
           {count.toLocaleString("ko-KR")}
         </p>
-        <p className="text-xs text-[#a0a0b0] mt-1.5">번 쳤습니다 · 이 기기에만 저장됩니다</p>
+        <p className="text-[11px] text-[#8a8fa8] mt-2">번 · 이 기기에만 저장됩니다</p>
       </div>
 
       <div className="flex gap-2">
         <button
           type="button"
           onClick={() => setMuted((m) => !m)}
-          className="rounded-full px-4 py-2 text-xs font-semibold border border-[#2a3a5a] bg-[#16213e] text-[#c0c8d8] hover:border-accent"
+          className="rounded-full px-4 py-2 text-xs font-medium border border-[#3a3f5a] bg-transparent text-[#b8bdd0] hover:border-[#c9a15a] hover:text-[#e8dcc4] transition-colors"
         >
           {muted ? "🔇 소리 꺼짐" : "🔊 소리 켜짐"}
         </button>
         <button
           type="button"
           onClick={() => setTone((v) => (v === "deep" ? "bright" : "deep"))}
-          className="rounded-full px-4 py-2 text-xs font-semibold border border-[#2a3a5a] bg-[#16213e] text-[#c0c8d8] hover:border-accent"
+          className="rounded-full px-4 py-2 text-xs font-medium border border-[#3a3f5a] bg-transparent text-[#b8bdd0] hover:border-[#c9a15a] hover:text-[#e8dcc4] transition-colors"
           aria-label="음색 바꾸기"
         >
           {tone === "deep" ? "음색: 묵직" : "음색: 맑음"}
@@ -324,7 +341,7 @@ export default function MoktakClient() {
         <button
           type="button"
           onClick={reset}
-          className="rounded-full px-4 py-2 text-xs font-semibold border border-[#2a3a5a] bg-[#16213e] text-[#a0a0b0] hover:border-accent"
+          className="rounded-full px-4 py-2 text-xs font-medium border border-[#3a3f5a] bg-transparent text-[#8a8fa8] hover:border-[#c9a15a] hover:text-[#e8dcc4] transition-colors"
         >
           처음부터
         </button>
