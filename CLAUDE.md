@@ -63,7 +63,7 @@ curl -H "Host: quiz.8282114.xyz" localhost:3000/mbti   # expect 308 → 8282114.
 
 Korean-language personal site on **Next.js 16** (App Router) + a standalone **Socket.IO** server.
 **105 URLs are in the sitemap; ~160 more stay live but noindexed** (see *Index scope* below).
-That 95 is the *policy* count — what Google has actually indexed is a separate number, read from
+That 105 is the *policy* count — what Google has actually indexed is a separate number, read from
 Search Console, and the two have never matched here.
 Deployed on Vercel; realtime server on Render.
 
