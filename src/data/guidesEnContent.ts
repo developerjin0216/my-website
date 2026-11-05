@@ -404,5 +404,115 @@ export const enGuideContent: Record<string, EnGuideContent> = {
         ]
       }
     ]
+  },
+  "korean-etiquette": {
+    "intro": "Most foreigners in Korea are forgiven almost any etiquette slip — except at the moments that matter: a colleague's parent dies and you are at the funeral hall with no idea whether to bow, how much to put in the envelope, or what to say. This guide starts there and then covers the other situations where a small gesture decides how you are seen: weddings, greetings, the dinner table, visiting a home, and the subway. It is written for what people actually do today, not for a textbook version of tradition.",
+    "sections": [
+      {
+        "title": "At a Korean funeral: from the door to the exit",
+        "body": [
+          "Korean funerals are held in a funeral hall (jangnyesikjang), usually attached to a hospital, over three days. Guests come and go at any time during the first two days; evening is most common, and you do not need an invitation or an appointment — the family posts the hall and room number (binso) in a text message, and you simply show up. A visit takes thirty minutes to an hour.",
+          "The sequence is the same everywhere. You hand in the condolence envelope and sign the guest book at the reception desk outside the room, take off your shoes, step into the room, pay respects at the altar, greet the family, then move to the dining area where you are served a meal. Knowing this order in advance removes most of the anxiety."
+        ],
+        "table": {
+          "headers": ["Step", "What you do"],
+          "rows": [
+            ["1. Reception desk", "Hand over the white envelope (buui-geum) and sign the guest book (bangmyeongnok) with your name. The desk is staffed by relatives or friends, not the chief mourners."],
+            ["2. Shoes off", "You will bow on the floor, so wear socks without holes. Line your shoes up neatly."],
+            ["3. Altar (yeongjeong)", "Approach the portrait. If there are chrysanthemums, place one with the flower head toward the portrait. If there is incense, light one stick from the candle, do not blow it out with your mouth (wave it gently), and set it in the burner."],
+            ["4. Bow — or stand in silence", "Two full bows and a half bow, or a moment of silence with head lowered. Both are respected (next section)."],
+            ["5. Greet the family (sangju)", "Turn to the mourners standing at the side and exchange one bow. A few quiet words or just the bow. No handshake, no smile, no questions."],
+            ["6. The meal", "Sit, eat what is served, speak quietly, never clink glasses. Leave after a reasonable time with a bow to the family if they are near the door."]
+          ]
+        }
+      },
+      {
+        "title": "Bowing at the altar — and the respectful alternative",
+        "body": [
+          "The traditional form is the keunjeol, the full kneeling bow: stand facing the portrait, kneel, place both hands on the floor and lower your forehead toward them, rise, and repeat — two full bows, followed by a short standing bow (banjeol). Men traditionally place the right hand over the left for a funeral and women the left over the right (the reverse of a celebration), but no one will inspect a foreigner's hands. Doing it slowly and calmly is what reads as respect.",
+          "If bowing conflicts with your beliefs, or you simply are not sure how, stand in front of the altar with your hands together in front of you, lower your head, and hold still for a few seconds. This is mungnyeom, a moment of silence, and it is exactly what many Korean Christians do. It is not a lesser option. The family notices that you came; they do not grade the form.",
+          "Whichever you choose, do it facing the portrait, then turn to the family. Do not look around the room, check your phone, or talk while you are at the altar. Children can simply stand beside you and bow their heads."
+        ]
+      },
+      {
+        "title": "Condolence money: the envelope, the amount, where it goes",
+        "body": [
+          "Guests do not bring flowers or gifts. The contribution is money (buui-geum or jouigeum) in a plain white envelope, handed to the reception desk — never directly to the family. The desk keeps a ledger so the family can later acknowledge who came; that ledger is the reason your name on the envelope matters.",
+          "Use a white envelope; the hall provides them at the desk, usually pre-printed with the characters for condolence. Put the bills inside without folding them in half if you can, and write your full name on the back, lower left. If the family knows you through work, add your company or department so they can place you.",
+          "Amounts: 50,000 won is the standard for an acquaintance or colleague; 100,000 won for a close friend, a teammate, or the family of someone you work with daily; more only if you are genuinely close. Odd numbers of ten-thousand-won notes (30,000 or 50,000) are traditional and 40,000 is avoided because the number four sounds like the word for death, but 100,000 is a normal round figure. If you forget cash, most desks accept a bank transfer later; ask a Korean colleague for the family's account rather than guessing."
+        ]
+      },
+      {
+        "title": "What to wear and what to say",
+        "body": [
+          "Wear black or the darkest clothes you own: a dark suit or dark trousers with a dark top, dark shoes, plain socks. No bright colors, no flashy jewelry, no hat indoors. If you come straight from work in business clothes, that is acceptable; a dark coat over them is enough. Avoid jeans and sneakers if you have any alternative.",
+          "The one phrase to know is 'Samga goin-ui myeongbok-eul bimnida' — May the deceased rest in peace. Said quietly to the family after the bow, it is complete. Koreans also use 'Eolmana sangsim-i keusimnikka' (How great your grief must be). If you cannot manage the Korean, a bow and 'I am so sorry' in English is understood everywhere; the family is not listening for vocabulary.",
+          "Do not ask how the person died, do not say 'at least they lived a long life,' do not laugh or chat loudly in the room, and do not take photographs. Keep your phone silent and in your pocket from the moment you enter."
+        ]
+      },
+      {
+        "title": "The meal afterward — yes, you should eat",
+        "body": [
+          "After greeting the family you are led to tables and served food — typically rice soup (yukgaejang), rice cakes, fruit, and drinks. Eating is part of paying respects, not an optional extra; leaving without sitting down can read as rushing out. You do not need to finish everything, but sit, eat something, and stay a little while.",
+          "Rules at the funeral table: no toasts, never clink glasses, speak quietly, and do not pour your own drink — pour for the person next to you and let them pour for you. Alcohol is usually available; drinking it is normal, declining is normal. When you leave, a slight bow toward the family if they are near is enough; you do not go back into the room to say goodbye."
+        ]
+      },
+      {
+        "title": "At a wedding: envelope again, buffet, timing",
+        "body": [
+          "Korean weddings are short and large. The ceremony in a wedding hall lasts about thirty minutes; guests arrive a little early, hand a white envelope of congratulation money (chuguigeum) to the reception desk, sign the guest book, receive a meal ticket, watch the ceremony, and go to the buffet. Leaving right after the meal is normal, not rude.",
+          "Amounts follow the funeral logic: 50,000 won for an acquaintance, 100,000 won for a friend or close colleague. Write your name on the back of the envelope. Do not bring a wrapped gift unless you are very close and have discussed it; money is the gift. Dress: smart but not formal — a suit or a dress — and avoid white, which is reserved for the bride. If you are invited to the family's photo after the ceremony, go; being asked is a compliment."
+        ]
+      },
+      {
+        "title": "Greetings, bows and two hands",
+        "body": [
+          "A short bow of the head with a 'Annyeonghaseyo' handles almost every greeting. Deeper bows are for people clearly senior to you — a boss, an elder, a professor — and for apologies or thanks that matter. You do not need to bow to shop staff, but a nod when you leave is warmly received.",
+          "Handshakes happen, especially in business, and the polite version uses two hands: shake with the right while the left hand lightly touches your right forearm or wrist. The same two-hand rule applies to giving and receiving anything — money, a card, a document, a gift. Business cards are given and received with both hands and read before being put away, never pocketed unread or written on in front of the giver.",
+          "Address people by title or role, not first name, unless they ask: 'Kim gwajang-nim' (manager Kim), 'seonsaeng-nim' (teacher, also a safe honorific for any adult). Age and seniority shape the language Koreans use with each other, which is why a new acquaintance may ask your age early — it is not rudeness."
+        ]
+      },
+      {
+        "title": "At the table",
+        "body": [
+          "Wait for the oldest or most senior person to pick up their spoon before you start. Rice and soup are eaten with a spoon, side dishes with chopsticks, and the rice bowl stays on the table — you do not lift it as in Japan. Never stand chopsticks upright in a bowl of rice; that is how rice is offered to the dead at a funeral altar.",
+          "Pouring is the ritual that matters. You pour for others and they pour for you; you never fill your own glass. Hold the bottle with two hands (or support your pouring arm with the other hand) when pouring for someone senior, and hold your glass with two hands when being served. Younger people traditionally turn slightly away when drinking in front of elders; foreigners are not expected to, but it is noticed when you do.",
+          "Do not blow your nose at the table — step away. The host or the most senior person often pays for the whole table; offer once, then let them. Among friends and colleagues of the same level, splitting the bill is now completely normal, so do not be surprised either way."
+        ]
+      },
+      {
+        "title": "Visiting a Korean home",
+        "body": [
+          "Shoes come off at the entrance — always. There is a recessed area by the door (hyeongwan); step out of your shoes there and onto the raised floor in socks or the slippers offered. Do not walk back into the entrance area in your socks.",
+          "Bring something small: fruit, a box of snacks or pastries, drinks, or something from your country. It is handed over with two hands and often set aside rather than opened in front of you — that is normal, not disinterest. You may be seated on the floor; sit however is comfortable, but avoid pointing your feet directly at other people."
+        ]
+      },
+      {
+        "title": "Subway, taxis and public places",
+        "body": [
+          "The seats at the ends of subway cars (noyakjaseok) are for the elderly, disabled, and pregnant; leave them empty even when the car is crowded and the seat is free. The pink seats are reserved for pregnant women for the same reason. Phone calls on trains and buses are kept short and quiet; most people text.",
+          "There is no tipping in Korea — not in restaurants, taxis, or hotels — and trying to tip causes confusion. Pay by placing your card or cash in the small tray at the counter or handing it over with two hands. On escalators, stand to the right. Blowing your nose in public is considered unpleasant; sniffing is tolerated, oddly enough.",
+          "Two small taboos worth knowing: do not write a living person's name in red ink (red was used for the names of the dead), and do not gift a knife or scissors to someone close, which traditionally suggests cutting the relationship. Neither will end a friendship if you slip, but both are easy to avoid."
+        ]
+      },
+      {
+        "title": "The phrases that carry you through",
+        "body": [
+          "You do not need fluent Korean for any of this. A handful of phrases, said sincerely with a small bow, cover the situations above."
+        ],
+        "table": {
+          "headers": ["Korean", "Said as", "Meaning · when"],
+          "rows": [
+            ["삼가 고인의 명복을 빕니다", "Samga goin-ui myeongbok-eul bimnida", "May the deceased rest in peace — at the funeral, or by text if you cannot attend"],
+            ["얼마나 상심이 크십니까", "Eolmana sangsim-i keusimnikka", "How great your grief must be — to the family"],
+            ["결혼 축하드립니다", "Gyeolhon chukha-deurimnida", "Congratulations on your wedding"],
+            ["잘 먹겠습니다 / 잘 먹었습니다", "Jal meokgessseumnida / Jal meogeossseumnida", "Before a meal (I will eat well) / after (I ate well) — to the host or whoever pays"],
+            ["감사합니다", "Gamsahamnida", "Thank you — with a small bow"],
+            ["죄송합니다", "Joesonghamnida", "I am sorry — the apology that works everywhere"],
+            ["처음 뵙겠습니다", "Cheoeum boepgesseumnida", "Nice to meet you (formal first meeting)"]
+          ]
+        }
+      }
+    ]
   }
 };

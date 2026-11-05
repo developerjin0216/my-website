@@ -62,7 +62,7 @@ curl -H "Host: quiz.8282114.xyz" localhost:3000/mbti   # expect 308 → 8282114.
 ## Architecture
 
 Korean-language personal site on **Next.js 16** (App Router) + a standalone **Socket.IO** server.
-**95 URLs are in the sitemap; ~160 more stay live but noindexed** (see *Index scope* below).
+**105 URLs are in the sitemap; ~160 more stay live but noindexed** (see *Index scope* below).
 That 95 is the *policy* count — what Google has actually indexed is a separate number, read from
 Search Console, and the two have never matched here.
 Deployed on Vercel; realtime server on Render.
@@ -123,7 +123,7 @@ Indexed sections first; the rest are live but noindexed.
 | `/help`, `/help/<id>` | yes | `data/help.ts` | 긴급 대처 가이드, the core of the site. Richest E-E-A-T template. The hub groups topics by situation and **throws at build** if a topic is unassigned, duplicated, or unknown |
 | `/guides/<id>` | yes | `data/guides.ts` | Long-form; must stay in sync with calculator rates |
 | `/calculators/<id>` | yes, except `bmi`·`calorie` | `data/calculators.ts` | Server layout + client page |
-| `/en`, `/en/<id>` | yes | `data/guidesEn.ts` | English emergency guides for foreigners in Korea |
+| `/en`, `/en/<id>` | yes | `data/guidesEn.ts` + `guidesEnContent.ts` | English guides for foreigners in Korea. `koId` pairs a guide with its `/help` twin for hreflang; `korean-etiquette` has no twin, so `koId` is optional and the shell hides the 한국어 link when it is absent |
 | `/tools/cctv` | yes | `data/cctvRegions.ts` | **The only feature with an external dependency.** Browser calls ITS directly — see below |
 | `/tools/cctv/<road>` | yes | `data/cctvHighways.json` (generated) | 20 expressway pages for "OO고속도로 cctv" searches (snow, 명절) |
 | `/tools/cctv/national-parks` | yes | `data/cctvParks.ts` (hand-copied) | 18 국립공원공단 cameras — 단풍·눈꽃·일출 season |

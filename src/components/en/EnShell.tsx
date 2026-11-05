@@ -160,17 +160,19 @@ export default function EnShell({
         </ul>
       </section>
 
-      {/* Korean version — visible pair for hreflang */}
-      <Link
-        href={`/help/${g.koId}`}
-        className="flex items-center justify-between rounded-xl px-4 py-3 mb-4 bg-card border border-[#2a3a5a] hover:border-accent transition-colors"
-      >
-        <span className="text-sm text-[#a0a0b0]">
-          🇰🇷 <span className="font-semibold text-[#e8e8f0]">한국어로 보기</span>
-          {" — "}Korean version of this guide
-        </span>
-        <span className="text-accent text-sm shrink-0 ml-2">→</span>
-      </Link>
+      {/* Korean version — visible pair for hreflang (only when a Korean counterpart exists) */}
+      {g.koId && (
+        <Link
+          href={`/help/${g.koId}`}
+          className="flex items-center justify-between rounded-xl px-4 py-3 mb-4 bg-card border border-[#2a3a5a] hover:border-accent transition-colors"
+        >
+          <span className="text-sm text-[#a0a0b0]">
+            🇰🇷 <span className="font-semibold text-[#e8e8f0]">한국어로 보기</span>
+            {" — "}Korean version of this guide
+          </span>
+          <span className="text-accent text-sm shrink-0 ml-2">→</span>
+        </Link>
+      )}
 
       {related.length > 0 && (
         <section className="mb-4">

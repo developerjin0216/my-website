@@ -26,7 +26,7 @@ export interface EnGuide {
   description: string;
   icon: string;
   date: string; // last verified — shown on page + JSON-LD dateModified
-  koId: string; // paired Korean help topic id (hreflang)
+  koId?: string; // paired Korean help topic id (hreflang) — omit when there is no Korean counterpart
   related: string[]; // related EN guide ids
   faq: EnFaq[];
   sources: EnSource[];
@@ -42,7 +42,7 @@ export const enGuides: EnGuide[] = [
     icon: "🚨",
     date: "2026-09-09",
     koId: "emergency-numbers",
-    related: ["night-hospital", "lost-card", "scam-calls"],
+    related: ["night-hospital", "lost-card", "scam-calls", "korean-etiquette"],
     faq: [
       {
         q: "Do 112 and 119 operators speak English?",
@@ -77,7 +77,7 @@ export const enGuides: EnGuide[] = [
     icon: "🏥",
     date: "2026-09-09",
     koId: "night-hospital",
-    related: ["emergency-numbers", "lost-card"],
+    related: ["emergency-numbers", "lost-card", "korean-etiquette"],
     faq: [
       {
         q: "Can I go to a Korean ER without Korean health insurance?",
@@ -300,7 +300,8 @@ export const enGuides: EnGuide[] = [
     "koId": "unpaid-wages",
     "related": [
       "scam-calls",
-      "medical-cost"
+      "medical-cost",
+      "korean-etiquette"
     ],
     "faq": [
       {
@@ -460,6 +461,55 @@ export const enGuides: EnGuide[] = [
         "url": "https://www.gov.kr/portal/foreigner/en/m030303"
       }
     ]
+  },
+  {
+    "id": "korean-etiquette",
+    "title": "Korean Etiquette for Everyday Situations",
+    "metaTitle": "Korean Etiquette Guide: What to Do at a Funeral, Wedding, Dinner Table and on the Subway",
+    "description": "Invited to a Korean funeral and not sure whether to bow? This practical guide covers the funeral hall step by step (bowing or a moment of silence, condolence money, what to wear and say), weddings, greetings, the dinner table, visiting a home, and subway manners — for foreigners living in Korea.",
+    "icon": "🙇",
+    "date": "2026-11-05",
+    "related": [
+      "emergency-numbers",
+      "night-hospital",
+      "jeonse-scam"
+    ],
+    "faq": [
+      {
+        "q": "I am not Buddhist or Confucian. Do I have to bow at the altar?",
+        "a": "No. Bowing to the portrait is a sign of respect, not a religious act for most Koreans, but a foreigner who stands in front of the altar with hands together and head bowed for a few seconds — a moment of silence (mungnyeom) — is fully respected. Many Korean Christians do exactly that. What matters to the family is that you came and that you greeted them; nobody will check your technique."
+      },
+      {
+        "q": "How much condolence money should I give?",
+        "a": "Most ordinary acquaintances give 50,000 won; close friends and colleagues of the deceased's family give 100,000 won or more. Use crisp bills in a plain white envelope (the funeral hall has them at the desk), write your name on the back lower left, and hand it to the reception desk, not to the family. Giving nothing while attending is unusual, but a modest amount is never judged."
+      },
+      {
+        "q": "I cannot drink alcohol. Will that offend anyone?",
+        "a": "Not if you say so. Hold out your glass with two hands when someone pours — that is the polite part — then simply do not drink it, or say you do not drink and ask for a soft drink. At a funeral meal nobody toasts anyway. The only real offense is pouring your own drink while ignoring others' empty glasses."
+      },
+      {
+        "q": "Can I bring flowers or a gift to a funeral?",
+        "a": "Do not bring a bouquet. Standing wreaths (johwa) are sent by companies and organizations through a florist, not carried in by guests. The guest's contribution is the condolence envelope and your presence. At a wedding, likewise, money in an envelope replaces gifts."
+      },
+      {
+        "q": "I cannot attend the funeral. Is a text message acceptable?",
+        "a": "Yes. Send a short message such as 'Samga goin-ui myeongbok-eul bimnida' (May the deceased rest in peace) — Koreans send this exact phrase by text — and, if you are close, transfer condolence money through a friend who attends or by bank transfer with your name in the memo. Do not call the family on the phone unless you are very close; they are busy and exhausted."
+      }
+    ],
+    "sources": [
+      {
+        "name": "Korea Tourism Organization — VisitKorea (culture and etiquette)",
+        "url": "https://english.visitkorea.or.kr"
+      },
+      {
+        "name": "Seoul Global Center — living in Seoul for foreigners",
+        "url": "https://global.seoul.go.kr"
+      },
+      {
+        "name": "KOREA.net — Korean culture overview",
+        "url": "https://www.korea.net"
+      }
+    ]
   }
 ];
 
@@ -479,7 +529,7 @@ export function buildEnMetadata(id: string): Metadata {
       canonical: url,
       languages: {
         en: url,
-        ko: `${ROOT_URL}/help/${g.koId}`,
+        ...(g.koId ? { ko: `${ROOT_URL}/help/${g.koId}` } : {}),
         "x-default": url,
       },
     },

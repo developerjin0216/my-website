@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { helpTopics } from "@/data/help";
 import { guides } from "@/data/guides";
+import { enGuides } from "@/data/guidesEn";
 import { calculators, CALC_COUNT } from "@/data/calculators";
 import { REVIEWED, calcReviewedDate } from "@/lib/trust";
 import { tools } from "@/data/tools";
@@ -158,13 +159,6 @@ export function GET(request: NextRequest) {
             "설치도 가입도 없이 브라우저에서 친구와 1:1 오목을 둡니다.",
           date: "2026-09-15",
         },
-        {
-          title: "웹 방탈출 '현상되지 않은 필름' - 한빛사진관",
-          link: `${ROOT_URL}/escape`,
-          description:
-            "폐업을 앞둔 동네 사진관을 정리하며 20년 전 흔적을 따라가는 무료 추리 방탈출.",
-          date: "2026-09-14",
-        },
         ...helpTopics.map((t) => ({
           title: t.title,
           link: `${ROOT_URL}/help/${t.id}`,
@@ -174,6 +168,13 @@ export function GET(request: NextRequest) {
         ...guides.map((g) => ({
           title: g.title,
           link: `${ROOT_URL}/guides/${g.id}`,
+          description: g.description,
+          date: g.date,
+        })),
+        // /en — 영어 가이드도 색인 대상입니다. 2026-11-05 까지 피드에 없었습니다.
+        ...enGuides.map((g) => ({
+          title: g.metaTitle,
+          link: `${ROOT_URL}/en/${g.id}`,
           description: g.description,
           date: g.date,
         })),
@@ -239,13 +240,6 @@ export function GET(request: NextRequest) {
         },
         // 최신 글이 맨 앞 — 네이버는 RSS 신선도를 크게 봅니다.
         // 새 코너를 만들 때 여기 추가하지 않으면 피드가 과거에 멈춰 있습니다.
-        {
-          title: "웹 방탈출 '현상되지 않은 필름' - 한빛사진관",
-          link: `${QUIZ_URL}/escape`,
-          description:
-            "폐업을 앞둔 동네 사진관을 정리하며 20년 전 흔적을 따라가는 무료 추리 방탈출. 방 6개, 퍼즐 12개.",
-          date: "2026-09-14",
-        },
         ...mbtiTypes.map((t) => ({
           title: `${t.code} 특징 총정리 - ${t.name}`,
           link: `${QUIZ_URL}/mbti/${t.code.toLowerCase()}`,
