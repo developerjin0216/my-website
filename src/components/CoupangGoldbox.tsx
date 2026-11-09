@@ -118,30 +118,14 @@ interface Campaign {
 }
 
 const CAMPAIGNS: Campaign[] = [
-  {
-    key: "wowday",
-    // 쿠팡 파트너스 프로모션 딥링크. lptag=AF1870954 가 우리 트래킹 코드입니다.
-    // 확인(2026-11-02): link.coupang.com/re/AFPROMO10 → 쿠팡 MLP 랜딩(landingId=5508).
-    // 랜딩 내용 자체는 확인하지 못했습니다 — 쿠팡이 데이터센터 IP 를 403 으로 막습니다
-    // (CLAUDE.md 의 ITS 건과 같은 이유). 사용자가 파트너스에서 받은 와멤데 링크입니다.
-    url: "https://link.coupang.com/re/AFPROMO10?lptag=AF1870954",
-    // 11/8(일) 종료 (사장님 확인, 2026-11-03) → 다음날 0시까지 노출.
-    // 이 시각이 지나면 마운트 직후 평소 골드박스로 돌아갑니다. 다만 정적 HTML 에는
-    // 재배포 전까지 남으니, 9일에 이 항목을 지우고 배포하는 편이 깔끔합니다.
-    until: "2026-11-09T00:00:00+09:00",
-    theme: THEMES.wow,
-    emoji: "🧰",
-    eyebrow: "쿠팡 파트너스 · 와우회원 전용",
-    title: "와우멤버십데이 진행 중",
-    period: "11월 8일(일)까지 · 기간 한정",
-    deadline: "11/8",
-    deadlineDay: "일",
-    sub: "비상용품은 급할 때 사면 제일 비쌉니다 — 손전등 · 보조배터리 · 건전지 · 핫팩, 지금 할인가로",
-    cta: "할인가 보기",
-    // only 없음 = 네 자리 전부. 와멤데는 '비상용품' 각도로 /help 까지 묶입니다.
-    // 맥북 사전예약 링크가 오면 이 위에 only: ["home","tools"] 로 넣으세요 —
-    // 위에서부터 먼저 맞는 항목이 이기므로 홈·도구만 맥북으로 갈립니다.
-  },
+  // 비어 있음 = 평소 골드박스. 행사가 생기면 여기에 한 항목을 넣고, 끝난 다음 날 지우고
+  // 배포합니다. 마지막 행사: 와우멤버십데이 2026-11-03~11-08 (key "wowday",
+  // link.coupang.com/re/AFPROMO10?lptag=AF1870954, 테마 THEMES.wow, 네 자리 전부) —
+  // 2026-11-09 제거. 다음 행사는 이 항목을 본떠 적으면 됩니다:
+  //   { key, url, until: "<종료 다음날>T00:00:00+09:00", theme, emoji, eyebrow,
+  //     title: "<행사명> 진행 중", period: "<n>월 <d>일(<요일>)까지 · 기간 한정",
+  //     deadline: "<m/d>", deadlineDay: "<요일>", sub, cta, only? }
+  // 맥북 사전예약처럼 /help 와 묶을 각도가 없는 행사는 only: ["home","tools"].
 ];
 
 const GOLDBOX = {

@@ -249,8 +249,8 @@ load and labels it 재생 중 / 잠시 멈춤. **Beach cameras were rejected:** 
 service serves 4-second still JPEGs over plain http through its own internal proxy — not an
 interface offered to outsiders, and mixed content on an https page. No public API for tourist-spot
 video exists on data.go.kr (only installation inventories).
-The page's autumn trail-closure section uses 2022 (official) and 2025 (news) dates; replace it
-when 공단 announces the 2026 closures (usually early November).
+The page's autumn trail-closure section carries the 2026 closures (공단 announced 2026-11-01: 148 sections, 11/15–12/15); refresh it
+each autumn when 공단 publishes the new list (usually the first days of November).
 
 ### Real cases on /help, never invented experience (`data/helpCases.ts`)
 

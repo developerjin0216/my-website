@@ -111,21 +111,27 @@ export default function NationalParksCctvPage() {
           </p>
         </section>
 
-        {/* 2026년 통제 공지는 아직 없어(10월 20일 기준) 지난 해 기준으로만 적었습니다.
-            공지가 나오면 기간·구간을 갱신하세요. */}
+        {/* 2026년 통제 공지(공단 11/1 발표)로 갱신 — 2026-11-09. 수치는 아래 출처 두 기사에서
+            그대로 옮겼습니다. 과태료 문단만 2025년 설악산 안내(경향)를 그대로 둡니다 — 2026
+            발표 기사에는 금액이 없습니다. 다음 해 10월 말에 다시 공지를 확인하세요. */}
         <section className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold text-accent mb-3">
-            가을 산불조심기간 탐방로 통제
+            2026년 가을 산불조심기간 탐방로 통제 — 11월 15일부터
           </h2>
           <p className="text-sm text-[#c0c8d8] leading-relaxed break-keep">
-            국립공원공단은 가을 건조기에 산불을 막으려고 일부 탐방로를 통제합니다. 2022년에는
-            전국 19개 국립공원의 115개 탐방로를 <strong className="text-[#e8e8f0]">11월 15일부터
-            12월 15일까지</strong> 전면 통제했고, 2025년에도 설악산이 같은 기간 공룡능선·한계령
-            등에서 대청봉으로 이어지는 고지대 탐방로를 막았습니다.
+            국립공원공단은 2026년 11월 1일부터 12월 15일까지 45일간을 가을철 산불조심 기간으로
+            정하고, 산불 위험이 높은 전국 탐방로{" "}
+            <strong className="text-[#e8e8f0]">148개 구간(668km)을 11월 15일부터 12월 15일까지
+            31일간</strong>{" "}
+            통제합니다(11월 1일 발표). 지리산 노고단고개~장터목 등 115개 구간(474km)은 전면
+            통제, 33개 구간(194km)은 상황에 따라 부분 통제이고, 나머지 515개 구간(1,373km)은
+            평소대로 다닐 수 있습니다.
           </p>
           <p className="text-sm text-[#c0c8d8] leading-relaxed mt-2 break-keep">
-            2026년 통제 구간은 아직 공지되지 않았습니다(10월 20일 기준). 카메라로 날씨를
-            확인했더라도 가려는 탐방로가 열려 있는지는 국립공원공단 누리집에서 따로 확인하세요.
+            어느 공원의 어느 구간이 막히는지는 국립공원공단 누리집의 공원별 알림에 지도와 함께
+            올라옵니다. 카메라로 날씨를 확인했더라도 가려는 탐방로가 열려 있는지는 거기서 따로
+            확인하세요. 출발점과 정상만 보지 말고 중간 갈림길과 하산 구간까지 계획한 경로와
+            맞춰 보는 편이 안전합니다.
           </p>
           <p className="text-xs text-[#8a90a0] leading-relaxed mt-2 break-keep">
             통제 구간에 무단으로 들어가면 20만~50만 원, 국립공원 안에서 담배를 피우거나 인화물질을
@@ -134,12 +140,21 @@ export default function NationalParksCctvPage() {
           <p className="text-xs text-[#8a90a0] mt-2">
             출처:{" "}
             <a
-              href="https://www.korea.kr/news/policyNewsView.do?newsId=148907885"
+              href="https://www.metroseoul.co.kr/article/20261101500193"
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-accent"
             >
-              정책브리핑 2022.11.7 ↗
+              메트로신문 2026.11.1 ↗
+            </a>
+            {" · "}
+            <a
+              href="https://www.ajunews.com/view/20261101110736361"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-accent"
+            >
+              아주경제 2026.11.1 ↗
             </a>
             {" · "}
             <a
@@ -148,7 +163,7 @@ export default function NationalParksCctvPage() {
               rel="noopener noreferrer"
               className="underline hover:text-accent"
             >
-              경향신문 2025.11.6 ↗
+              경향신문 2025.11.6(과태료) ↗
             </a>
           </p>
         </section>
