@@ -79,7 +79,7 @@ split four ways had each part starting trust from zero (index count stayed at 0 
 - `src/proxy.ts` (Next 16 renamed middleware → proxy) now only 308s legacy hosts
   (`quiz.` / `calc.` / `tools.` / `www.`) to the root, mapping each subdomain root to its section
   home (`quiz.→/quiz-home`, `calc.→/calculators`, `tools.→/tools`). Since 2026-11 it also 308s
-  the Vercel default domain (`moducalc.vercel.app`, any `*.vercel.app`) to the same path on the
+  the Vercel default domains (`moducalc.vercel.app`, `sangsikwang.vercel.app`, any `*.vercel.app`) to the same path on the
   root — **only when `VERCEL_ENV === "production"`**, so branch previews on `*.vercel.app` keep
   working. The old domain was serving the whole site with 200 and still had visitors.
 - **Keep the subdomains attached to the Vercel project** — detaching them kills the redirects.
@@ -317,7 +317,7 @@ Update it whenever rates change.
 
 Korean rates live in shared utils so one edit updates calculator + example table + guide prose:
 `utils/salary.ts` (4대보험·세율), `utils/electricity.ts` (전기요금), `utils/medianIncome.ts`
-(기준 중위소득 2023–2026).
+(기준 중위소득 2023–2027, 1–7인 as printed by 보건복지부; 8인+ by the 고시 formula, not an estimate).
 
 For welfare/tax numbers, **verify before publishing and record how**. `medianIncome.ts` carries its
 cross-check in a comment (생계급여 32% back-calculated against a korea.kr figure). When only a

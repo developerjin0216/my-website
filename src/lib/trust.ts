@@ -17,7 +17,7 @@ import { CONTACT_EMAIL, INFO_SITE_NAME, ROOT_URL } from "@/lib/site";
  *   추가되어 두 달 가까이 어긋나 있었습니다. 데이터 파일을 고치면 여기도 올리세요.)
  */
 export const REVIEWED = {
-  calculators: "2026-10-02", // src/data/calculators.ts
+  calculators: "2026-11-11", // src/data/calculators.ts
   salaryRates: "2026-07-28", // src/utils/salary.ts (4대보험·세율)
   electricityRates: "2026-07-21", // src/utils/electricity.ts (전기요금)
   cardDeduction: "2026-10-15", // src/utils/cardDeduction.ts — 국회예산정책처 2025 개정세법 보고서와 대조

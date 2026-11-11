@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   Field,
@@ -17,6 +17,8 @@ import {
   atRate,
   won,
   PENDING_YEAR,
+  SSR_DEFAULT_YEAR,
+  yearInEffect,
   type MedianIncomeYear,
 } from "@/utils/medianIncome";
 
@@ -30,11 +32,24 @@ import {
 const HOUSEHOLD_MAX = 10;
 
 export default function MedianIncomeCalcPage() {
-  const [year, setYear] = useState<MedianIncomeYear>(MEDIAN_INCOME_YEARS[0]);
+  // 다음 해 표가 고시돼 있어도 1월 1일 전까지는 올해 기준이 적용 중입니다. 기본 선택은
+  // '지금 적용 중인 해'로 둡니다 — 11월에 신청하는 사람이 내년 금액을 보고 판단하지 않도록.
+  // 서버 HTML 은 고정값, 마운트 뒤 실제 날짜로 맞춥니다(하이드레이션 불일치 방지).
+  const [inEffect, setInEffect] = useState<MedianIncomeYear>(SSR_DEFAULT_YEAR);
+  const [year, setYear] = useState<MedianIncomeYear>(SSR_DEFAULT_YEAR);
   const [household, setHousehold] = useState(1);
   const [rate, setRate] = useState(100);
 
-  const { amount: base, estimated } = medianIncome(year, household);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const y = yearInEffect(Date.now());
+      setInEffect(y);
+      setYear(y);
+    }, 0);
+    return () => clearTimeout(t);
+  }, []);
+
+  const { amount: base, byFormula, step } = medianIncome(year, household);
   const result = atRate(base, rate);
 
   return (
@@ -48,7 +63,7 @@ export default function MedianIncomeCalcPage() {
           >
             {MEDIAN_INCOME_YEARS.map((y) => (
               <option key={y} value={y}>
-                {y}년
+                {y}년{y === inEffect ? " (현재 적용)" : y > inEffect ? ` (${y}.1.1부터 적용)` : ""}
               </option>
             ))}
           </select>
@@ -94,13 +109,19 @@ export default function MedianIncomeCalcPage() {
         <ResultRow label="연 환산 (12개월)" value={`${won(result * 12)}원`} />
       </Card>
 
-      {estimated && (
+      {byFormula && (
         <Notice>
-          고시표에는 6인 가구까지만 나옵니다. 7인 이상은 6인 기준에 1인 증가분을
-          더해 산정하는데, 여기서는 5인→6인 차액({won(
-            medianIncome(year, 6).amount - medianIncome(year, 5).amount
-          )}원)을 증가분으로 본 <strong>추정값</strong>입니다. 정확한 금액은
-          주민센터나 복지로에서 확인하세요.
+          고시표에는 7인 가구까지 금액이 나옵니다. 8인 이상은 고시에 정한 산식대로
+          1인 늘어날 때마다 7인 기준과 6인 기준의 차액({won(step)}원)을 7인 기준에
+          더해 계산했습니다.
+        </Notice>
+      )}
+
+      {year > inEffect && (
+        <Notice>
+          <strong>{year}년 기준은 {year}년 1월 1일부터 적용됩니다.</strong> 그 전에
+          신청하는 제도는 보통 {inEffect}년 기준을 쓰지만, 어느 해 기준을 보는지는
+          제도마다 다를 수 있으니 공고문에서 확인하세요.
         </Notice>
       )}
 
@@ -174,16 +195,15 @@ export default function MedianIncomeCalcPage() {
         </div>
       </Card>
 
-      {/* '2027년 중위소득'으로 찾아오는 사람에게, 추정치를 지어내는 대신
-          지금까지 확인된 사실만 알려줍니다. */}
-      <Notice>
-        <strong>{PENDING_YEAR.year}년 기준은 아직 표로 나오지 않았습니다.</strong>{" "}
-        인상률 {PENDING_YEAR.raisePercent}%가 발표됐고 4인 가구 생계급여가 월 221만
-        7천 원으로 오른다는 것까지 공개됐지만, 가구원 수별 고시 금액은 확정 공고를
-        기다려야 합니다. 가구원 수마다 적용되는 지수가 달라 인상률만 곱하면 실제
-        금액과 어긋나기 때문에, 여기서는 추정치를 넣지 않았습니다. 고시가 나오는
-        대로 반영하겠습니다.
-      </Notice>
+      {/* 다음 해 인상률만 보도되고 가구원 수별 고시액이 없을 때만 보입니다.
+          추정치를 지어내는 대신 확인된 사실만 알려줍니다. */}
+      {PENDING_YEAR && (
+        <Notice>
+          <strong>{PENDING_YEAR.year}년 기준은 아직 표로 나오지 않았습니다.</strong>{" "}
+          인상률 {PENDING_YEAR.raisePercent}%가 발표됐지만 가구원 수별 고시 금액은 확정
+          공고를 기다려야 합니다. 인상률만 곱한 추정치는 넣지 않았습니다.
+        </Notice>
+      )}
 
       <Notice>
         여기 계산되는 값은 고시된 기준 중위소득에 비율을 곱한 것입니다.{" "}
