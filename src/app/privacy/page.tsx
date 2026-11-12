@@ -17,7 +17,7 @@ export default function PrivacyPage() {
           ← 홈으로
         </Link>
         <h1 className="text-2xl font-bold text-accent">개인정보처리방침</h1>
-        <p className="text-xs text-[#606070] mt-1">시행일 2026-05-07 · 개정 2026-08-25</p>
+        <p className="text-xs text-[#606070] mt-1">시행일 2026-05-07 · 개정 2026-11-12</p>
       </header>
 
       <div className="flex-1 px-5 py-6">
@@ -25,15 +25,16 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-base font-bold text-white mb-2">0. 적용 범위</h2>
             <p>
-              본 방침은 아래 4개 서비스(이하 &ldquo;서비스&rdquo;)에 공통으로
-              적용됩니다. 모든 서비스는 동일 운영자가 운영합니다.
+              본 방침은 8282114 생활안내(8282114.xyz)와 그 안의 모든 페이지(이하
+              &ldquo;서비스&rdquo;)에 적용됩니다. 긴급상황·생활 정보, 생활 계산기(모두의
+              계산기), 웹 도구(모두의 도구), 상식 퀴즈·배틀(상식왕 퀴즈)이 모두 이 한
+              주소에서 운영되며, 운영자는 한 명입니다.
             </p>
-            <ul className="list-disc pl-5 mt-2 space-y-1 text-[#a0a0b0]">
-              <li>8282114 생활안내 (8282114.xyz) — 긴급상황·생활 정보</li>
-              <li>모두의 계산기 (calc.8282114.xyz) — 생활 계산기</li>
-              <li>모두의 도구 (tools.8282114.xyz) — 웹 도구</li>
-              <li>상식왕 퀴즈 (quiz.8282114.xyz) — 상식 퀴즈·배틀</li>
-            </ul>
+            <p className="mt-2 text-[#a0a0b0]">
+              예전에 쓰던 주소(calc.·tools.·quiz.8282114.xyz, sangsikwang.vercel.app,
+              moducalc.vercel.app)는 2026년 9~11월에 모두 8282114.xyz로 옮겼고, 지금은
+              해당 주소로 접속하면 같은 페이지로 자동 연결됩니다.
+            </p>
           </section>
 
           <section>
@@ -133,8 +134,9 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-base font-bold text-white mb-2">6. 방침의 변경</h2>
             <p>
-              본 방침은 2026년 5월 7일 시행되었고, 2026년 8월 25일 4개 서비스
-              공통 방침으로 개정되었습니다. 변경 시 본 페이지를 통해 공지합니다.
+              본 방침은 2026년 5월 7일 시행되었고, 2026년 8월 25일 여러 서비스 공통
+              방침으로, 2026년 11월 12일 서비스 주소를 8282114.xyz 하나로 합친 내용을
+              반영해 개정되었습니다. 변경 시 본 페이지를 통해 공지합니다.
             </p>
           </section>
         </div>

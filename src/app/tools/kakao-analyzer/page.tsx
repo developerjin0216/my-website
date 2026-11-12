@@ -48,7 +48,7 @@ function drawShareCard(a: Analysis): string {
   );
   ctx.fillStyle = "#606070";
   ctx.font = "24px sans-serif";
-  ctx.fillText("tools.8282114.xyz · 대화는 서버로 전송되지 않아요", 400, 720);
+  ctx.fillText("8282114.xyz · 대화는 서버로 전송되지 않아요", 400, 720);
   return c.toDataURL("image/png");
 }
 

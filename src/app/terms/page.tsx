@@ -23,9 +23,9 @@ export default function TermsPage() {
           <section>
             <h2 className="text-base font-bold text-white mb-2">제1조 (목적)</h2>
             <p>
-              본 약관은 8282114 생활안내(8282114.xyz), 모두의
-              계산기(calc.8282114.xyz), 모두의 도구(tools.8282114.xyz), 상식왕
-              퀴즈(quiz.8282114.xyz) — 이하 통칭 &ldquo;서비스&rdquo; — 의 이용과
+              본 약관은 8282114 생활안내(8282114.xyz)와 그 안에서 운영하는 모두의
+              계산기, 모두의 도구, 상식왕 퀴즈 등 모든 페이지 — 이하 통칭
+              &ldquo;서비스&rdquo; — 의 이용과
               관련하여 서비스 제공자와 이용자 간의 권리, 의무 및 기타 필요한
               사항을 규정함을 목적으로 합니다.
             </p>

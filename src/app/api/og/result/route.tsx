@@ -93,7 +93,7 @@ export async function GET(request: Request) {
             display: "flex",
           }}
         >
-          너도 도전해봐 · quiz.8282114.xyz
+          너도 도전해봐 · 8282114.xyz
         </div>
       </div>
     ),

@@ -42,12 +42,17 @@ export function proxy(request: NextRequest) {
   // 프로덕션 배포에서만 겁니다 — 프리뷰 배포(브랜치별 *.vercel.app)는 테스트용이라
   // 건드리면 미리보기가 전부 본 도메인으로 튀어 버립니다. VERCEL_ENV 는 Vercel 이
   // 런타임에 넣어 주는 값이고 로컬·프리뷰에서는 "production" 이 아닙니다.
+  //
+  // 301 인 이유(2026-11-12): 사이트는 5~8월에 sangsikwang.vercel.app·moducalc.vercel.app 에서
+  // 운영됐고, 구글 서치콘솔은 아직 그 사본들을 새 주소의 '참조 페이지'로 기억합니다. 서치콘솔
+  // '주소 변경' 도구는 옛 홈페이지가 301 로 넘어가야 한다고만 적고 있어(308 언급 없음), 그
+  // 도구를 쓸 수 있게 여기만 301 로 둡니다. 검색엔진에는 둘 다 영구 이전입니다.
   if (
     host.endsWith(".vercel.app") &&
     process.env.VERCEL_ENV === "production"
   ) {
     const { pathname, search } = request.nextUrl;
-    return NextResponse.redirect(new URL(pathname + search, ROOT_URL), 308);
+    return NextResponse.redirect(new URL(pathname + search, ROOT_URL), 301);
   }
 
   // 로컬 개발(localhost 등)은 건드리지 않습니다

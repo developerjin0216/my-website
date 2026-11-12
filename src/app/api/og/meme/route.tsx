@@ -65,7 +65,7 @@ export async function GET(request: Request) {
           {meaning}
         </div>
         <div style={{ fontSize: 26, color: "#606070", marginTop: 44, display: "flex" }}>
-          이 말 무슨 뜻? · quiz.8282114.xyz/meme
+          이 말 무슨 뜻? · 8282114.xyz/meme
         </div>
       </div>
     ),

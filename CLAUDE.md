@@ -78,10 +78,14 @@ split four ways had each part starting trust from zero (index count stayed at 0 
   The `*_SPLIT` / `SPLIT_ACTIVE` constants derive from host comparison and are therefore all false.
 - `src/proxy.ts` (Next 16 renamed middleware → proxy) now only 308s legacy hosts
   (`quiz.` / `calc.` / `tools.` / `www.`) to the root, mapping each subdomain root to its section
-  home (`quiz.→/quiz-home`, `calc.→/calculators`, `tools.→/tools`). Since 2026-11 it also 308s
+  home (`quiz.→/quiz-home`, `calc.→/calculators`, `tools.→/tools`). Since 2026-11 it also **301**s
   the Vercel default domains (`moducalc.vercel.app`, `sangsikwang.vercel.app`, any `*.vercel.app`) to the same path on the
   root — **only when `VERCEL_ENV === "production"`**, so branch previews on `*.vercel.app` keep
   working. The old domain was serving the whole site with 200 and still had visitors.
+  The site lived on those two vercel.app hosts from 2026-05 to 2026-08, so Google still lists them as
+  *referring pages* for apex URLs in URL inspection. That is stale crawl memory, not something we emit:
+  sitemap, feed, robots and all sitemap pages were checked on 2026-11-12 and carry only the apex.
+  301 (not 308) on this branch because Search Console's 주소 변경 tool documents only 301.
 - **Keep the subdomains attached to the Vercel project** — detaching them kills the redirects.
 - Re-splitting means restoring the env reads in `site.ts`; canonical/OG/sitemap/RSS/proxy all key
   off those constants and follow automatically. The `SPLIT_ACTIVE` branches left in
