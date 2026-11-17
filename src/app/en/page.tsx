@@ -75,13 +75,6 @@ export default function EnHubPage() {
             </p>
           </Link>
         ))}
-        <p className="text-xs text-[#606070] leading-relaxed px-1">
-          Not an emergency?{" "}
-          <Link href="/en/slang" className="text-accent hover:underline">
-            Korean slang dictionary
-          </Link>{" "}
-          — oppa, daebak, nunchi and other words K-dramas never explain.
-        </p>
       </div>
 
       <div className="mb-6">

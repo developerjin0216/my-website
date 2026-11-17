@@ -11,6 +11,20 @@
 
 /** 이 경로와 그 아래 전부를 색인에서 뺍니다 */
 const NOINDEX_SECTIONS = [
+  "/omok",
+  "/tools",
+  "/moktak", // 사이버 목탁 — 별도 서비스, 주제 밖
+];
+
+/** 2026-11-17 삭제한 섹션 — proxy.ts 가 이 경로와 그 아래 전부에 410 Gone 을 돌려줍니다.
+ *
+ * 10월에 색인에서 빼고도 한 달 뒤 구글 색인은 여전히 1개였고, 서치콘솔은 "가치가 낮아 색인하지
+ * 않음"으로 판단했습니다. 색인 제외 페이지도 구글은 계속 읽고 사이트 성격을 볼 때 함께 보며,
+ * 애드센스 심사는 사이트 전체를 봅니다. 그래서 사장님 결정으로 주제 밖 콘텐츠(퀴즈·퀴즈 은행·
+ * MBTI·밈·프롬프트·영어 슬랭·퀴즈 배틀, 약 150페이지)를 내렸습니다. 웹 도구·오목·목탁은 남김.
+ * 코드는 git 기록에 있습니다(되살리려면 해당 커밋을 되돌리고 이 목록에서 빼면 됩니다).
+ * 404 가 아니라 410 인 이유: "잠시 없음"이 아니라 "영구 삭제"라고 알려야 목록에서 빨리 빠집니다. */
+export const GONE_SECTIONS = [
   "/quiz",
   "/quiz-bank",
   "/quiz-home",
@@ -18,11 +32,13 @@ const NOINDEX_SECTIONS = [
   "/meme",
   "/prompts",
   "/en/slang",
-  "/omok",
   "/battle",
-  "/tools",
-  "/moktak", // 사이버 목탁 — 별도 서비스, 주제 밖
+  "/result",
 ];
+
+export function isGonePath(pathname: string): boolean {
+  return GONE_SECTIONS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+}
 
 /** 위 섹션 안이지만 주제에 맞아 남기는 페이지 (폭설·폭우 때 도로 확인) */
 const INDEX_EXCEPTIONS = [

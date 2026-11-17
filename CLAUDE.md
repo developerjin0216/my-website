@@ -23,8 +23,6 @@ node server/test/omok-directions.test.js # vertical / both diagonals
 node --experimental-strip-types scripts/insta-parser.test.mts  # 15 assertions
 
 # Data generators — never hand-edit their output files
-node scripts/gen-prompts.mjs <workflow-output.json>       # → src/data/prompts.ts
-node scripts/gen-viral-prompts.mjs <workflow-output.json> # → src/data/promptsViral.ts
 node scripts/gen-cctv-highways.mjs                        # → src/data/cctvHighways.json (run in Korea; ITS key in .env.local)
 
 # Push 사이트맵 URLs to IndexNow (Bing·Naver·Yandex; Google does NOT participate)
@@ -62,7 +60,8 @@ curl -H "Host: quiz.8282114.xyz" localhost:3000/mbti   # expect 308 → 8282114.
 ## Architecture
 
 Korean-language personal site on **Next.js 16** (App Router) + a standalone **Socket.IO** server.
-**105 URLs are in the sitemap; ~160 more stay live but noindexed** (see *Index scope* below).
+**105 URLs are in the sitemap; 17 more stay live but noindexed** (14 web tools, BMI/칼로리, 목탁,
+plus 오목). About 150 off-topic pages were **deleted on 2026-11-17** and answer 410 (see *Index scope*).
 That 105 is the *policy* count — what Google has actually indexed is a separate number, read from
 Search Console, and the two have never matched here.
 Deployed on Vercel; realtime server on Render.
@@ -78,7 +77,7 @@ split four ways had each part starting trust from zero (index count stayed at 0 
   The `*_SPLIT` / `SPLIT_ACTIVE` constants derive from host comparison and are therefore all false.
 - `src/proxy.ts` (Next 16 renamed middleware → proxy) now only 308s legacy hosts
   (`quiz.` / `calc.` / `tools.` / `www.`) to the root, mapping each subdomain root to its section
-  home (`quiz.→/quiz-home`, `calc.→/calculators`, `tools.→/tools`). Since 2026-11 it also **301**s
+  home (`quiz.→/`, `calc.→/calculators`, `tools.→/tools`). Since 2026-11 it also **301**s
   the Vercel default domains (`moducalc.vercel.app`, `sangsikwang.vercel.app`, any `*.vercel.app`) to the same path on the
   root — **only when `VERCEL_ENV === "production"`**, so branch previews on `*.vercel.app` keep
   working. The old domain was serving the whole site with 200 and still had visitors.
@@ -108,8 +107,15 @@ exactly what the subdomain split proved, and costs money). Only what the domain 
 - `indexPolicy.ts` is the **single source**: sitemap and RSS filter through `isIndexableUrl`;
   section layouts and the calc/tool metadata builders set `robots: robotsFor(path)`. Reverting a
   section means deleting one line there — sitemap, feed and meta all follow.
-- Noindexed pages still render, still self-canonicalize, and use `follow`. They are not deleted
-  and the home footer still links to them, so existing users can reach them.
+- Noindexed pages still render, still self-canonicalize, and use `follow`. The few that remain
+  (tools, 오목, 목탁) are linked from `/about`, not from the home page.
+- **2026-11-17: the off-topic content was deleted, not just noindexed.** A month after the narrowing,
+  Google still indexed exactly 1 page and Search Console called the rest low value. Noindexed pages
+  are still crawled and still shape how Google and AdSense read the site, so at the owner's decision
+  퀴즈·퀴즈 은행·MBTI·밈·프롬프트·영어 슬랭·퀴즈 배틀·결과 공유 (~150 pages) were removed. Their
+  prefixes live in `GONE_SECTIONS` (`indexPolicy.ts`); `proxy.ts` answers **410** with a small
+  noindex page linking home, /help, /calculators and /omok. Do not reuse those paths. The code is in
+  git history; restoring means reverting that commit and emptying the list.
 - Do **not** `Disallow` them in robots.txt — Google would then never see the noindex.
 - **A new page must fit the topic, or go into `NOINDEX_SECTIONS`.** Adding unrelated sections to
   the index is how the site got here.
@@ -131,15 +137,11 @@ Indexed sections first; the rest are live but noindexed.
 | `/tools/cctv` | yes | `data/cctvRegions.ts` | **The only feature with an external dependency.** Browser calls ITS directly — see below |
 | `/tools/cctv/<road>` | yes | `data/cctvHighways.json` (generated) | 20 expressway pages for "OO고속도로 cctv" searches (snow, 명절) |
 | `/tools/cctv/national-parks` | yes | `data/cctvParks.ts` (hand-copied) | 18 국립공원공단 cameras — 단풍·눈꽃·일출 season |
-| `/en/slang/<id>` | no | `slangEn.ts` | 53 per-item pages — the pattern that already failed for memes |
-| `/quiz-bank/<cat>/<page>` | no | `lib/quizBank.ts` over `data/categories/` | Paginated Q&A archive |
-| `/quiz`, `/quiz/<cat>`, `/quiz-home` | no | `data/quizData.ts` | 11 categories, 1,168 questions (맞춤법 has 168, the rest 100) |
-| `/mbti/<type>`, `/mbti/test` | no | `data/mbti.ts` | |
 | `/tools/insta-follow-check` | yes | `data/tools.ts` | The one indexed utility — see below |
 | `/tools/<id>` | no | `data/tools.ts` | Browser-only utilities (no upload) |
-| `/prompts/<cat>`, `/prompts/viral/<cat>` | no | `data/prompts.ts`, `promptsViral.ts` | 37 original + 41 sourced |
-| `/meme/<category>` | no | `data/memes.ts`, `memeUsage.ts` | |
-| `/omok`, `/battle` | no | — | Games; both need the Socket.IO server |
+| `/omok` | no | — | 1:1 game; needs the Socket.IO server |
+| `/moktak` | no | — | 사이버 목탁, a standalone toy (Web Audio + rAF SVG motion) |
+| `/quiz*`, `/mbti`, `/meme`, `/prompts`, `/en/slang`, `/battle`, `/result` | **deleted** | — | Removed 2026-11-17, proxy answers 410. See *Index scope* |
 
 ### Body-text length is the live indexing constraint
 
@@ -150,7 +152,7 @@ never by eye: `/quiz` shipped 22 KB of HTML that reduced to **464 characters** a
 the rest was Tailwind class strings and the RSC payload.
 
 Rough bands from this site: `<1000` won't be indexed, `1000–1799` is at risk, `≥3000` is safe.
-Client-only routes (`/quiz`, `/omok`, `/battle`, `/mbti/test`) render nothing for crawlers, so
+Client-only routes (`/omok`; formerly `/quiz`, `/battle`, `/mbti/test`) render nothing for crawlers, so
 their `layout.tsx` must carry the server-rendered prose — that is the whole reason those layouts
 exist. Every page needs an `<h1>`; `/quiz` had none because its body is a client component.
 
@@ -295,11 +297,10 @@ articles when there were 27. Any "N종 / N편" string must interpolate.
 ### Category documents, not per-item pages
 
 Meme terms (95) once had one page each at ~540 chars; **none were indexed**. They were consolidated
-into 7 category documents (3,000–6,500 chars each), with old term URLs 308ing to
-`/meme/<category>#<term>`. `/prompts` follows the same shape from the start.
+into 7 category documents (3,000–6,500 chars each). Memes and prompts were later deleted outright
+(2026-11-17), but the lesson stands for anything new.
 
 **Do not add a page per small item.** Group them into a category document and use anchors.
-`meme/[id]/page.tsx` throws at module load if a term id ever collides with a category id.
 
 ### Build-time content validators
 
@@ -345,7 +346,8 @@ Own `package.json`, own deploy (Render free tier — **first connect after idle 
 clients need an explicit connecting state). Two independent games share one process with separate
 room maps and event namespaces:
 
-- Quiz battle (`index.js`): **server stores no quiz data**. The host client picks 10 questions from
+- Quiz battle (`index.js`) — **its client pages were deleted 2026-11-17**; the handlers stay dormant
+  on Render and need no redeploy. **Server stores no quiz data**. The host client picks 10 questions from
   `src/data` and ships them in `start-game`; the server only relays, validates against
   `quiz.answer`, and scores (10 pts, 5 with hint). Client timer 15s, server force-advances at 16s.
 - Omok (`omok.js`, `omok:` prefixed events): 15×15, free rule, win checked in four directions from
@@ -365,7 +367,7 @@ Rooms are in-memory `Map`s (lost on restart), 6-char codes excluding `0/O/1/I`.
   persistent product list is exactly the commerce format they refuse. `lib/toss.ts` and
   `TossProducts` stay but render nothing without keys.
 - Affiliate and prompt-copy clicks fire GA4 events via `utils/analytics.ts` and `CopyButton`
-  (`affiliate_click`, `prompt_copy`, `prompt_open`). Coupang's iframe carousel cannot be tracked.
+  (`affiliate_click`). Coupang's iframe carousel cannot be tracked.
 
 ### SEO invariants
 
@@ -373,13 +375,13 @@ Rooms are in-memory `Map`s (lost on restart), 6-char codes excluding `0/O/1/I`.
   `alternates: { canonical: "/" }`, so a new page that omits it silently claims the homepage URL.
   noindex pages must still self-canonicalize — pointing elsewhere can spread the noindex.
 - Collapsible content must stay in the DOM (`hidden` attribute, not conditional rendering).
-  `PromptCard` hides prompt bodies this way precisely because the prompt text *is* the content.
-- Client-only pages (`/battle`, `/omok`) render almost nothing for crawlers; their `layout.tsx`
+  Text hidden by unmounting is invisible to crawlers; text behind `hidden` still counts.
+- Client-only pages (`/omok`) render almost nothing for crawlers; their `layout.tsx`
   carries server-rendered rules/FAQ so the route has indexable text.
 - New sections must first pass *Index scope* above. Then they need: sitemap entry
   (`sitemap.xml/route.ts`), RSS item (`feed.xml/route.ts`), and
   **inbound internal links** — a page linked from one place is treated as unimportant.
-- Section homes are `/quiz-home`, `/calculators`, `/tools` — **not** `QUIZ_URL`/`TOOLS_URL`, which
+- Section homes are `/calculators`, `/tools` — **not** `CALC_URL`/`TOOLS_URL`, which
   both collapse to `ROOT_URL` now. Code written for the split emitted the bare host, which silently
   dropped `/tools` and `/quiz-home` from the sitemap and pointed footer links at the wrong home.
 - Breadcrumb/`og:site_name`/title template for anything rooted at `/` must use `ROOT_SITE_NAME`,

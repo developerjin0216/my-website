@@ -237,18 +237,15 @@ export default function AboutPage() {
               예전에 만든 것들
             </h2>
             <p className="text-sm text-[#a0a0b0] leading-relaxed break-keep mb-2">
-              사이트 주제를 &lsquo;급할 때 생활 안내&rsquo;로 좁히면서 검색
-              결과에서는 뺐지만, 페이지는 그대로 열립니다. 쓰시던 분들을 위해
-              길만 남겨 둡니다.
+              사이트 주제를 &lsquo;급할 때 생활 안내&rsquo;로 좁히면서 퀴즈·MBTI·밈·AI
+              프롬프트·영어 슬랭은 2026년 11월에 내렸습니다. 아래 셋은 검색 결과에서만
+              빼고 그대로 열립니다.
             </p>
             <p className="text-sm text-[#a0a0b0] leading-relaxed">
               {[
-                ["/quiz-home", "상식 퀴즈"],
-                ["/omok", "오목"],
-                ["/mbti", "MBTI"],
-                ["/meme", "밈 사전"],
-                ["/prompts", "AI 프롬프트"],
+                ["/omok", "1:1 온라인 오목"],
                 ["/moktak", "사이버 목탁"],
+                ["/tools", "로그인 없이 쓰는 웹 도구"],
               ].map(([href, label], i) => (
                 <span key={href}>
                   {i > 0 && " · "}

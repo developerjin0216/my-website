@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ROOT_URL, ROOT_HOST, SPLIT_ACTIVE } from "@/lib/site";
+import { isGonePath } from "@/lib/indexPolicy";
 
 // 단일 도메인 통합 프록시 (Next.js 16: middleware → proxy)
 //
@@ -12,7 +13,7 @@ import { ROOT_URL, ROOT_HOST, SPLIT_ACTIVE } from "@/lib/site";
 // 생활안내' 홈이라, 그냥 /로 넘기면 퀴즈를 찾아온 사람이 엉뚱한 데 떨어집니다.
 
 const LEGACY_HOME: Record<string, string> = {
-  "quiz.8282114.xyz": "/quiz-home",
+  "quiz.8282114.xyz": "/", // 퀴즈 홈은 2026-11-17 삭제
   "calc.8282114.xyz": "/calculators",
   "tools.8282114.xyz": "/tools",
 };
@@ -20,9 +21,20 @@ const LEGACY_HOME: Record<string, string> = {
 // www도 같이 정리 — 정식 호스트는 8282114.xyz 하나입니다
 const LEGACY_HOSTS = new Set([...Object.keys(LEGACY_HOME), "www.8282114.xyz"]);
 
+// 삭제한 섹션(lib/indexPolicy.ts GONE_SECTIONS)의 응답. 사람에게는 갈 곳을 알려 주고,
+// 검색엔진에는 410 과 noindex 로 영구 삭제를 알립니다.
+const GONE_HTML = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>정리된 페이지 | 8282114 생활안내</title></head><body style="font-family:system-ui,sans-serif;background:#1a1a2e;color:#e8e8f0;max-width:32rem;margin:0 auto;padding:3rem 1.25rem;line-height:1.7"><h1 style="color:#ffd700;font-size:1.4rem">이 페이지는 정리되었습니다</h1><p>사이트 주제를 &lsquo;급할 때 생활 안내&rsquo;로 좁히면서 퀴즈·MBTI·밈·AI 프롬프트·영어 슬랭 페이지를 2026년 11월에 내렸습니다.</p><p><a href="/" style="color:#ffd700">홈으로</a> · <a href="/help" style="color:#ffd700">급할 때 대처법</a> · <a href="/calculators" style="color:#ffd700">생활 계산기</a> · <a href="/omok" style="color:#ffd700">오목</a></p></body></html>`;
+
 export function proxy(request: NextRequest) {
   const host = request.headers.get("host");
   if (!host) return NextResponse.next();
+
+  if (isGonePath(request.nextUrl.pathname)) {
+    return new NextResponse(GONE_HTML, {
+      status: 410,
+      headers: { "content-type": "text/html; charset=utf-8", "x-robots-tag": "noindex" },
+    });
+  }
 
   // 통합 후에는 정식 호스트가 하나뿐이라 SPLIT_ACTIVE는 항상 false입니다.
   // 다시 분리하게 되면 이 가드가 옛 동작을 되살릴 자리입니다.

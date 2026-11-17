@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getSocket, disconnectSocket } from "@/utils/socket";
 
@@ -502,11 +501,6 @@ export default function OmokClient() {
         </p>
       )}
 
-      <p className="text-center mt-5">
-        <Link href="/battle" className="text-xs text-[#606070] hover:text-[#a0a0b0]">
-          퀴즈 배틀도 해보기 →
-        </Link>
-      </p>
     </div>
   );
 }

@@ -1,16 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { calculators } from "@/data/calculators";
 import { guides } from "@/data/guides";
-import { categories } from "@/data/quizData";
-import { bankPath, getBankPageCount } from "@/lib/quizBank";
 import { helpTopics } from "@/data/help";
 import { tools } from "@/data/tools";
-import { mbtiTypes } from "@/data/mbti";
-import { memeCategories } from "@/data/memes";
-import { promptCategories } from "@/data/prompts";
-import { viralCategories } from "@/data/promptsViral";
 import { enGuides } from "@/data/guidesEn";
-import { slangEntries } from "@/data/slangEn";
 import { isIndexableUrl } from "@/lib/indexPolicy";
 import { HIGHWAYS, SNAPSHOT_DATE } from "@/data/cctvHighways";
 import {
@@ -31,18 +24,12 @@ import {
 // 정적 단일 사이트맵(구 sitemap.ts)에서 동적 분리로 전환했습니다.
 // 구글은 GSC 속성별로 자기 호스트 사이트맵을 제출하면 되므로 손해가 없습니다.
 
-const MBTI_MEME_LAUNCH = "2026-09-08"; // MBTI 백과·밈 사전 공개일 (실제 lastmod)
-const memeCategoryIds = Object.keys(memeCategories);
 const OMOK_LAUNCH = "2026-09-15"; // 1:1 온라인 오목 공개일
-const PROMPTS_LAUNCH = "2026-09-22"; // AI 프롬프트 모음 공개일
-const promptCategoryIds = Object.keys(promptCategories);
-const viralCategoryIds = Object.keys(viralCategories);
 
 // 섹션 홈. 서브도메인 시절에는 그 호스트의 루트가 곧 섹션 홈이었지만,
 // 단일 도메인으로 합친 뒤에는 경로가 따로 생겼습니다(proxy.ts의 LEGACY_HOME과 같은 쌍).
 // 이걸 갱신하지 않아 /tools와 /quiz-home 두 허브가 사이트맵에서 빠져 있었습니다 —
 // 둘 다 200으로 살아 있는데 사이트맵에는 ROOT_URL이 중복으로 들어가 있었습니다.
-const QUIZ_HOME = SPLIT_ACTIVE ? QUIZ_URL : `${ROOT_URL}/quiz-home`;
 const TOOLS_HOME = SPLIT_ACTIVE ? TOOLS_URL : `${ROOT_URL}/tools`;
 
 interface Entry {
@@ -70,32 +57,6 @@ function rootEntries(): Entry[] {
       changefreq: "monthly" as const,
       priority: 0.7,
     })),
-    // K-슬랭 사전 (영문)
-    ...(slangEntries.length > 0
-      ? [
-          { url: `${ROOT_URL}/en/slang`, changefreq: "weekly" as const, priority: 0.8 },
-          ...slangEntries.map((e) => ({
-            url: `${ROOT_URL}/en/slang/${e.id}`,
-            lastmod: "2026-09-09",
-            changefreq: "monthly" as const,
-            priority: 0.7,
-          })),
-        ]
-      : []),
-    // AI 프롬프트 — 분류 문서 단위 (프롬프트별 페이지는 만들지 않음)
-    { url: `${ROOT_URL}/prompts`, lastmod: PROMPTS_LAUNCH, changefreq: "weekly", priority: 0.9 },
-    ...promptCategoryIds.map((cid) => ({
-      url: `${ROOT_URL}/prompts/${cid}`,
-      lastmod: PROMPTS_LAUNCH,
-      changefreq: "monthly" as const,
-      priority: 0.8,
-    })),
-    ...viralCategoryIds.map((cid) => ({
-      url: `${ROOT_URL}/prompts/viral/${cid}`,
-      lastmod: PROMPTS_LAUNCH,
-      changefreq: "monthly" as const,
-      priority: 0.8,
-    })),
     { url: `${ROOT_URL}/about`, changefreq: "yearly", priority: 0.4 },
     { url: `${ROOT_URL}/contact`, changefreq: "yearly", priority: 0.4 },
     { url: `${ROOT_URL}/privacy`, changefreq: "yearly", priority: 0.3 },
@@ -103,42 +64,11 @@ function rootEntries(): Entry[] {
   ];
 }
 
+// 퀴즈·MBTI·밈 등은 2026-11-17 삭제(lib/indexPolicy.ts GONE_SECTIONS). 남은 것은 오목뿐이고
+// 색인 제외라 아래 필터에서 빠지지만, 정책을 되돌리면 바로 실리도록 항목은 둡니다.
 function quizEntries(): Entry[] {
   return [
-    { url: QUIZ_HOME, changefreq: "daily", priority: 1 },
-    { url: `${QUIZ_URL}/quiz`, changefreq: "daily", priority: 0.9 },
-    { url: `${QUIZ_URL}/battle`, changefreq: "monthly", priority: 0.8 },
     { url: `${QUIZ_URL}/omok`, lastmod: OMOK_LAUNCH, changefreq: "monthly", priority: 0.8 },
-    ...categories.map((c) => ({
-      url: `${QUIZ_URL}/quiz/${c.id}`,
-      changefreq: "monthly" as const,
-      priority: 0.7,
-    })),
-    { url: `${QUIZ_URL}/quiz-bank`, changefreq: "weekly", priority: 0.8 },
-    ...categories.flatMap((cat) =>
-      Array.from({ length: getBankPageCount(cat.id) }, (_, i) => ({
-        url: `${QUIZ_URL}${bankPath(cat.id, i + 1)}`,
-        changefreq: "monthly" as const,
-        priority: i === 0 ? 0.7 : 0.6,
-      }))
-    ),
-    { url: `${QUIZ_URL}/mbti`, lastmod: MBTI_MEME_LAUNCH, changefreq: "weekly", priority: 0.9 },
-    { url: `${QUIZ_URL}/mbti/test`, lastmod: MBTI_MEME_LAUNCH, changefreq: "monthly", priority: 0.8 },
-    ...mbtiTypes.map((t) => ({
-      url: `${QUIZ_URL}/mbti/${t.code.toLowerCase()}`,
-      lastmod: MBTI_MEME_LAUNCH,
-      changefreq: "monthly" as const,
-      priority: 0.8,
-    })),
-    { url: `${QUIZ_URL}/meme`, lastmod: MBTI_MEME_LAUNCH, changefreq: "weekly", priority: 0.9 },
-    // 용어별 페이지는 카테고리 문서로 통합했습니다(각 540자로 얇아 색인되지 않았음).
-    // 옛 용어 URL은 308로 카테고리 앵커에 넘기므로 사이트맵에는 싣지 않습니다.
-    ...memeCategoryIds.map((cid) => ({
-      url: `${QUIZ_URL}/meme/${cid}`,
-      lastmod: MBTI_MEME_LAUNCH,
-      changefreq: "monthly" as const,
-      priority: 0.8,
-    })),
   ];
 }
 
