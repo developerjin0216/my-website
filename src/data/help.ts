@@ -162,7 +162,7 @@ export const helpTopics: HelpInfo[] = [
       { name: "경찰청 — 112 신고 안내", url: "https://www.police.go.kr" },
       { name: "소방청 — 119 신고 안내", url: "https://www.nfa.go.kr" },
       { name: "정부24 — 정부민원안내콜센터 110", url: "https://www.gov.kr" },
-      { name: "외교부 영사콜센터", url: "https://www.0404.go.kr/callcenter/callcenter_intro.jsp" },
+      { name: "외교부 영사콜센터", url: "https://www.0404.go.kr/bbs/contsPst/MST0000000000104/4/detail" },
     ],
   },
   {
@@ -236,7 +236,7 @@ export const helpTopics: HelpInfo[] = [
     ],
     sources: [
       { name: "응급의료포털 E-Gen", url: "https://www.e-gen.or.kr" },
-      { name: "달빛어린이병원 안내 (보건복지부)", url: "https://www.e-gen.or.kr/egen/moonlight_hospital.do" },
+      { name: "달빛어린이병원 안내 (보건복지부)", url: "https://www.e-gen.or.kr/moonlight/main.do" },
       { name: "소방청 — 119 이용 안내", url: "https://www.nfa.go.kr" },
       { name: "식품의약품안전처 — 안전상비의약품 제도", url: "https://www.mfds.go.kr" },
     ],
@@ -500,7 +500,7 @@ export const helpTopics: HelpInfo[] = [
       { name: "외교부 여권안내 — 긴급여권", url: "https://www.passport.go.kr/home/kor/contents.do?menuPos=14" },
       { name: "외교부 여권안내 — 비전자여권 국가별 인정현황", url: "https://www.passport.go.kr/home/kor/board.do?menuPos=17" },
       { name: "인천국제공항 — 정부종합행정센터(T2)", url: "https://www.airport.kr/ap_ko/896/subview.do" },
-      { name: "외교부 영사콜센터 (24시간)", url: "https://www.0404.go.kr/callcenter/callcenter_intro.jsp" },
+      { name: "외교부 영사콜센터 (24시간)", url: "https://www.0404.go.kr/bbs/contsPst/MST0000000000104/4/detail" },
     ],
   },
   {
@@ -646,9 +646,9 @@ export const helpTopics: HelpInfo[] = [
       { name: "국민재난안전포털 — 자연재난 행동요령", url: "https://www.safekorea.go.kr" },
       { name: "산림청 산사태정보시스템", url: "https://sansatai.forest.go.kr" },
       { name: "기상청 날씨누리 — 특보 현황", url: "https://www.weather.go.kr" },
-      { name: "국가법령정보센터 — 자연재난 구호 및 복구 비용 부담기준 규정", url: "https://www.law.go.kr/LSW/lumLsLinkPop.do?lspttninfSeq=63234&chrClsCd=010202" },
+      { name: "국가법령정보센터 — 자연재난 구호 및 복구 비용 부담기준 규정", url: "https://www.law.go.kr/법령/자연재난구호및복구비용부담기준등에관한규정" },
       { name: "정부24 — 풍수해·지진재해보험료 지원", url: "https://www.gov.kr/portal/service/serviceInfo/WII000001130" },
-      { name: "희망브리지 전국재해구호협회", url: "https://www.hoopekorea.org" },
+      { name: "희망브리지 전국재해구호협회", url: "https://hopebridge.or.kr" },
     ],
   },
   {

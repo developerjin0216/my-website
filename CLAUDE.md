@@ -238,6 +238,13 @@ queries ±0.003° around it (≈1 s, 1–2 results) for a fresh stream URL.
 - The hub lives in the route group `tools/cctv/(hub)/` so its `ToolShell` layout (h1, intro,
   FAQ) does not wrap the 20 highway pages — otherwise each would get two h1s and the same prose.
 - With one result, ITS JSON returns `data` as an **object, not an array**. Normalise it.
+- Per-road prose comes only from camera names (`junctionsOf`, `stopsOf` in `data/cctvHighways.ts`):
+  two roads meet where both lists carry the same 분기점 name, which yields ~50 cross-links between
+  highway pages; rest areas and 졸음쉼터 are listed by name. Added 2026-11-17 because the 20 pages
+  shared half their sentences. Never infer region or direction from coordinates.
+- `camsOf` trims a run of ≤3 cameras more than 100 km from the rest at either end of a list. ITS
+  appended three 통영대전 cameras (ending 진주분기점2) to 중부선, so the 중부 page claimed to end at
+  진주 and 남해 claimed to meet 중부 there. Real split roads (동해, 중앙, 익산포항) have big runs and stay.
 - `data/cctvHighwayList.ts` holds the route list without the 173 KB JSON so client components
   (the hub) can link to highways without bundling the snapshot. Import the JSON only server-side.
 - Re-run the generator every few months; `data/cctvHighways.ts` fails the build if a configured

@@ -8,6 +8,8 @@ import {
   SNAPSHOT_DATE,
   camsOf,
   getHighway,
+  junctionsOf,
+  stopsOf,
 } from "@/data/cctvHighways";
 import { robotsFor } from "@/lib/indexPolicy";
 import { CONTACT_EMAIL, ROOT_SITE_NAME, ROOT_URL } from "@/lib/site";
@@ -81,6 +83,10 @@ export default async function HighwayPage({
   const names = cams.map((c) => c[0]);
   const c = counts(names);
   const others = HIGHWAYS.filter((x) => x.slug !== h.slug);
+  const junctions = junctionsOf(h);
+  const linked = junctions.filter((j) => j.meets.length > 0);
+  const unlinked = junctions.filter((j) => j.meets.length === 0);
+  const stops = stopsOf(h);
   const url = `${ROOT_URL}${pathOf(h.slug)}`;
 
   const jsonLd = {
@@ -144,8 +150,8 @@ export default async function HighwayPage({
             {c.tunnel.length > 0 && <li>· 이름에 &lsquo;터널&rsquo;이 들어간 지점 {c.tunnel.length}곳</li>}
             {c.junction.length > 0 && (
               <li>
-                · 분기점 근처 {c.junction.length}곳 — 다른 고속도로와 갈라지는 곳입니다.
-                목록에서 &lsquo;분기점&rsquo;으로 찾을 수 있습니다
+                · 분기점 근처 {c.junction.length}곳 — {h.name}이 다른 고속도로와 갈라지는
+                곳이고, 이어지는 노선은 아래에 정리했습니다
               </li>
             )}
             {c.restArea.length > 0 && <li>· 휴게소 근처 {c.restArea.length}곳</li>}
@@ -157,6 +163,68 @@ export default async function HighwayPage({
             브라우저가 직접 받아 보여주며, 이 사이트를 거치거나 저장되지 않습니다.
           </p>
         </section>
+
+        {/* 노선마다 다른 본문 — 지점 이름에서만 뽑습니다(data/cctvHighways.ts junctionsOf).
+            두 노선의 지점 목록에 같은 분기점 이름이 있으면 그 둘은 거기서 만납니다. */}
+        {junctions.length > 0 && (
+          <section className="bg-card rounded-2xl p-5">
+            <h2 className="text-base font-bold text-accent mb-3">
+              {h.name}과 만나는 고속도로
+            </h2>
+            {linked.length > 0 && (
+              <ul className="text-sm text-[#c0c8d8] leading-relaxed space-y-1.5 break-keep">
+                {linked.map((j) => (
+                  <li key={j.label}>
+                    · <strong className="text-[#e8e8f0]">{j.label}</strong> —{" "}
+                    {j.meets.map((m, i) => (
+                      <span key={m.slug}>
+                        {i > 0 && ", "}
+                        <Link href={pathOf(m.slug)} className="text-accent underline">
+                          {m.name}
+                        </Link>
+                      </span>
+                    ))}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {unlinked.length > 0 && (
+              <p className="text-sm text-[#c0c8d8] leading-relaxed mt-2 break-keep">
+                그 밖에 {unlinked.map((j) => j.label).join(", ")}에도 카메라가 있습니다.
+              </p>
+            )}
+            <p className="text-xs text-[#8a90a0] leading-relaxed mt-3 break-keep">
+              {h.name}에서 다른 고속도로로 갈아탈 계획이면 위 링크로 그 노선 CCTV를 이어서
+              보세요. 연결은 {h.name}과 상대 노선의 CCTV 지점 목록에 같은 분기점 이름이 있는지로
+              확인했습니다.
+            </p>
+          </section>
+        )}
+
+        {(stops.rest.length > 0 || stops.shelters.length > 0) && (
+          <section className="bg-card rounded-2xl p-5">
+            <h2 className="text-base font-bold text-accent mb-3">
+              {h.name} 휴게소·졸음쉼터 CCTV
+            </h2>
+            {stops.rest.length > 0 && (
+              <p className="text-sm text-[#c0c8d8] leading-relaxed break-keep">
+                <strong className="text-[#e8e8f0]">휴게소 {stops.rest.length}곳</strong>:{" "}
+                {stops.rest.join(", ")}
+              </p>
+            )}
+            {stops.shelters.length > 0 && (
+              <p className="text-sm text-[#c0c8d8] leading-relaxed mt-2 break-keep">
+                <strong className="text-[#e8e8f0]">졸음쉼터 {stops.shelters.length}곳</strong>:{" "}
+                {stops.shelters.join(", ")}
+              </p>
+            )}
+            <p className="text-xs text-[#8a90a0] leading-relaxed mt-3 break-keep">
+              이름에 휴게소·졸음쉼터가 들어간 지점입니다. 예를 들어 &lsquo;
+              {stops.rest[0] ?? stops.shelters[0]}&rsquo;에 들르기 전에 위 목록에서 그 이름을
+              누르면 근처 도로 흐름과 노면이 나옵니다.
+            </p>
+          </section>
+        )}
 
         <section className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold text-accent mb-3">다른 고속도로</h2>
