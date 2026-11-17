@@ -35,6 +35,7 @@ export default function PassportPhotoPage() {
   const [zoom, setZoom] = useState(1);
   const [area, setArea] = useState<Area | null>(null);
   const [busy, setBusy] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const onFile = (file: File) => {
     if (imgUrl) URL.revokeObjectURL(imgUrl);
@@ -46,6 +47,7 @@ export default function PassportPhotoPage() {
   const save = async () => {
     if (!imgUrl || !area) return;
     setBusy(true);
+    setSaveError(null);
     try {
       const img = new Image();
       img.src = imgUrl;
@@ -68,6 +70,8 @@ export default function PassportPhotoPage() {
       a.download = `photo_${spec.w}x${spec.h}.jpg`;
       a.click();
       URL.revokeObjectURL(a.href);
+    } catch {
+      setSaveError("이 사진을 열지 못해 저장하지 못했습니다. 브라우저가 열 수 없는 형식일 수 있으니 JPG 사진으로 다시 시도하세요.");
     } finally {
       setBusy(false);
     }
@@ -170,6 +174,9 @@ export default function PassportPhotoPage() {
                 {busy ? "저장 중..." : `⬇️ ${spec.w}×${spec.h} 저장`}
               </button>
             </div>
+            {saveError && (
+              <p className="text-xs text-[#ff6b6b] mt-2 leading-relaxed">{saveError}</p>
+            )}
           </div>
         </>
       )}

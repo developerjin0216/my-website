@@ -36,7 +36,11 @@ function Row({ label, value, note }: { label: string; value: string; note: strin
 
 export default function MoneyHangulPage() {
   const [raw, setRaw] = useState("5000000");
+  // 지운 글자가 있으면 이유를 알립니다. 계약서에 들어가는 금액이라, 소수점 뒤가 이어 붙거나
+  // '만'이 지워져 금액이 조용히 바뀌는 일이 없어야 합니다.
+  const [dropped, setDropped] = useState<"decimal" | "unit" | null>(null);
   const amount = Number(raw || 0);
+  const tooBig = amount > Number.MAX_SAFE_INTEGER;
   const result = toHangul(amount);
   const valid = amount > 0 && result.contract !== "";
 
@@ -47,8 +51,14 @@ export default function MoneyHangulPage() {
         <input
           type="text"
           inputMode="numeric"
-          value={amount > 0 ? amount.toLocaleString("ko-KR") : ""}
-          onChange={(e) => setRaw(e.target.value.replace(/[^\d]/g, ""))}
+          // 숫자로 바꾸지 않고 입력한 글자 그대로 쉼표만 넣습니다 — 아주 큰 수의 끝자리가 바뀌지 않게
+          value={amount > 0 ? raw.replace(/^0+/, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",") : ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            setDropped(/[만억조경천백십]/.test(v) ? "unit" : v.includes(".") ? "decimal" : null);
+            // 소수점 아래(원 단위 미만)는 버립니다. 지우기만 하면 뒷자리가 이어 붙어 다른 금액이 됩니다.
+            setRaw(v.split(".")[0].replace(/[^\d]/g, ""));
+          }}
           placeholder="5,000,000"
           className="w-full bg-[#16213e] border border-[#2a3a5a] rounded-xl px-4 py-3 text-xl font-bold outline-none focus:border-accent"
         />
@@ -57,7 +67,10 @@ export default function MoneyHangulPage() {
             <button
               key={p}
               type="button"
-              onClick={() => setRaw(String(p))}
+              onClick={() => {
+                setRaw(String(p));
+                setDropped(null);
+              }}
               className="text-xs bg-[#16213e] border border-[#2a3a5a] rounded-full px-3 py-1.5 text-[#a0a0b0] hover:text-accent hover:border-accent"
             >
               {p >= 100_000_000
@@ -69,6 +82,19 @@ export default function MoneyHangulPage() {
           ))}
         </div>
       </div>
+
+      {dropped && (
+        <p className="text-xs text-[#ffb347] leading-relaxed px-1">
+          {dropped === "decimal"
+            ? "소수점 아래(원 단위 미만)는 버리고 원 단위까지만 변환합니다."
+            : "'만'·'억' 같은 글자는 금액에 넣지 않습니다. 금액을 숫자로 모두 입력하세요."}
+        </p>
+      )}
+      {tooBig && (
+        <p className="text-xs text-[#ffb347] leading-relaxed px-1">
+          약 9천조 원보다 큰 금액은 정확히 다룰 수 없어 변환하지 않습니다.
+        </p>
+      )}
 
       {valid && (
         <div className="space-y-2.5">

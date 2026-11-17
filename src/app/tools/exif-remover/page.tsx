@@ -58,7 +58,9 @@ export default function ExifRemoverPage() {
         try {
           const meta = await exifr.parse(file, {
             gps: true,
-            pick: ["DateTimeOriginal", "Make", "Model", "latitude", "longitude"],
+            // latitude·longitude 는 exifr 가 GPS 원본 태그에서 계산하는 값이라 원본 태그를 같이 골라야
+            // 나옵니다. 2026-11-17 전에는 이 둘만 골라서, 위치가 찍힌 사진도 'GPS 없음'으로 보였습니다.
+            pick: ["DateTimeOriginal", "Make", "Model", "latitude", "longitude", "GPSLatitude", "GPSLatitudeRef", "GPSLongitude", "GPSLongitudeRef"],
           });
           if (meta) {
             hasMeta = true;

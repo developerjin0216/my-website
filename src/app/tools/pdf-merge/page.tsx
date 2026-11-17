@@ -23,11 +23,13 @@ export default function PdfMergePage() {
       setError("PDF 파일을 올려주세요.");
       return;
     }
-    const next = [...entries, ...pdfs.map((file) => ({ file, pages: null }))];
-    setEntries(next);
+    // 새로 올린 것만 따로 들고 검사합니다. 예전에는 목록 전체를 복사해 두었다가 검사 뒤 통째로
+    // 되돌려 써서, 검사 중에 지우거나 순서를 바꾼 것이 되살아나고 그사이 올린 묶음이 사라졌습니다.
+    const added: Entry[] = pdfs.map((file) => ({ file, pages: null }));
+    setEntries((cur) => [...cur, ...added]);
     // 페이지 수 검사 (암호 PDF 조기 감지)
     const { PDFDocument } = await import("pdf-lib");
-    for (const entry of next) {
+    for (const entry of added) {
       if (entry.pages !== null) continue;
       try {
         const doc = await PDFDocument.load(await entry.file.arrayBuffer(), {
@@ -38,7 +40,8 @@ export default function PdfMergePage() {
         entry.pages = -1;
       }
     }
-    setEntries([...next]);
+    // 결과는 같은 항목 객체에 적었으므로 지금 목록을 그대로 다시 그리면 됩니다
+    setEntries((cur) => [...cur]);
   };
 
   const move = (i: number, dir: -1 | 1) => {
@@ -82,6 +85,8 @@ export default function PdfMergePage() {
   };
 
   const mergeable = entries.filter((e) => e.pages !== -1);
+  // 확인이 안 끝난 파일이 암호 PDF 면 병합 전체가 엉뚱한 오류로 멈춥니다 — 끝날 때까지 잠급니다
+  const checking = entries.some((e) => e.pages === null);
 
   return (
     <div className="space-y-4">
@@ -155,12 +160,14 @@ export default function PdfMergePage() {
           <button
             type="button"
             onClick={merge}
-            disabled={busy || mergeable.length < 2}
+            disabled={busy || checking || mergeable.length < 2}
             className="w-full py-3 rounded-xl bg-accent text-[#1a1a2e] text-sm font-bold active:scale-[0.98] transition-transform disabled:opacity-50"
           >
             {busy
               ? "병합 중..."
-              : mergeable.length < 2
+              : checking
+                ? "페이지 확인 중..."
+                : mergeable.length < 2
                 ? "PDF를 2개 이상 올려주세요"
                 : `📑 ${mergeable.length}개 파일 합치기`}
           </button>

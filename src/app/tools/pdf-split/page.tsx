@@ -12,10 +12,12 @@ export function parseRange(input: string, total: number): number[] {
     if (m) {
       // "3-1"처럼 역순 범위는 내림차순으로 — 순서 바꿔 뽑기 지원
       const a = Number(m[1]), b = Number(m[2]);
-      const step = a <= b ? 1 : -1;
-      for (let i = a; step > 0 ? i <= b : i >= b; i += step) {
-        if (i >= 1 && i <= total) out.push(i - 1);
-      }
+      // 문서 밖 번호는 어차피 버리므로 먼저 잘라 둡니다 — "1-1000000000" 같은 입력에 탭이 멈추지 않게
+      const lo = Math.max(1, Math.min(a, b));
+      const hi = Math.min(total, Math.max(a, b));
+      if (lo > hi) continue;
+      if (a <= b) for (let i = lo; i <= hi; i++) out.push(i - 1);
+      else for (let i = hi; i >= lo; i--) out.push(i - 1);
     } else if (/^\d+$/.test(p)) {
       const n = Number(p);
       if (n >= 1 && n <= total) out.push(n - 1);
@@ -166,7 +168,7 @@ export default function PdfSplitPage() {
             <input
               type="text"
               value={range}
-              onChange={(e) => setRange(e.target.value.replace(/[^\d,\-\s]/g, ""))}
+              onChange={(e) => setRange(e.target.value.replace(/[~～]/g, "-").replace(/[^\d,\-\s]/g, ""))}
               placeholder="예: 1-3,5,7-9"
               className="w-full mt-2 bg-[#16213e] border border-[#2a3a5a] rounded-xl px-4 py-3 text-sm outline-none focus:border-accent"
             />

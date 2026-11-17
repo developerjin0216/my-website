@@ -52,7 +52,9 @@ export interface MoneyHangul {
 }
 
 export function toHangul(amount: number): MoneyHangul {
-  if (!Number.isFinite(amount) || amount <= 0 || amount > 9_999_999_999_999_999) {
+  // 자바스크립트 숫자로 정확히 다룰 수 있는 최대값까지만. 예전 상한(9,999조…)은 그 범위를 넘어
+  // 끝자리가 조용히 바뀐 금액을 변환했습니다.
+  if (!Number.isFinite(amount) || amount <= 0 || amount > Number.MAX_SAFE_INTEGER) {
     return { contract: "", gajeun: "", reading: "" };
   }
   const contractBody = convert(amount, DIGITS, SMALL, BIG, true);

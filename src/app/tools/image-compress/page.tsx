@@ -33,7 +33,13 @@ function encode(bmp: ImageBitmap, type: string, quality: number): Promise<Blob> 
   const canvas = document.createElement("canvas");
   canvas.width = bmp.width;
   canvas.height = bmp.height;
-  canvas.getContext("2d")!.drawImage(bmp, 0, 0);
+  const ctx = canvas.getContext("2d")!;
+  // JPG 는 투명을 담지 못해 투명한 부분이 검게 나옵니다 — 흰색을 먼저 깔아 둡니다(WebP 는 투명 유지)
+  if (type === "image/jpeg") {
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  ctx.drawImage(bmp, 0, 0);
   return new Promise((resolve, reject) =>
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("encode fail"))), type, quality)
   );
@@ -91,9 +97,14 @@ export default function ImageCompressPage() {
             ? await compressToTarget(bmp, type, Math.max(10, Number(targetKb)) * 1024)
             : await encode(bmp, type, Math.min(95, Math.max(5, Number(quality))) / 100);
         bmp.close();
-        const ext = format === "webp" ? ".webp" : ".jpg";
+        // 확장자는 실제로 만들어진 형식을 따릅니다 — WebP 를 못 만드는 브라우저는 PNG 를 돌려줍니다
+        const ext = blob.type === "image/webp" ? ".webp" : blob.type === "image/png" ? ".png" : ".jpg";
+        // 이름이 같아지는 사진(a.png·a.jpg)이 ZIP 안에서 서로 덮어쓰지 않게 번호를 붙입니다
+        const base = file.name.replace(/\.[^.]+$/, "");
+        let name = base + ext;
+        for (let n = 2; done.some((d) => d.name === name); n++) name = `${base} (${n})${ext}`;
         done.push({
-          name: file.name.replace(/\.[^.]+$/, "") + ext,
+          name,
           before: file.size,
           after: blob.size,
           blob,
@@ -210,7 +221,12 @@ export default function ImageCompressPage() {
         <p className="text-xs text-[#606070] mt-1.5">사진은 서버로 전송되지 않습니다</p>
         <input
           ref={inputRef} type="file" accept="image/*" multiple className="hidden"
-          onChange={(e) => e.target.files?.length && handleFiles(e.target.files)}
+          onChange={(e) => {
+            // 설정만 바꿔 같은 사진을 다시 고를 수 있게 선택을 비웁니다(목록은 먼저 복사)
+            const picked = e.target.files ? [...e.target.files] : [];
+            e.target.value = "";
+            if (picked.length) handleFiles(picked);
+          }}
         />
       </div>
 

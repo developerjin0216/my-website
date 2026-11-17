@@ -26,10 +26,15 @@ export default function QrGeneratorPage() {
   const [smsBody, setSmsBody] = useState("");
   const [png, setPng] = useState<string | null>(null);
   const [svg, setSvg] = useState<string | null>(null);
+  const [qrError, setQrError] = useState<string | null>(null);
 
+  // 앞뒤 공백·대문자 HTTP 도 링크로 봅니다. 예전에는 " https://x" 가 "https://https://x" 가 됐습니다.
+  const urlTrim = url.trim();
+  // 숫자가 하나도 없으면 빈 tel: QR 을 만들지 않습니다
+  const telDigits = tel.replace(/[^\d+]/g, "");
   const content =
     mode === "url"
-      ? url.trim() && (url.startsWith("http") ? url.trim() : `https://${url.trim()}`)
+      ? urlTrim && (/^https?:\/\//i.test(urlTrim) ? urlTrim : `https://${urlTrim}`)
       : mode === "text"
         ? text.trim()
         : mode === "wifi"
@@ -38,9 +43,9 @@ export default function QrGeneratorPage() {
               wifiEnc === "nopass" ? "" : `P:${esc(wifiPw)};`
             };`
           : mode === "tel"
-            ? tel.trim() && `tel:${tel.replace(/[^\d+]/g, "")}`
-            : tel.trim() &&
-              `sms:${tel.replace(/[^\d+]/g, "")}${smsBody.trim() ? `?body=${encodeURIComponent(smsBody.trim())}` : ""}`;
+            ? telDigits && `tel:${telDigits}`
+            : telDigits &&
+              `sms:${telDigits}${smsBody.trim() ? `?body=${encodeURIComponent(smsBody.trim())}` : ""}`;
 
   useEffect(() => {
     let cancelled = false;
@@ -49,18 +54,30 @@ export default function QrGeneratorPage() {
         if (!cancelled) {
           setPng(null);
           setSvg(null);
+          setQrError(null);
         }
         return;
       }
       const QRCode = await import("qrcode");
       const opts = { errorCorrectionLevel: "M" as const, margin: 2, width: 640 };
-      const [pngUrl, svgStr] = await Promise.all([
-        QRCode.toDataURL(content, opts),
-        QRCode.toString(content, { ...opts, type: "svg" }),
-      ]);
-      if (!cancelled) {
-        setPng(pngUrl);
-        setSvg(svgStr);
+      try {
+        const [pngUrl, svgStr] = await Promise.all([
+          QRCode.toDataURL(content, opts),
+          QRCode.toString(content, { ...opts, type: "svg" }),
+        ]);
+        if (!cancelled) {
+          setPng(pngUrl);
+          setSvg(svgStr);
+          setQrError(null);
+        }
+      } catch {
+        // 담을 수 있는 양을 넘으면 라이브러리가 오류를 냅니다. 예전 QR 을 남겨 두면 지금 입력과
+        // 다른 QR 을 저장하게 되므로 지우고 이유를 알립니다.
+        if (!cancelled) {
+          setPng(null);
+          setSvg(null);
+          setQrError("내용이 너무 길어 QR 하나에 담을 수 없습니다. 글을 줄이거나 링크로 바꿔 주세요.");
+        }
       }
     }, 250);
     return () => {
@@ -133,6 +150,10 @@ export default function QrGeneratorPage() {
           </div>
         )}
       </div>
+
+      {qrError && (
+        <p className="bg-card rounded-2xl p-4 text-sm text-[#ff6b6b] leading-relaxed">{qrError}</p>
+      )}
 
       {png && (
         <div className="bg-card rounded-2xl p-5 text-center">

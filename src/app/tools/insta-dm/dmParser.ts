@@ -62,7 +62,7 @@ export function parseDmFiles(
       if (!raw.sender_name || !raw.timestamp_ms) continue;
       // 좋아요 반응·빈 메시지는 제외, 사진·공유는 텍스트 없는 메시지로 집계
       const content = raw.content ? fixMojibake(raw.content) : "";
-      // 시스템 문구(영문 액션 메시지) 걸러내기: 릴스 공유 안내 등은 텍스트 분석에서 자연 제외됨
+      // 시스템 문구를 따로 거르지는 않습니다. 글 없는 공유(사진·릴스)는 content 가 비어 단어 분석에 영향이 없을 뿐입니다.
       entry.messages.push({
         author: fixMojibake(raw.sender_name),
         ts: raw.timestamp_ms,

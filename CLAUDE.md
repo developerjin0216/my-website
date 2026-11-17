@@ -48,6 +48,10 @@ node scripts/cctv-check.mjs
 
 # Re-verify every /help case against its source (run from a Korean IP; needs pdftotext)
 node --experimental-strip-types scripts/check-help-cases.mjs
+
+# Tool-page detail text vs. the tools' own source — every sentence in data/toolsDetail.ts keeps
+# verbatim code quotes; this fails if a quote is gone. Run after changing any /tools/<id> code.
+node --experimental-strip-types scripts/check-tool-claims.mjs
 ```
 
 Verifying host-dependent behaviour locally (sitemap, robots, legacy redirects):
@@ -156,8 +160,18 @@ Client-only routes (`/omok`; formerly `/quiz`, `/battle`, `/mbti/test`) render n
 their `layout.tsx` must carry the server-rendered prose — that is the whole reason those layouts
 exist. Every page needs an `<h1>`; `/quiz` had none because its body is a client component.
 
-`/tools/*` is noindexed apart from two exceptions, so padding the rest is moot — they compete
-with single-purpose domains (ilovepdf, TinyPNG) anyway. Don't delete them; they still serve users.
+`/tools/*` is noindexed apart from two exceptions, so padding the rest is moot for search — they
+compete with single-purpose domains (ilovepdf, TinyPNG) anyway. Don't delete them; they still serve
+users. **It is not moot for AdSense**, whose reviewers read every page. On 2026-11-17 the 11 thinnest
+tool pages (983–1,326 chars) were deepened to ~1,900–2,500 chars purely from their own source code:
+`data/toolsDetail.ts`, merged into `tools.ts` at module load. Each tool keeps `evidence` (verbatim
+code fragments, not rendered); `scripts/check-tool-claims.mjs` fails when one disappears. Writing
+that text exposed bugs that silently gave users wrong results, all fixed the same day: the EXIF tool
+never detected GPS (exifr `pick` lacked the raw GPS tags, so geotagged photos showed "GPS 없음"),
+pdf-split turned "1~3" into page 13, money-hangul merged decimals into the amount and changed digits
+above 2^53, the QR tool left a stale QR downloadable when content was too long, image-compress
+painted transparency black in JPG, and pdf-merge could resurrect removed files. /moktak got a
+code-derived "소리와 움직임" section (486 → 1,048 chars) for the same reason.
 
 The exceptions are `/tools/cctv` and, since 2026-10-28, **`/tools/insta-follow-check`**. The
 Instagram one is not a generic utility: every competing 언팔 확인 app asks for the user's
@@ -361,6 +375,11 @@ Rooms are in-memory `Map`s (lost on restart), 6-char codes excluding `0/O/1/I`.
 
 - **AdSense is not approved.** Every `AdBanner` slot is the placeholder `"XXXXXXXXXX"` and the
   component returns `null`, so those slots render nothing. Only Coupang actually displays.
+  The checklist was cleared on 2026-11-17: ads.txt (`public/ads.txt`) and the AdSense script/meta on
+  every page, privacy policy discloses Google/third-party ad cookies, Coupang and GA, no "준비 중"
+  text anywhere, no page under 1,000 visible chars, off-topic bulk deleted (410). What remains is
+  Google's site-wide trust: with 1 page in the Google index, reapplying again is unlikely to change
+  the verdict — reapply once Search Console shows the index count rising.
 - Keep ad density low — one banner mid-document is the current rule on prompt pages. A
   placeholder/"준비 중" page is an explicit AdSense rejection reason (`/deals` was removed for this).
 - Toss ShareLink was **rejected**: its API only offers best-selling/today-deals lists, and a
