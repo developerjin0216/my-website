@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
 export default function MoktakPage() {
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
+    <div className="flex flex-col min-h-screen page-shell">
       <header className="px-5 pt-6 pb-2">
         <Link href="/" className="text-sm text-[#a0a0b0] hover:text-accent">
           ← {ROOT_SITE_NAME}

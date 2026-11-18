@@ -10,6 +10,7 @@ import {
   CALC_SITE_NAME,
   TOOLS_SITE_NAME,
   INFO_SITE_NAME,
+  BRAND,
 } from "@/lib/site";
 
 // PWA manifest — 접속 도메인에 따라 브랜딩 분기 (루트=생활안내 / 퀴즈 / 계산기)
@@ -20,7 +21,7 @@ export function GET(request: NextRequest) {
   if (CALC_SPLIT && host === CALC_HOST) {
     manifest = {
       name: CALC_SITE_NAME,
-      short_name: "모두의계산기",
+      short_name: BRAND,
       description: "연봉 실수령액·전기요금·환율 등 무료 생활 계산기",
       icons: [
         { src: "/calc-icon-192.png", sizes: "192x192", type: "image/png" },
@@ -30,8 +31,8 @@ export function GET(request: NextRequest) {
   } else if (TOOLS_SPLIT && host === TOOLS_HOST) {
     manifest = {
       name: TOOLS_SITE_NAME,
-      short_name: "모두의도구",
-      description: "인스타 언팔 확인 등 로그인 없이 쓰는 무료 웹 도구",
+      short_name: BRAND,
+      description: "사진·PDF·서류를 브라우저 안에서만 처리하는 무료 도구",
       icons: [
         { src: "/info-icon-192.png", sizes: "192x192", type: "image/png" },
         { src: "/info-icon-512.png", sizes: "512x512", type: "image/png" },
@@ -40,8 +41,9 @@ export function GET(request: NextRequest) {
   } else if (QUIZ_SPLIT && host === QUIZ_HOST) {
     manifest = {
       name: SITE_NAME,
-      short_name: "상식왕",
-      description: "다양한 카테고리의 상식 퀴즈를 풀어보세요!",
+      short_name: BRAND,
+      description: "급할 때 바로 찾는 생활 긴급 안내",
+      // 이 분기는 2026-11-17 퀴즈 삭제로 실제로는 쓰이지 않습니다. 분리를 되살릴 때를 위해 남깁니다.
       icons: [
         { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
         { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
@@ -50,7 +52,7 @@ export function GET(request: NextRequest) {
   } else {
     manifest = {
       name: INFO_SITE_NAME,
-      short_name: "8282114",
+      short_name: BRAND,
       description: "급할 때 바로 찾는 생활 긴급 안내",
       icons: [
         { src: "/info-icon-192.png", sizes: "192x192", type: "image/png" },

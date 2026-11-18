@@ -9,6 +9,8 @@
 // 빠진 페이지도 그대로 열리고 링크도 따라갑니다(follow). 되돌리려면 아래 목록에서
 // 지우기만 하면 사이트맵·RSS·메타가 함께 돌아옵니다.
 
+import { INDEXED_HIGHWAY_SLUGS } from "@/data/cctvHighwayList";
+
 /** 이 경로와 그 아래 전부를 색인에서 뺍니다 */
 const NOINDEX_SECTIONS = [
   "/omok",
@@ -41,17 +43,17 @@ export function isGonePath(pathname: string): boolean {
 }
 
 /** 위 섹션 안이지만 주제에 맞아 남기는 페이지 (폭설·폭우 때 도로 확인) */
-const INDEX_EXCEPTIONS = [
-  "/tools/cctv",
-  // 2026-10-28 추가. /tools 를 통째로 뺀 이유는 단일 목적 도메인(ilovepdf 등)과
-  // 경쟁이 안 되는 범용 유틸리티였기 때문인데, 이 하나는 성격이 다릅니다.
-  // 시중 언팔 확인 앱은 인스타 비밀번호를 받아갑니다(Meta 약관 위반·계정 정지 위험).
-  // 이 도구는 공식 내보내기 파일을 브라우저에서만 분석해 그 위험 자체가 없고,
-  // "비번 넣는 앱 말고 안전하게 확인하는 법"은 /help/privacy-leak 과 같은 질문입니다.
-  // 위성 2개(insta-hidden·insta-dm)는 얇아서 색인에 넣지 않습니다 —
-  // 주제 밖 페이지를 벌크로 넣는 것이 2026-10 에 사이트를 끌어내린 바로 그 패턴입니다.
-  "/tools/insta-follow-check",
-];
+const INDEX_EXCEPTIONS = ["/tools/cctv"];
+
+// 2026-11-18: /tools/insta-follow-check 를 색인 예외에서 뺐습니다.
+// 2026-10-28 에 "비밀번호를 받는 언팔 앱 대신"이라는 이유로 유일한 색인 도구로 남겼지만,
+// 애드센스 심사는 사이트 전체를 보고 이 도구는 사이트 주제(급할 때 생활 안내)와
+// SNS 계정 관리 사이에 걸쳐 있습니다. SNS·대화 분석 도구 4종(숨은기록·카톡 분석·
+// DM 분석·맞팔 확인)을 함께 색인에서 빼고, 탐색(푸터·/about·/tools 목록)에서도 내렸습니다.
+// URL 은 그대로 200 으로 열립니다 — 쓰던 사람이 주소로 들어오면 동작합니다.
+
+/** /tools/cctv 아래에서 색인에 남기는 노선 — 나머지 노선은 200 이지만 색인 제외 */
+const CCTV_INDEXED_ROADS = new Set(INDEXED_HIGHWAY_SLUGS);
 
 /** 남기는 섹션 안이지만 주제 밖인 개별 페이지 (건강 계산기) */
 const NOINDEX_PAGES = ["/calculators/bmi", "/calculators/calorie"];
@@ -62,6 +64,11 @@ const under = (path: string, base: string) =>
 /** 경로(쿼리·해시 없이, 예: "/help/medical-cost")가 검색 색인 대상인지 */
 export function isIndexable(path: string): boolean {
   const p = path.length > 1 ? path.replace(/\/+$/, "") : path;
+  // 고속도로 노선 페이지는 대표 5개만 색인합니다(국립공원은 아래 예외로 남습니다).
+  const road = p.match(/^\/tools\/cctv\/([^/]+)$/);
+  if (road && road[1] !== "national-parks") {
+    return CCTV_INDEXED_ROADS.has(road[1]);
+  }
   if (INDEX_EXCEPTIONS.some((e) => under(p, e))) return true;
   if (NOINDEX_PAGES.includes(p)) return false;
   return !NOINDEX_SECTIONS.some((s) => under(p, s));

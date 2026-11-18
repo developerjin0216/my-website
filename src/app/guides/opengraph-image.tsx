@@ -34,7 +34,7 @@ export default async function Image() {
           4대보험 · 전기요금 누진제 · 퇴직금, 알기 쉽게
         </div>
         <div style={{ fontSize: 30, color: "#606070", marginTop: 20 }}>
-          모두의 계산기
+          8282114
         </div>
       </div>
     ),

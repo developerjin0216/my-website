@@ -99,7 +99,7 @@ function ElectricityCalc() {
           )}
           <ShareButton
             title="전기요금 계산기"
-            text={`전기요금 계산: ${fmt(usage)}kWh(${monthN}월) → 약 ${won(bill.total)} — 모두의 계산기`}
+            text={`전기요금 계산: ${fmt(usage)}kWh(${monthN}월) → 약 ${won(bill.total)} — 8282114`}
           />
         </Card>
       )}

@@ -5,7 +5,7 @@ import { join } from "path";
 // 계산기 섹션 공용 OG 이미지 — /calculators 하위 전체에 적용 (세그먼트 상속)
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "모두의 계산기 - 연봉 실수령액·전기요금·환율 등 무료 생활 계산기";
+export const alt = "8282114 생활 계산기 - 연봉 실수령액·전기요금·환율 등 무료 생활 계산기";
 
 export default async function Image() {
   const fontData = await readFile(
@@ -28,7 +28,10 @@ export default async function Image() {
       >
         <div style={{ fontSize: 56, marginBottom: 20 }}>🧮</div>
         <div style={{ fontSize: 104, color: "#ffd700", fontWeight: 700 }}>
-          모두의 계산기
+          8282114
+        </div>
+        <div style={{ fontSize: 44, color: "#c0c8d8", marginTop: 8 }}>
+          생활 계산기
         </div>
         <div style={{ fontSize: 38, color: "#c0c8d8", marginTop: 28 }}>
           연봉 실수령액 · 퇴직금 · 전기요금 · 환율 · BMI

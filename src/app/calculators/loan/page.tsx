@@ -159,7 +159,7 @@ function LoanCalc() {
             </div>
             <ShareButton
               title="대출 이자 계산기"
-              text={`대출 이자 계산: ${won(P)} · 연 ${annualRate}% → 월 ${bigValue}, 총 이자 ${won(totalInterest)} — 모두의 계산기`}
+              text={`대출 이자 계산: ${won(P)} · 연 ${annualRate}% → 월 ${bigValue}, 총 이자 ${won(totalInterest)} — 8282114`}
             />
           </Card>
 

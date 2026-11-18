@@ -129,7 +129,7 @@ function AirconCalc() {
           )}
           <ShareButton
             title="에어컨 전기세 계산기"
-            text={`에어컨 전기세: 하루 ${hoursN}시간 × ${daysN}일 → 월 추가 약 ${won(extra)} — 모두의 계산기`}
+            text={`에어컨 전기세: 하루 ${hoursN}시간 × ${daysN}일 → 월 추가 약 ${won(extra)} — 8282114`}
           />
         </Card>
       )}

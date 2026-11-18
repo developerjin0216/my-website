@@ -3,7 +3,7 @@ import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import { guides } from "@/data/guides";
 import { getCalc } from "@/data/calculators";
-import { CALC_URL } from "@/lib/site";
+import { BRAND, CALC_URL } from "@/lib/site";
 
 // 허브 페이지가 링크 목록만으로 끝나면 색인되지 않습니다. 실제로 이 페이지는
 // 사람이 읽는 글자가 806자뿐이라 "Crawled - currently not indexed" 후보였습니다.
@@ -50,7 +50,7 @@ const SITUATIONS: { when: string; go: string; href: string; why: string }[] = [
 ];
 
 export const metadata: Metadata = {
-  title: { absolute: "생활 가이드 - 모두의 계산기" },
+  title: { absolute: `생활 가이드 - ${BRAND}` },
   description:
     "4대보험 요율, 전기요금 누진제, 퇴직금 지급 기준까지 — 생활 계산기와 함께 보는 알기 쉬운 생활 정보 가이드입니다.",
   alternates: { canonical: `${CALC_URL}/guides` },
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
 
 export default function GuidesPage() {
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
+    <div className="flex flex-col min-h-screen page-shell">
       <header className="bg-header px-5 py-6">
         <Link
           href="/calculators"
@@ -88,6 +88,7 @@ export default function GuidesPage() {
           </p>
         </div>
 
+        <div className="card-grid">
         {guides.map((g) => {
           const calcs = g.relatedCalcs
             .map((id) => {
@@ -130,6 +131,7 @@ export default function GuidesPage() {
             </div>
           );
         })}
+        </div>
       </div>
 
       <div className="px-5 pb-6">

@@ -94,8 +94,8 @@ function PrepaymentCalc() {
             title="중도상환수수료 계산기"
             text={
               exempt
-                ? `${won(amountN)} 중도상환 — 수수료 면제! — 모두의 계산기`
-                : `${won(amountN)} 중도상환 시 수수료 ${won(fee)} — 모두의 계산기`
+                ? `${won(amountN)} 중도상환 — 수수료 면제! — 8282114`
+                : `${won(amountN)} 중도상환 시 수수료 ${won(fee)} — 8282114`
             }
           />
         </Card>

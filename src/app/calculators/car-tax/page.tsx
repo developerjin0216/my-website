@@ -124,7 +124,7 @@ function CarTaxCalc() {
           </div>
           <ShareButton
             title="자동차세 계산기"
-            text={`${isEv ? "전기차" : `${ccN.toLocaleString()}cc ${ageN}년차`} 자동차세 연 ${won(annual)}, ${monthInfo.label} 연납 시 ${won(prepayTotal)} — 모두의 계산기`}
+            text={`${isEv ? "전기차" : `${ccN.toLocaleString()}cc ${ageN}년차`} 자동차세 연 ${won(annual)}, ${monthInfo.label} 연납 시 ${won(prepayTotal)} — 8282114`}
           />
         </Card>
       )}

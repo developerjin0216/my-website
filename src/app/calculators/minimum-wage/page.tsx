@@ -124,7 +124,7 @@ function MinimumWageCalc() {
           </p>
           <ShareButton
             title="최저임금·주휴수당 계산기"
-            text={`시급 ${won(wageN)} × 주 ${hoursN}시간 → 월 ${won(monthlyPay)} (주휴수당 포함) — 모두의 계산기`}
+            text={`시급 ${won(wageN)} × 주 ${hoursN}시간 → 월 ${won(monthlyPay)} (주휴수당 포함) — 8282114`}
           />
         </Card>
       )}

@@ -102,7 +102,7 @@ function SalaryCalc() {
           </div>
           <ShareButton
             title="연봉 실수령액 계산기"
-            text={`연봉 실수령액 계산: 월 ${won(d.net)} (세전 ${won(monthlyGross)}) — 모두의 계산기`}
+            text={`연봉 실수령액 계산: 월 ${won(d.net)} (세전 ${won(monthlyGross)}) — 8282114`}
           />
         </Card>
       )}

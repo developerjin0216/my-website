@@ -3,7 +3,7 @@ import AdBanner from "@/components/AdBanner";
 import CoupangGoldbox from "@/components/CoupangGoldbox";
 import { calculators, calcGroups, CALC_COUNT } from "@/data/calculators";
 import { guides } from "@/data/guides";
-import { QUIZ_URL, CALC_URL, SPLIT, CALC_SITE_NAME } from "@/lib/site";
+import { CALC_URL, SPLIT, CALC_SITE_NAME, BRAND } from "@/lib/site";
 
 // 서버 컴포넌트 — 계산기 허브. 크롤러가 읽을 수 있는 정적 콘텐츠 포함
 // 도메인 분리 시 계산기 도메인의 홈 역할을 겸합니다 (proxy가 / 를 여기로 rewrite)
@@ -43,7 +43,7 @@ export default function CalculatorsPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
+    <div className="flex flex-col min-h-screen page-shell">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -51,18 +51,11 @@ export default function CalculatorsPage() {
         }}
       />
       <header className="bg-header px-5 py-6">
-        {SPLIT ? (
-          <a
-            href={QUIZ_URL}
-            className="text-sm text-[#a0a0b0] hover:text-accent"
-          >
-            상식왕 퀴즈 →
-          </a>
-        ) : (
-          <Link href="/" className="text-sm text-[#a0a0b0] hover:text-accent">
-            ← 8282114 홈
-          </Link>
-        )}
+        {/* 분리 시절에는 이 자리에 "퀴즈 →" 링크가 있었습니다. 퀴즈는 2026-11-17 삭제(410)되어
+            갈 곳이 없으므로, 어느 모드에서든 홈으로 돌아갑니다. */}
+        <Link href="/" className="text-sm text-[#a0a0b0] hover:text-accent">
+          ← {BRAND} 홈
+        </Link>
         <h1 className="text-3xl font-bold text-accent mt-2">생활 계산기 모음</h1>
         <p className="text-sm text-[#a0a0b0] mt-1">
           월급부터 전기요금까지, 일상에 필요한 계산기를 무료로 이용하세요
@@ -107,7 +100,7 @@ export default function CalculatorsPage() {
         {/* 생활 가이드 — 정보성 콘텐츠 */}
         <section className="mb-6">
           <h2 className="text-lg font-bold mb-3">생활 가이드</h2>
-          <div className="space-y-3">
+          <div className="card-grid">
             {guides.map((g) => (
               <Link
                 key={g.id}

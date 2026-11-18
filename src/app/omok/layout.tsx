@@ -94,11 +94,11 @@ export default function OmokLayout({ children }: { children: React.ReactNode }) 
       />
       {children}
 
-      <div className="max-w-lg mx-auto w-full px-5">
+      <div className="page-shell px-5">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />
       </div>
 
-      <section className="max-w-lg mx-auto w-full px-5 py-6 space-y-4">
+      <section className="page-shell px-5 py-6 space-y-4">
         <div className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold mb-3 text-accent">오목 규칙</h2>
           <p className="text-sm text-[#a0a0b0] leading-relaxed mb-3">

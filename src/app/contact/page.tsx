@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CONTACT_EMAIL } from "@/lib/site";
+import { BRAND, CONTACT_EMAIL } from "@/lib/site";
+
+// 문의 페이지 — 애드센스 심사와 E-E-A-T 에서 "연락할 수 있는 운영자"의 증거가 됩니다.
+// 2026-11-18: 퀴즈 서비스가 삭제되었는데도 문의 항목에 "퀴즈 문제·해설 오류",
+// "퀴즈 카테고리"가 남아 있었습니다. 지금 실제로 운영하는 서비스 기준으로 다시 썼습니다.
 
 export const metadata: Metadata = {
-  title: { absolute: "문의하기 - 8282114" },
+  title: { absolute: `문의하기 - ${BRAND}` },
   description:
-    "상식왕 퀴즈·생활 계산기 문의 페이지 — 오류 제보, 광고·제휴 문의를 받습니다.",
+    "8282114 생활안내 문의 — 계산기·안내 내용의 오류 제보, 콘텐츠 제안, 광고·제휴, 개인정보 관련 문의를 받습니다.",
   alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
+    <div className="flex flex-col min-h-screen page-shell">
       <header className="bg-header px-5 py-5 text-center">
         <Link href="/" className="text-sm text-[#a0a0b0] mb-1 block">
           ← 홈으로
@@ -53,7 +57,8 @@ export default function ContactPage() {
               </li>
               <li>
                 <strong className="text-white">입력한 값과 나온 값</strong> —
-                계산기라면 어떤 숫자를 넣었을 때 얼마가 나왔는지
+                계산기라면 어떤 숫자를 넣었을 때 얼마가 나왔는지, 안내 글이라면
+                어떤 문장이 문제인지
               </li>
               <li>
                 <strong className="text-white">맞다고 생각하는 값과 근거</strong>{" "}
@@ -71,13 +76,13 @@ export default function ContactPage() {
             <h2 className="text-base font-bold text-white mb-2">이런 문의를 받습니다</h2>
             <ul className="list-disc pl-5 space-y-1 text-[#a0a0b0]">
               <li>
-                <strong className="text-white">오류 제보</strong> — 퀴즈 문제·해설 오류,
-                계산기 요율·계산 결과 오류 (해당 페이지 주소를 함께 보내주시면
-                빠르게 확인할 수 있습니다)
+                <strong className="text-white">오류 제보</strong> — 계산기 요율·계산
+                결과 오류, 안내 글의 사실·연락처 오류, 도구가 동작하지 않는 경우
+                (해당 페이지 주소를 함께 보내주시면 빠르게 확인할 수 있습니다)
               </li>
               <li>
                 <strong className="text-white">콘텐츠 제안</strong> — 추가되었으면 하는
-                퀴즈 카테고리나 계산기
+                생활 계산기, 다루지 않은 긴급 상황, 영문 가이드 주제
               </li>
               <li>
                 <strong className="text-white">광고·제휴</strong> — 광고 게재, 콘텐츠 제휴 문의
@@ -151,7 +156,7 @@ export default function ContactPage() {
             이용약관
           </Link>
         </div>
-        <p className="text-xs text-[#606070]">© 2026 상식왕 퀴즈 · 생활 계산기</p>
+        <p className="text-xs text-[#606070]">© 2026 {BRAND} — 급할 때 생활 안내</p>
       </footer>
     </div>
   );

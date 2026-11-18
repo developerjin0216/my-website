@@ -1,7 +1,6 @@
 import { Children, isValidElement } from "react";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
-import { CALC_SOURCES } from "@/lib/trust";
 import { getGuide } from "@/data/guides";
 import { getCalc } from "@/data/calculators";
 import {
@@ -111,13 +110,13 @@ export default function GuideShell({
   const guide = getGuide(id);
   const url = `${CALC_URL}/guides/${id}`;
 
-  // 공식 출처 — 가이드의 요율·기준은 관련 계산기의 utils 에서 오므로 출처도 같습니다.
-  // CALC_SOURCES 를 그대로 합쳐서(중복 URL 제거) 보여 줍니다. 가이드에만 따로 출처를
-  // 두면 계산기와 어긋나는 날이 옵니다.
-  const seen = new Set<string>();
-  const guideSources = guide.relatedCalcs
-    .flatMap((cid) => CALC_SOURCES[cid] ?? [])
-    .filter((s) => (seen.has(s.url) ? false : (seen.add(s.url), true)));
+  // 공식 출처 — 글마다 자기 근거 기관만 씁니다(data/guides.ts 의 sources).
+  //
+  // 예전에는 relatedCalcs 의 CALC_SOURCES 를 합쳐서 보여줬습니다. 계산기끼리 요율 파일을
+  // 공유하니 출처도 같다고 본 것인데, 글과 계산기는 다루는 제도가 다릅니다. 그래서
+  // /guides/pension-reform 아래에 "고용노동부 — 퇴직금 제도"가 뜨고, 반대로 퇴직금 글에는
+  // 국민연금공단이 붙었습니다. 지금은 guides.ts 의 sources 만 렌더합니다.
+  const guideSources = guide.sources;
 
   // 본문 Sec 제목으로 목차 — HelpShell 과 같은 이유입니다(하위 주제에 주소 주기).
   const sections = Children.toArray(children)
@@ -148,8 +147,7 @@ export default function GuideShell({
       {
         "@type": "BreadcrumbList",
         // 1번 항목의 이름과 주소가 서로 맞아야 합니다. 예전에는 이름이
-        // CALC_SITE_NAME(단일 도메인에서는 '상식왕 퀴즈')인데 주소는
-        // /calculators라 둘이 어긋나 있었습니다.
+        // (당시의) 계산기 사이트 이름인데 주소는 /calculators라 둘이 어긋나 있었습니다.
         itemListElement: [
           {
             "@type": "ListItem",
@@ -185,7 +183,7 @@ export default function GuideShell({
   };
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
+    <div className="flex flex-col min-h-screen page-shell">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

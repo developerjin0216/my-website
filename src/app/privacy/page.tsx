@@ -1,23 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CONTACT_EMAIL } from "@/lib/site";
+import { BRAND, CONTACT_EMAIL } from "@/lib/site";
+
+// 개인정보처리방침 — 애드센스 심사에서 실제로 읽는 페이지입니다.
+// 2026-11-18: 퀴즈(점수·출석·배틀 닉네임)가 삭제됐는데도 방침에는 그 항목이 남아 있었습니다.
+// 지금 운영하는 서비스와 실제로 다루는 정보만 남기고 다시 썼습니다.
+// 여기에 없는 수집 항목을 새로 만들면(예: 뉴스레터, 로그인) 이 페이지도 같이 고쳐야 합니다.
 
 export const metadata: Metadata = {
-  title: { absolute: "개인정보처리방침 - 8282114" },
+  title: { absolute: `개인정보처리방침 - ${BRAND}` },
   description:
-    "8282114 생활안내·모두의 계산기·모두의 도구·상식왕 퀴즈 공통 개인정보처리방침입니다.",
+    "8282114 생활안내의 개인정보처리방침입니다. 계산기 입력값과 도구에 올린 파일은 서버로 전송되지 않으며, 광고·통계 쿠키의 사용과 거부 방법을 안내합니다.",
   alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
+    <div className="flex flex-col min-h-screen page-shell">
       <header className="bg-header px-5 py-5 text-center">
         <Link href="/" className="text-sm text-[#a0a0b0] mb-1 block">
           ← 홈으로
         </Link>
         <h1 className="text-2xl font-bold text-accent">개인정보처리방침</h1>
-        <p className="text-xs text-[#606070] mt-1">시행일 2026-05-07 · 개정 2026-11-12</p>
+        <p className="text-xs text-[#606070] mt-1">시행일 2026-05-07 · 개정 2026-11-18</p>
       </header>
 
       <div className="flex-1 px-5 py-6">
@@ -26,9 +31,9 @@ export default function PrivacyPage() {
             <h2 className="text-base font-bold text-white mb-2">0. 적용 범위</h2>
             <p>
               본 방침은 8282114 생활안내(8282114.xyz)와 그 안의 모든 페이지(이하
-              &ldquo;서비스&rdquo;)에 적용됩니다. 긴급상황·생활 정보, 생활 계산기(모두의
-              계산기), 웹 도구(모두의 도구), 상식 퀴즈·배틀(상식왕 퀴즈)이 모두 이 한
-              주소에서 운영되며, 운영자는 한 명입니다.
+              &ldquo;서비스&rdquo;)에 적용됩니다. 서비스는 긴급 상황 대처 안내,
+              생활 계산기, 생활·서류 도구, 실시간 도로 CCTV, 영문 가이드로
+              구성되며, 운영자는 한 명입니다.
             </p>
             <p className="mt-2 text-[#a0a0b0]">
               예전에 쓰던 주소(calc.·tools.·quiz.8282114.xyz, sangsikwang.vercel.app,
@@ -45,14 +50,21 @@ export default function PrivacyPage() {
               같습니다.
             </p>
             <ul className="list-disc pl-5 mt-2 space-y-1 text-[#a0a0b0]">
-              <li>퀴즈 점수·출석 기록: 이용자의 브라우저(로컬 스토리지)에만 저장되며 서버로 전송되지 않습니다</li>
-              <li>퀴즈 배틀 닉네임: 게임 세션 동안만 서버에 보관 후 즉시 삭제됩니다</li>
-              <li>계산기 입력값(연봉·금액 등): 서버로 전송·저장되지 않습니다</li>
+              <li>계산기 입력값(연봉·금액·사용량 등): 서버로 전송·저장되지 않고 브라우저에서만 계산됩니다</li>
               <li>
-                <strong className="text-white">도구에 올리는 파일(사진·PDF·대화 내보내기·SNS 데이터
-                등): 서버로 전송되지 않고 100% 이용자의 브라우저 안에서만
-                처리됩니다.</strong> 페이지를 닫으면 사라지며, 운영자는 파일
-                내용에 접근할 수 없습니다
+                <strong className="text-white">도구에 올리는 파일(사진·PDF·문서·QR 내용 등): 서버로
+                전송되지 않고 100% 이용자의 브라우저 안에서만 처리됩니다.</strong> 페이지를 닫으면
+                사라지며, 운영자는 파일 내용에 접근할 수 없습니다
+              </li>
+              <li>
+                실시간 도로 CCTV: 영상은 운영자 서버를 거치지 않고 이용자의 브라우저가
+                국토교통부 국가교통정보센터(ITS)·국립공원공단에 직접 요청합니다. 이때
+                접속 IP·브라우저 정보는 일반적인 웹 요청과 마찬가지로 해당 기관에
+                전달되며, 운영자는 이를 받아 보관하지 않습니다
+              </li>
+              <li>
+                문의 메일: 이용자가 먼저 보낸 경우에 한해 메일 주소와 내용을 확인하고,
+                답변 후 필요 없으면 삭제합니다
               </li>
             </ul>
           </section>
@@ -88,7 +100,8 @@ export default function PrivacyPage() {
               </li>
               <li>
                 쿠팡 파트너스: 서비스는 쿠팡 파트너스 활동의 일환으로 일정액의
-                수수료를 제공받으며, 해당 배너에는 그 사실을 함께 표시합니다
+                수수료를 제공받으며, 해당 배너에는 그 사실을 함께 표시합니다. 배너를
+                누르면 쿠팡으로 이동하고, 그 뒤의 정보 처리는 쿠팡의 방침을 따릅니다
               </li>
             </ul>
           </section>
@@ -96,7 +109,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-base font-bold text-white mb-2">3. 방문 통계 수집</h2>
             <p>
-              서비스는 Google Analytics로 방문 통계(페이지뷰, 유입 경로,
+              서비스는 Google Analytics(GA4)로 방문 통계(페이지뷰, 유입 경로,
               기기·브라우저 정보)를 수집합니다. 이 정보는 개인을 식별하지 않으며
               서비스 개선 목적으로만 사용됩니다.{" "}
               <a
@@ -114,9 +127,10 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-base font-bold text-white mb-2">4. 보관 및 파기</h2>
             <p>
-              브라우저에 저장되는 기록(퀴즈 점수 등)은 이용자가 브라우저
-              데이터를 삭제하면 함께 제거됩니다. 서버에 저장되는 개인정보는
-              없으며, 배틀 닉네임은 세션 종료 시 즉시 삭제됩니다.
+              서버에 저장되는 개인정보는 없습니다. 브라우저에 남는 값(예: 사이버
+              목탁을 친 횟수)은 이용자가 브라우저 데이터를 삭제하면 함께
+              제거됩니다. 문의 메일은 답변이 끝나고 보관할 이유가 없으면
+              삭제합니다.
             </p>
           </section>
 
@@ -136,7 +150,9 @@ export default function PrivacyPage() {
             <p>
               본 방침은 2026년 5월 7일 시행되었고, 2026년 8월 25일 여러 서비스 공통
               방침으로, 2026년 11월 12일 서비스 주소를 8282114.xyz 하나로 합친 내용을
-              반영해 개정되었습니다. 변경 시 본 페이지를 통해 공지합니다.
+              반영해 개정되었습니다. 2026년 11월 18일에는 실제로 운영하는 서비스
+              범위에 맞춰 수집 항목을 정리했습니다. 변경 시 본 페이지를 통해
+              공지합니다.
             </p>
           </section>
         </div>
@@ -150,7 +166,7 @@ export default function PrivacyPage() {
           <span className="text-xs text-[#606070]">|</span>
           <Link href="/terms" className="text-xs text-[#606070] hover:text-[#a0a0b0]">이용약관</Link>
         </div>
-        <p className="text-xs text-[#606070]">© 2026 8282114</p>
+        <p className="text-xs text-[#606070]">© 2026 {BRAND}</p>
       </footer>
     </div>
   );

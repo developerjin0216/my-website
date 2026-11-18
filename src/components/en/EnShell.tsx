@@ -64,7 +64,7 @@ export default function EnShell({
     .filter((r): r is NonNullable<typeof r> => Boolean(r));
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full px-5 py-8">
+    <div className="flex flex-col min-h-screen page-shell px-5 py-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

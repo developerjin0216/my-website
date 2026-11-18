@@ -149,8 +149,8 @@ function RentConversionCalc() {
             title="전월세 전환율 계산기"
             text={
               toMonthly
-                ? `전세 ${won(jeonseN)} → 보증금 ${won(depositN)} + 월세 ${won(calcMonthly)} (전환율 ${convRate}%) — 모두의 계산기`
-                : `보증금 ${won(depositN)} + 월세 ${won(rentN)} → 전세 환산 ${won(calcJeonse)} — 모두의 계산기`
+                ? `전세 ${won(jeonseN)} → 보증금 ${won(depositN)} + 월세 ${won(calcMonthly)} (전환율 ${convRate}%) — 8282114`
+                : `보증금 ${won(depositN)} + 월세 ${won(rentN)} → 전세 환산 ${won(calcJeonse)} — 8282114`
             }
           />
         </Card>

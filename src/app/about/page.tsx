@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT_EMAIL, INFO_SITE_NAME, ROOT_URL } from "@/lib/site";
-import { publisher } from "@/lib/trust";
+import { publisher, AUTHOR_SAMEAS, VERIFICATION_POLICY } from "@/lib/trust";
 import { CALC_COUNT } from "@/data/calculators";
 import { helpTopics } from "@/data/help";
 
@@ -29,6 +29,8 @@ const jsonLd = {
       name: `${INFO_SITE_NAME} 사이트 소개`,
       inLanguage: "ko-KR",
       about: { "@id": `${ROOT_URL}/#organization` },
+      // 어떤 원칙으로 검증했는지 — 이 페이지 안 검증 절차 안내(아래 "검증 절차")를 가리킵니다
+      publishingPrinciples: `${ROOT_URL}/about`,
     },
     {
       ...publisher,
@@ -38,6 +40,7 @@ const jsonLd = {
         name: OPERATOR,
         jobTitle: "개발자",
         email: CONTACT_EMAIL,
+        sameAs: AUTHOR_SAMEAS,
       },
       foundingDate: "2026",
       knowsAbout: [
@@ -52,7 +55,7 @@ const jsonLd = {
 
 export default function AboutPage() {
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
+    <div className="flex flex-col min-h-screen page-shell">
       <header className="bg-header px-5 py-5 text-center">
         <Link href="/" className="text-sm text-[#a0a0b0] mb-1 block">
           ← 홈으로
@@ -104,13 +107,14 @@ export default function AboutPage() {
               </li>
               <li>
                 <Link
-                  href="/tools/insta-follow-check"
+                  href="/tools"
                   className="text-white font-bold hover:text-accent"
                 >
-                  인스타 맞팔·언팔 확인
+                  생활·서류 도구
                 </Link>{" "}
-                — 비밀번호를 받아가는 앱 대신, 공식 내보내기 파일을 브라우저
-                안에서만 분석합니다
+                — 사진 위치정보 확인·제거, 이미지 압축, PDF 합치기·나누기,
+                여권사진 규격, QR 생성 등. 파일은 서버로 가지 않고 브라우저
+                안에서만 처리합니다
               </li>
               <li>
                 <Link href="/en" className="text-white font-bold hover:text-accent">
@@ -142,6 +146,27 @@ export default function AboutPage() {
               다만 모든 내용은 일반 정보 제공이며 법률·의료·세무 자문이
               아닙니다. 법적 효력이 필요한 판단은 해당 기관·전문가를 통해
               확인하시기 바랍니다.
+            </p>
+          </section>
+
+          {/* 검증 절차 — 애드센스 E-E-A-T 에서 실제로 확인하는 항목입니다.
+              구체적인 절차와 상담 번호를 적어야 “출처를 밝힌다”는 말이 근거를 가집니다. */}
+          <section id="검증-절차">
+            <h2 className="text-base font-bold text-white mb-2">검증 절차</h2>
+            <p>{VERIFICATION_POLICY}</p>
+            <ul className="list-disc pl-5 mt-2 space-y-1 text-[#a0a0b0]">
+              <li>법령·고시는 국가법령정보센터와 각 부처 고시 원문을 먼저 봅니다</li>
+              <li>돈·노동 문제는 고용노동부 상담(1350)·고용24·국세청 안내와 대조합니다</li>
+              <li>금융·사기 문제는 금융감독원(1332)·경찰청 안내와 대조합니다</li>
+              <li>
+                요율·금액은 글마다 따로 적지 않고 공용 파일 한 곳에 두어, 계산기·
+                예시 표·가이드 본문이 같은 값을 보게 합니다
+              </li>
+            </ul>
+            <p className="mt-2">
+              의료·법적 판단은 다루지 않습니다. 필요한 경우에는 119·1350·1332 같은
+              공식 창구를 안내하는 데 그칩니다. 이 사이트의 어떤 글도 법률·
+              의료·세무 자문이 아닙니다.
             </p>
           </section>
 
@@ -238,14 +263,15 @@ export default function AboutPage() {
             </h2>
             <p className="text-sm text-[#a0a0b0] leading-relaxed break-keep mb-2">
               사이트 주제를 &lsquo;급할 때 생활 안내&rsquo;로 좁히면서 퀴즈·MBTI·밈·AI
-              프롬프트·영어 슬랭은 2026년 11월에 내렸습니다. 아래 셋은 검색 결과에서만
-              빼고 그대로 열립니다.
+              프롬프트·영어 슬랭은 2026년 11월에 내렸습니다. 아래 둘은 검색 결과에서만
+              빼고 그대로 열립니다. SNS·대화 분석 도구 4종(숨은 기록·카톡 대화·DM·
+              맞팔 확인)도 주소를 직접 넣으면 그대로 열리지만, 사이트 소개와
+              목록에서는 내렸습니다.
             </p>
             <p className="text-sm text-[#a0a0b0] leading-relaxed">
               {[
                 ["/omok", "1:1 온라인 오목"],
                 ["/moktak", "사이버 목탁"],
-                ["/tools", "로그인 없이 쓰는 웹 도구"],
               ].map(([href, label], i) => (
                 <span key={href}>
                   {i > 0 && " · "}

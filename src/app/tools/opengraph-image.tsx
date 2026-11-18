@@ -2,10 +2,10 @@ import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
-// 모두의 도구 기본 OG 이미지 — 빌드 타임 정적 생성 (satori: 다중 자식 div는 display:flex 필수)
+// 생활·서류 도구 기본 OG 이미지 — 빌드 타임 정적 생성 (satori: 다중 자식 div는 display:flex 필수)
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "모두의 도구 - 로그인 없이 쓰는 무료 웹 도구";
+export const alt = "생활·서류 도구 - 8282114 로그인 없이 쓰는 무료 웹 도구";
 
 export default async function Image() {
   const fontData = await readFile(
@@ -28,10 +28,10 @@ export default async function Image() {
       >
         <div style={{ fontSize: 72, marginBottom: 16 }}>🧰</div>
         <div style={{ fontSize: 96, color: "#ffd700", fontWeight: 700 }}>
-          모두의 도구
+          생활·서류 도구
         </div>
         <div style={{ fontSize: 38, color: "#c0c8d8", marginTop: 24 }}>
-          인스타 언팔 확인 · 로그인 없이 · 서버 전송 없이
+          사진 · PDF · 서류를 브라우저 안에서만 · 서버 전송 없이
         </div>
         {/* 2026-09 에 서브도메인을 접었는데 공유 카드에 tools.8282114.xyz 가
             남아 있었습니다 — 지금은 열리지 않는 주소입니다. */}
