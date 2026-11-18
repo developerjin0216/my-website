@@ -50,12 +50,22 @@ function trimStrays(cams: CamPoint[]): CamPoint[] {
   return cams.slice(start, end);
 }
 
+// 노선 범위가 분명한데 ITS 가 다른 노선 카메라를 섞어 보내는 경우의 명시적 범위.
+// 중부고속도로는 하남분기점~남이분기점(청주, 북위 약 36.6°)입니다. ITS 는 노선번호 35를 함께 쓰는
+// 통영대전고속도로(대전 남쪽~통영) 카메라 일부를 [중부선]으로 보냅니다 — 2026-10-15 스냅샷에는
+// 3대(위 trimStrays 가 걸러냄), 2026-11-18 스냅샷에는 산서~매촌1교 10대가 36km 간격을 두고 붙어
+// trimStrays 의 "3대 이하·100km 초과" 조건을 빠져나갔습니다. 거리·대수 규칙을 더 넓히면 중앙선
+// 끝의 실제 부산 구간(대동분기점 쪽 7대, 80km 간격)까지 잘리므로, 이 노선만 범위를 적어 둡니다.
+const LINE_LAT_MIN: Record<string, number> = { "중부선": 36.55 };
+
 const trimmed = new Map<string, CamPoint[]>();
 
 export function camsOf(h: Highway): CamPoint[] {
   let c = trimmed.get(h.line);
   if (!c) {
-    c = trimStrays(lines[h.line] ?? []);
+    const minLat = LINE_LAT_MIN[h.line];
+    const all = lines[h.line] ?? [];
+    c = trimStrays(minLat === undefined ? all : all.filter((p) => p[1] >= minLat));
     trimmed.set(h.line, c);
   }
   return c;

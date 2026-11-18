@@ -261,6 +261,12 @@ queries ±0.003° around it (≈1 s, 1–2 results) for a fresh stream URL.
 - `camsOf` trims a run of ≤3 cameras more than 100 km from the rest at either end of a list. ITS
   appended three 통영대전 cameras (ending 진주분기점2) to 중부선, so the 중부 page claimed to end at
   진주 and 남해 claimed to meet 중부 there. Real split roads (동해, 중앙, 익산포항) have big runs and stay.
+- `LINE_LAT_MIN` in the same file bounds 중부선 to 북위 36.55° and up (중부고속도로 ends at 남이분기점). The
+  2026-11-18 snapshot attached ten 통영대전 cameras 36 km past 남이육교, which slipped past the run rule;
+  widening that rule would also cut the real 중앙선 부산 stretch (7 cameras after an 80 km gap).
+- 2026-11-18 regeneration: 4,322 → 4,685 cameras; 세종포천 87 → 180 (고덕터널). ITS stopped returning
+  the 43 광주대구 cameras on the 남원–함양 stretch (남원분기점, 지리산휴게소 included), which also dropped
+  the 남원분기점 link to 순천완주. Check on the next run whether they come back.
 - `data/cctvHighwayList.ts` holds the route list without the 173 KB JSON so client components
   (the hub) can link to highways without bundling the snapshot. Import the JSON only server-side.
 - Re-run the generator every few months; `data/cctvHighways.ts` fails the build if a configured
