@@ -13,6 +13,12 @@ export interface GuideInfo {
   date: string; // 최초 발행일 (Article JSON-LD)
   keywords: string[];
   relatedCalcs: string[]; // 관련 계산기 id
+  /** 이 글의 실제 근거 기관 — 글마다 다릅니다(GuideShell 의 '공식 출처' 블록).
+   *
+   * 예전에는 relatedCalcs 의 출처를 합쳐서 보여줬는데, 그 탓에 연금개혁 글 아래에
+   * "고용노동부 — 퇴직금 제도"가 뜨는 식으로 엉뚱한 기관이 붙었습니다. 계산기가 같은
+   * 요율 파일을 쓰더라도 글이 다루는 제도는 다르므로 출처도 글 단위로 둡니다. */
+  sources: { name: string; url: string }[];
 }
 
 export const guides: GuideInfo[] = [
@@ -26,6 +32,11 @@ export const guides: GuideInfo[] = [
     date: "2026-07-28",
     keywords: ["4대보험 요율", "국민연금 요율", "건강보험 요율", "고용보험 요율", "4대보험 계산"],
     relatedCalcs: ["salary", "severance"],
+    sources: [
+      { name: "국민연금공단 — 연금보험료", url: "https://www.nps.or.kr" },
+      { name: "국민건강보험공단 — 보험료율", url: "https://www.nhis.or.kr" },
+      { name: "고용노동부 — 고용보험·산재보험", url: "https://www.moel.go.kr" },
+    ],
   },
   {
     id: "electricity-progressive",
@@ -37,6 +48,7 @@ export const guides: GuideInfo[] = [
     date: "2026-07-28",
     keywords: ["전기요금 누진제", "누진세 구간", "전기세 절약", "주택용 전기요금", "하계 누진구간"],
     relatedCalcs: ["electricity", "aircon"],
+    sources: [{ name: "한국전력공사 — 전기요금표", url: "https://cyber.kepco.co.kr" }],
   },
   {
     id: "minimum-wage-2027",
@@ -48,6 +60,10 @@ export const guides: GuideInfo[] = [
     date: "2026-07-29",
     keywords: ["2027 최저임금", "최저임금 10700", "2027 최저시급 월급", "최저임금 인상률", "주휴수당"],
     relatedCalcs: ["minimum-wage", "salary", "annual-leave"],
+    sources: [
+      { name: "최저임금위원회 — 연도별 최저임금", url: "https://www.minimumwage.go.kr" },
+      { name: "고용노동부 — 최저임금 제도", url: "https://www.moel.go.kr" },
+    ],
   },
   {
     id: "unemployment-benefits",
@@ -59,6 +75,10 @@ export const guides: GuideInfo[] = [
     date: "2026-07-29",
     keywords: ["실업급여 조건", "실업급여 신청방법", "구직급여", "실업급여 상한액", "자발적 퇴사 실업급여"],
     relatedCalcs: ["unemployment", "severance", "annual-leave"],
+    sources: [
+      { name: "고용24 — 실업급여(구직급여)", url: "https://www.work24.go.kr" },
+      { name: "고용노동부 — 고용보험", url: "https://www.moel.go.kr" },
+    ],
   },
   {
     id: "pension-reform",
@@ -70,6 +90,10 @@ export const guides: GuideInfo[] = [
     date: "2026-07-29",
     keywords: ["연금개혁", "국민연금 보험료 인상", "국민연금 요율", "소득대체율 43", "국민연금 개혁 내용"],
     relatedCalcs: ["salary", "severance"],
+    sources: [
+      { name: "보건복지부 — 국민연금 제도개혁", url: "https://www.mohw.go.kr" },
+      { name: "국민연금공단 — 보험료율·연금개혁 안내", url: "https://www.nps.or.kr" },
+    ],
   },
   {
     id: "severance",
@@ -81,6 +105,7 @@ export const guides: GuideInfo[] = [
     date: "2026-07-28",
     keywords: ["퇴직금 지급기준", "퇴직금 계산방법", "퇴직금 지급기한", "퇴직소득세", "퇴직금 IRP"],
     relatedCalcs: ["severance", "annual-leave", "salary"],
+    sources: [{ name: "고용노동부 — 퇴직금 제도", url: "https://www.moel.go.kr" }],
   },
 ];
 

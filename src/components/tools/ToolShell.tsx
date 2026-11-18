@@ -54,7 +54,7 @@ export default function ToolShell({
           {
             "@type": "ListItem",
             position: 2,
-            name: "모두의 도구",
+            name: "생활·서류 도구",
             item: `${ROOT_URL}/tools`,
           },
           { "@type": "ListItem", position: 3, name: tool.name, item: url },
@@ -64,7 +64,7 @@ export default function ToolShell({
   };
 
   return (
-    <div className="max-w-lg mx-auto w-full">
+    <div className="page-shell">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

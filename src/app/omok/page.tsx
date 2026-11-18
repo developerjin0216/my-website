@@ -55,7 +55,7 @@ export default function OmokPage() {
   return (
     <Suspense
       fallback={
-        <div className="max-w-lg mx-auto w-full px-5 py-20 text-center">
+        <div className="page-shell px-5 py-20 text-center">
           <p className="text-sm text-[#606070]">불러오는 중…</p>
         </div>
       }

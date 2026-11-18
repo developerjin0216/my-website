@@ -138,7 +138,7 @@ function SavingsCalc() {
           </div>
           <ShareButton
             title="예금·적금 이자 계산기"
-            text={`${isInstallment ? `월 ${won(amountN)} 적금` : `${won(amountN)} 예금`} ${n}개월(연 ${rate}%) → 세후 ${won(totalReceive)} — 모두의 계산기`}
+            text={`${isInstallment ? `월 ${won(amountN)} 적금` : `${won(amountN)} 예금`} ${n}개월(연 ${rate}%) → 세후 ${won(totalReceive)} — 8282114`}
           />
         </Card>
       )}

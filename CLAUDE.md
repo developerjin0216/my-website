@@ -64,9 +64,10 @@ curl -H "Host: quiz.8282114.xyz" localhost:3000/mbti   # expect 308 → 8282114.
 ## Architecture
 
 Korean-language personal site on **Next.js 16** (App Router) + a standalone **Socket.IO** server.
-**105 URLs are in the sitemap; 17 more stay live but noindexed** (14 web tools, BMI/칼로리, 목탁,
-plus 오목). About 150 off-topic pages were **deleted on 2026-11-17** and answer 410 (see *Index scope*).
-That 105 is the *policy* count — what Google has actually indexed is a separate number, read from
+**89 URLs are in the sitemap; 34 more stay live but noindexed** (14 생활·서류 도구 + `/tools` 허브,
+15 of the 20 expressway pages, BMI/칼로리, 목탁, plus 오목). About 150 off-topic pages were
+**deleted on 2026-11-17** and answer 410 (see *Index scope*).
+That 89 is the *policy* count — what Google has actually indexed is a separate number, read from
 Search Console, and the two have never matched here.
 Deployed on Vercel; realtime server on Render.
 
@@ -108,6 +109,13 @@ exactly what the subdomain split proved, and costs money). Only what the domain 
 8282 빨리빨리 + 114 안내 — stays indexed: `/help`, `/guides`, `/calculators` (minus BMI/칼로리),
 `/en` emergency guides, `/tools/cctv`, and the about/legal pages.
 
+**2026-11-18, second pass (AdSense "가치 없음").** Two more cuts, both about how the site reads to a
+reviewer rather than about crawling: the four SNS/chat analyzers lost their last indexed member
+(`/tools/insta-follow-check`, which had been the one exception since 2026-10-28), and 15 of the 20
+expressway pages went noindex (only 경부·서해안·영동·중부·수도권제1순환이 남습니다 — `INDEXED_HIGHWAY_SLUGS`
+in `data/cctvHighwayList.ts`). Both sets still return 200 and are still reachable from the CCTV hub
+and from `/help/privacy-leak`; they are out of the sitemap, the footer, `/about` and the `/tools` list.
+
 - `indexPolicy.ts` is the **single source**: sitemap and RSS filter through `isIndexableUrl`;
   section layouts and the calc/tool metadata builders set `robots: robotsFor(path)`. Reverting a
   section means deleting one line there — sitemap, feed and meta all follow.
@@ -139,10 +147,9 @@ Indexed sections first; the rest are live but noindexed.
 | `/calculators/<id>` | yes, except `bmi`·`calorie` | `data/calculators.ts` | Server layout + client page |
 | `/en`, `/en/<id>` | yes | `data/guidesEn.ts` + `guidesEnContent.ts` | English guides for foreigners in Korea. `koId` pairs a guide with its `/help` twin for hreflang; `korean-etiquette` has no twin, so `koId` is optional and the shell hides the 한국어 link when it is absent |
 | `/tools/cctv` | yes | `data/cctvRegions.ts` | **The only feature with an external dependency.** Browser calls ITS directly — see below |
-| `/tools/cctv/<road>` | yes | `data/cctvHighways.json` (generated) | 20 expressway pages for "OO고속도로 cctv" searches (snow, 명절) |
+| `/tools/cctv/<road>` | yes, 5 of 20 | `data/cctvHighways.json` (generated) | All 20 exist for "OO고속도로 cctv" searches (snow, 명절); since 2026-11-18 only the five in `INDEXED_HIGHWAY_SLUGS` are indexed |
 | `/tools/cctv/national-parks` | yes | `data/cctvParks.ts` (hand-copied) | 18 국립공원공단 cameras — 단풍·눈꽃·일출 season |
-| `/tools/insta-follow-check` | yes | `data/tools.ts` | The one indexed utility — see below |
-| `/tools/<id>` | no | `data/tools.ts` | Browser-only utilities (no upload) |
+| `/tools/<id>` | no | `data/tools.ts` | Browser-only utilities (no upload). Includes the four SNS/chat analyzers, noindexed since 2026-11-18 |
 | `/omok` | no | — | 1:1 game; needs the Socket.IO server |
 | `/moktak` | no | — | 사이버 목탁, a standalone toy (Web Audio + rAF SVG motion) |
 | `/quiz*`, `/mbti`, `/meme`, `/prompts`, `/en/slang`, `/battle`, `/result` | **deleted** | — | Removed 2026-11-17, proxy answers 410. See *Index scope* |
@@ -173,16 +180,16 @@ above 2^53, the QR tool left a stale QR downloadable when content was too long, 
 painted transparency black in JPG, and pdf-merge could resurrect removed files. /moktak got a
 code-derived "소리와 움직임" section (486 → 1,048 chars) for the same reason.
 
-The exceptions are `/tools/cctv` and, since 2026-10-28, **`/tools/insta-follow-check`**. The
-Instagram one is not a generic utility: every competing 언팔 확인 app asks for the user's
-Instagram password, which violates Meta's terms and gets accounts locked. This tool reads the
-official export file in the browser instead, so the risk does not exist — and "how to check
-without handing over your password" is the same question as `/help/privacy-leak`, which is why
-it is not purely off-topic. It was deepened from 2,025 to 3,853 chars first, entirely from what
-`parser.ts` actually does (which filenames it reads, the 10-entry exclude list, why JSON not
-HTML) — no invented claims. The two thin satellites (`insta-hidden` 1,365, `insta-dm` 1,228)
-stay noindexed and are linked from it via `ToolInfo.related`. **Do not promote them too** —
-adding off-topic pages in bulk is exactly what dragged the site down in 2026-10.
+The only indexed page under `/tools` is now `/tools/cctv` (and the highway pages listed above).
+`/tools/insta-follow-check` was the exception from 2026-10-28 to **2026-11-18**: it is not a
+generic utility (every competing 언팔 확인 app asks for the user's Instagram password, which
+violates Meta's terms and gets accounts locked, while this one reads the official export in the
+browser), and it had been deepened from 2,025 to 3,853 chars from what `parser.ts` actually does.
+It was still noindexed with the other three SNS/chat analyzers because a reviewer reads the whole
+site, not the exception list — the topic is SNS account management, not 급할 때 생활 안내. The
+page keeps an inbound link from `/help/privacy-leak`, where it is the safe alternative to a
+password-stealing app. **Do not re-promote these four** — adding off-topic pages back is exactly
+what dragged the site down in 2026-10.
 
 Shared layout prose is duplicated across every child route. `app/quiz/layout.tsx` wraps `/quiz`
 **and** all 11 `/quiz/<cat>` pages, so a long block there ships 12 identical copies and gives each
@@ -250,7 +257,9 @@ Consequences to keep in mind:
 **Highway pages** (`/tools/cctv/<road>`) render the camera list on the server from a committed
 snapshot (`scripts/gen-cctv-highways.mjs` → names + coordinates only; ITS prefixes every name with
 `[경부선]`, which is how cameras are grouped). Nothing calls ITS on page load. Clicking a camera
-queries ±0.003° around it (≈1 s, 1–2 results) for a fresh stream URL.
+queries ±0.003° around it (≈1 s, 1–2 results) for a fresh stream URL. All 20 are generated and
+linked from the hub, but only the five slugs in `INDEXED_HIGHWAY_SLUGS` are indexed — the other 15
+share too much boilerplate to be 20 separate indexed pages (2026-11-18).
 - The hub lives in the route group `tools/cctv/(hub)/` so its `ToolShell` layout (h1, intro,
   FAQ) does not wrap the 20 highway pages — otherwise each would get two h1s and the same prose.
 - With one result, ITS JSON returns `data` as an **object, not an array**. Normalise it.
@@ -339,8 +348,17 @@ site, not just the indexed part.
 ### Trust signals (`src/lib/trust.ts`)
 
 Shared `Organization`/`WebSite` JSON-LD is injected in the root layout; page schemas reference it
-by `@id`. `authorship(date)` supplies author/publisher/dateModified. `CALC_SOURCES` maps each
+by `@id`. `authorship(date)` supplies author/publisher/dateModified/sameAs. `CALC_SOURCES` maps each
 calculator to its real governing body, rendered as a "계산 근거·공식 출처" block.
+
+`guides.ts` keeps its **own** `sources` per article — never derive them from `relatedCalcs` again.
+The old code unioned `CALC_SOURCES` for the related calculators, so `/guides/pension-reform`
+(related: salary, severance) printed "고용노동부 — 퇴직금 제도" under a pension-reform article.
+
+`AUTHOR_SAMEAS` lists the two places that verify the operator exists (Tistory blog, GitHub) and is
+attached to the Organization, the Article author and the `/about` founder. `VERIFICATION_POLICY`
+is the single sentence behind `/about`'s "검증 절차" section (1350·1332·국세청 대조, 법률·의료·세무
+자문 아님); change it there, not in the page.
 
 **Dates are never invented** — `REVIEWED` holds the real last-changed date of each data file.
 Update it whenever rates change.
@@ -388,6 +406,13 @@ Rooms are in-memory `Map`s (lost on restart), 6-char codes excluding `0/O/1/I`.
   the verdict — reapply once Search Console shows the index count rising.
 - Keep ad density low — one banner mid-document is the current rule on prompt pages. A
   placeholder/"준비 중" page is an explicit AdSense rejection reason (`/deals` was removed for this).
+- 2026-11-18 readability pass, done while still unapproved: the three trust pages were rewritten
+  around the services that actually exist (the quiz had been deleted but `/contact`, `/privacy` and
+  `/terms` still described quiz scores, attendance and battle nicknames), the brand became 8282114
+  everywhere (`BRAND` in `site.ts` replaced 상식왕 퀴즈/모두의 계산기/모두의 도구 in titles, OG cards,
+  manifest and share text), `maximumScale: 1`/`userScalable: false` came out of the viewport
+  (WCAG 1.4.4), the home page got editorial blocks instead of a 27-card wall, and `/guides` stopped
+  borrowing `relatedCalcs`' sources (퇴직금 source was showing under the pension article).
 - Toss ShareLink was **rejected**: its API only offers best-selling/today-deals lists, and a
   persistent product list is exactly the commerce format they refuse. `lib/toss.ts` and
   `TossProducts` stay but render nothing without keys.
@@ -409,17 +434,24 @@ Rooms are in-memory `Map`s (lost on restart), 6-char codes excluding `0/O/1/I`.
 - Section homes are `/calculators`, `/tools` — **not** `CALC_URL`/`TOOLS_URL`, which
   both collapse to `ROOT_URL` now. Code written for the split emitted the bare host, which silently
   dropped `/tools` and `/quiz-home` from the sitemap and pointed footer links at the wrong home.
-- Breadcrumb/`og:site_name`/title template for anything rooted at `/` must use `ROOT_SITE_NAME`,
-  not `SITE_NAME` ("상식왕 퀴즈" is a *section* name). Until 2026-10 the root title template,
-  root `og:site_name` and `CALC_SITE_NAME` all fell back to it, so calculator pages declared
-  themselves part of a quiz site.
+- Breadcrumb/`og:site_name`/title template for anything rooted at `/` must use `ROOT_SITE_NAME`
+  (short form: `BRAND`). Since 2026-11-18 every name constant resolves to the same 8282114
+  identity, so the old mismatch cannot recur — but keep using them instead of a typed string.
+  Until 2026-10 the root title template, root `og:site_name` and `CALC_SITE_NAME` all fell back to
+  the quiz section name, so calculator pages declared themselves part of a quiz site.
 - The root layout hardcodes `<html lang="ko">` and only a root layout may render `<html>`. `/en`
   scopes its language with a `lang="en"` wrapper using `className="contents"`; reading `headers()`
-  in the root layout to switch it would turn all 255 static pages dynamic.
+  in the root layout to switch it would turn all the static pages dynamic.
 
 ### Styling
 
 Tailwind v4 with `@theme inline` in `globals.css`; dark theme via CSS custom properties
-(`--bg-primary: #1a1a2e`, `--accent: #ffd700`). Mobile-first, `max-w-lg` throughout.
+(`--bg-primary: #1a1a2e`, `--accent: #ffd700`).
+
+Page width is the `page-shell` class (`globals.css`): 32rem on mobile, 48rem from `lg` (64rem).
+Do **not** hardcode `max-w-lg` on a page wrapper again — until 2026-11-18 every page was pinned to
+512px, so on a desktop monitor the site was a phone column with two thirds of the screen empty.
+Card lists use `card-grid`: one column on mobile, two from `lg`. Prose stays inside `page-shell`;
+the old single-column rule still applies to the 게임 화면.
 Path alias `@/*` → `./src/*`. Calculator UI uses the primitives in
 `components/calculators/ui.tsx`; section shells live in `components/<section>/*Shell.tsx`.

@@ -26,12 +26,33 @@ export const REVIEWED = {
   help: "2026-11-03", // src/data/help.ts
 } as const;
 
+/** 운영자를 확인할 수 있는 외부 프로필 — 구조화 데이터 sameAs.
+ *
+ * 애드센스·검색엔진은 "이 사이트를 누가 쓰는가"를 사이트 밖에서도 확인하려 합니다.
+ * 개인 운영 사이트에서 확인 가능한 것은 이 두 주소이고, 둘 다 실제로 운영자가 쓰는
+ * 곳입니다(블로그·GitHub). 없는 프로필을 지어내지 마세요.
+ */
+export const AUTHOR_SAMEAS = [
+  "https://developerjin.tistory.com",
+  "https://github.com/developerjin0216",
+];
+
+/** 검증 절차 — /about 본문과 구조화 데이터가 같은 원칙을 말하게 한 곳에 둡니다.
+ *
+ * 1350·1332 같은 번호는 이 사이트가 실제로 안내하는 상담 창구입니다. 번호가
+ * 바뀌면 한 곳만 고치면 됩니다. */
+export const VERIFICATION_POLICY =
+  "공공기관·법령 원문을 먼저 확인하고, 1350(고용노동부)·1332(금융감독원)·국세청 등 소관 기관의 안내와 대조한 뒤 씁니다. 확인되지 않은 수치는 싣지 않으며, 이 사이트의 글은 법률·의료·세무 자문이 아닙니다.";
+
 /** 모든 페이지가 공유하는 발행 주체 */
 export const publisher = {
   "@type": "Organization" as const,
   name: INFO_SITE_NAME,
   url: ROOT_URL,
   email: CONTACT_EMAIL,
+  sameAs: AUTHOR_SAMEAS,
+  // 편집·검증 원칙을 밝힌 페이지 — CreativeWork/Organization 공통 속성
+  publishingPrinciples: `${ROOT_URL}/about`,
   logo: {
     "@type": "ImageObject" as const,
     url: `${ROOT_URL}/icon-512.png`,
@@ -72,11 +93,18 @@ export function siteJsonLd() {
 /** 계산기·도구·가이드 스키마에 공통으로 붙이는 저작·발행 정보 */
 export function authorship(dateModified: string) {
   return {
-    author: { "@type": "Organization" as const, name: INFO_SITE_NAME, url: ROOT_URL },
+    author: {
+      "@type": "Organization" as const,
+      name: INFO_SITE_NAME,
+      url: ROOT_URL,
+      sameAs: AUTHOR_SAMEAS,
+    },
     publisher: { "@id": `${ROOT_URL}/#organization` },
     dateModified,
     inLanguage: "ko-KR",
     isAccessibleForFree: true,
+    // 어떤 원칙으로 검증했는지 — 문장을 구조화 데이터에도 넣습니다
+    publishingPrinciples: `${ROOT_URL}/about`,
   };
 }
 

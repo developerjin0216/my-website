@@ -4,7 +4,7 @@ import { guides } from "@/data/guides";
 import { enGuides } from "@/data/guidesEn";
 import { calculators, CALC_COUNT } from "@/data/calculators";
 import { REVIEWED, calcReviewedDate } from "@/lib/trust";
-import { tools } from "@/data/tools";
+import { everydayTools } from "@/data/tools";
 import {
   ROOT_URL,
   CALC_URL,
@@ -123,9 +123,9 @@ export function GET(request: NextRequest) {
           date: REVIEWED.help,
         },
         {
-          title: "로그인 없이 쓰는 생활 도구",
+          title: "생활·서류 도구",
           link: `${ROOT_URL}/tools`,
-          description: `인스타 언팔 확인·카톡 분석·PDF 편집 등 ${tools.length}종. 파일이 서버로 전송되지 않습니다.`,
+          description: `사진 위치정보 제거·이미지 압축·PDF 편집·여권사진 등 ${everydayTools.length}종. 파일이 서버로 전송되지 않습니다.`,
           date: REVIEWED.tools,
         },
         {
@@ -154,7 +154,7 @@ export function GET(request: NextRequest) {
           description: g.description,
           date: g.date,
         })),
-        ...tools.map((t) => ({
+        ...everydayTools.map((t) => ({
           title: t.name,
           link: `${ROOT_URL}/tools/${t.id}`,
           description: t.metaDescription,
@@ -187,7 +187,7 @@ export function GET(request: NextRequest) {
         link: TOOLS_URL,
         description: "로그인 없이 브라우저에서만 동작하는 무료 도구 모음",
       },
-      tools.map((t) => ({
+      everydayTools.map((t) => ({
         title: t.name,
         link: `${TOOLS_URL}/tools/${t.id}`,
         description: t.metaDescription,

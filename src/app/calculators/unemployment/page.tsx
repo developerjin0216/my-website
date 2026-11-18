@@ -118,7 +118,7 @@ function UnemploymentCalc() {
           </p>
           <ShareButton
             title="실업급여 계산기"
-            text={`실업급여 예상: 1일 ${won(dailyBenefit)} × ${days}일 = 총 ${won(total)} — 모두의 계산기`}
+            text={`실업급여 예상: 1일 ${won(dailyBenefit)} × ${days}일 = 총 ${won(total)} — 8282114`}
           />
         </Card>
       )}

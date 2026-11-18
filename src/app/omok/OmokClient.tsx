@@ -158,14 +158,20 @@ export default function OmokClient() {
   // ── 연결 중 ──
   if (view === "connecting") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] max-w-lg mx-auto w-full px-5 text-center">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] page-shell px-5 text-center">
         <div className="text-5xl mb-6 animate-bounce">⚫</div>
+        {/* h1 은 화면 상태가 아니라 페이지 이름입니다. 예전에는 연결 중 상태에서
+            h1 이 "서버 연결 중…"이라, 이 페이자의 제목이 사라진 것처럼 보였습니다. */}
         <h1 className="text-xl font-bold text-accent mb-3">
-          {invited
-            ? `${inviter || "친구"}님의 방으로 가는 중…`
-            : "서버 연결 중…"}
+          {invited ? `${inviter || "친구"}님의 방으로 가는 중…` : "1:1 오목"}
         </h1>
         <p className="text-sm text-[#a0a0b0] leading-relaxed">
+          {!invited && (
+            <>
+              <strong className="text-[#e8e8f0]">서버 연결 중…</strong>
+              <br />
+            </>
+          )}
           {slow ? (
             <>
               서버가 잠들어 있어 깨우는 중입니다.
@@ -194,7 +200,7 @@ export default function OmokClient() {
   // 할 일을 닉네임 입력 하나로 줄입니다.
   if (invited && (view === "lobby" || !room)) {
     return (
-      <div className="max-w-lg mx-auto w-full px-5 py-10">
+      <div className="page-shell px-5 py-10">
         <div className="text-center mb-6">
           <div className="text-5xl mb-3">⚫⚪</div>
           <h1 className="text-xl font-bold text-accent mb-1">
@@ -249,7 +255,7 @@ export default function OmokClient() {
   // ── 로비 ──
   if (view === "lobby" || !room) {
     return (
-      <div className="max-w-lg mx-auto w-full px-5 py-6">
+      <div className="page-shell px-5 py-6">
         <h1 className="text-2xl font-bold text-accent mb-1">1:1 오목</h1>
         <p className="text-sm text-[#a0a0b0] mb-5">
           가입 없이 닉네임만 정하면 바로 둘 수 있습니다.
@@ -341,7 +347,7 @@ export default function OmokClient() {
   };
 
   return (
-    <div className="max-w-lg mx-auto w-full px-5 py-6">
+    <div className="page-shell px-5 py-6">
       <div className="flex items-center justify-between mb-3">
         <button
           type="button"

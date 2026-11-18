@@ -87,7 +87,7 @@ export default function HelpHubPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
+    <div className="flex flex-col min-h-screen page-shell">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -132,7 +132,7 @@ export default function HelpHubPage() {
           <section key={g.title}>
             <h2 className="text-lg font-bold mb-1">{g.title}</h2>
             <p className="text-xs text-[#a0a0b0] leading-relaxed mb-3">{g.lead}</p>
-            <div className="space-y-2.5">
+            <div className="card-grid">
               {g.ids.map((id) => {
                 const t = byId.get(id)!;
                 return (

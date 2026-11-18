@@ -74,7 +74,7 @@ function FreelancerCalc() {
           </div>
           <ShareButton
             title="프리랜서 3.3% 계산기"
-            text={`세전 ${won(gross)} → 3.3% 공제 후 ${won(net)} — 모두의 계산기`}
+            text={`세전 ${won(gross)} → 3.3% 공제 후 ${won(net)} — 8282114`}
           />
         </Card>
       )}

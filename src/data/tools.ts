@@ -1,4 +1,4 @@
-// 모두의 도구(/tools) 레지스트리 — 허브 카드·메타데이터·가이드·FAQ의 단일 소스
+// 생활·서류 도구(/tools) 레지스트리 — 허브 카드·메타데이터·가이드·FAQ의 단일 소스
 // 새 도구 추가: 여기에 엔트리 + app/tools/<id>/layout.tsx(ToolShell) + page.tsx(클라이언트 UI)
 
 import type { Metadata } from "next";
@@ -896,6 +896,23 @@ tools.push(
   PASSPORT_PHOTO,
   MONEY_HANGUL
 );
+
+/** 색인·탐색에서 뺀 도구 — SNS·대화 분석 4종.
+ *
+ * 2026-11-18 애드센스 '가치 없음' 대응. 이 사이트의 주제는 "급할 때 생활 안내"인데
+ * SNS 팔로우·DM·카톡 대화 분석은 그 주제와 겹치지 않습니다. URL 은 그대로 200 으로
+ * 열립니다(쓰던 사람이 주소로 들어오면 동작합니다) — 사이트맵·허브·소개에서만 뺍니다.
+ * indexPolicy.ts 는 이 파일을 import 하면 순환 참조라 별도 주석으로만 남겼습니다. */
+export const OFF_TOPIC_TOOL_IDS = [
+  "insta-follow-check",
+  "insta-hidden",
+  "kakao-analyzer",
+  "insta-dm",
+];
+
+/** 허브·소개 페이지가 보여 주는 생활·서류 도구 — 위 4종을 뺀 나머지.
+ *  "N종" 같은 숫자는 이 배열 길이로 셉니다(손으로 적으면 또 어긍납니다). */
+export const everydayTools = tools.filter((t) => !OFF_TOPIC_TOOL_IDS.includes(t.id));
 
 // 코드에서 뽑은 상세 설명을 각 도구 뒤에 붙입니다 — toolsDetail.ts 주석 참고.
 for (const t of tools) {

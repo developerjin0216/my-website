@@ -129,7 +129,7 @@ function OvertimeCalc() {
           </div>
           <ShareButton
             title="연장·야간·휴일수당 계산기"
-            text={`연장 ${ot}h·야간 ${night}h·휴일 ${hol}h → 수당 ${won(total)} — 모두의 계산기`}
+            text={`연장 ${ot}h·야간 ${night}h·휴일 ${hol}h → 수당 ${won(total)} — 8282114`}
           />
         </Card>
       )}

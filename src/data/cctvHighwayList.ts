@@ -14,6 +14,19 @@ export interface Highway {
   name: string;
 }
 
+/** 색인에 남기는 대표 노선 5개 — 사이트맵과 robots 메타가 이 목록을 봅니다(indexPolicy.ts).
+ *
+ * 20개 노선 페이지는 서로 문장의 절반을 공유해 "가치 없음" 판정에 기여했습니다.
+ * 나머지 15개는 URL·기능 그대로 200으로 열리지만 색인에서는 뺍니다.
+ * 노선을 바꾸려면 여기만 고치면 사이트맵·메타가 함께 따라옵니다. */
+export const INDEXED_HIGHWAY_SLUGS: string[] = [
+  "gyeongbu", // 경부고속도로 — 가장 긴 축, 명절·폭설 검색이 몰립니다
+  "seohaean", // 서해안고속도로
+  "yeongdong", // 영동고속도로 — 강원 방면 눈길
+  "jungbu", // 중부고속도로
+  "capital-ring-1", // 수도권제1순환고속도로 — 수도권 통근
+];
+
 export const HIGHWAYS: Highway[] = [
   { slug: "gyeongbu", line: "경부선", name: "경부고속도로" },
   { slug: "yeongdong", line: "영동선", name: "영동고속도로" },
@@ -36,3 +49,13 @@ export const HIGHWAYS: Highway[] = [
   { slug: "iksan-pohang", line: "익산포항선", name: "익산포항고속도로" },
   { slug: "seobu-naeryuk", line: "서부내륙선(평택부여)", name: "서부내륙고속도로" },
 ];
+
+// 색인 목록의 slug 오타는 조용히 "사이트맵에서 사라진 노선"이 됩니다. 빌드에서 잡습니다.
+const unknownIndexed = INDEXED_HIGHWAY_SLUGS.filter(
+  (slug) => !HIGHWAYS.some((h) => h.slug === slug)
+);
+if (unknownIndexed.length) {
+  throw new Error(
+    `INDEXED_HIGHWAY_SLUGS 에 없는 노선 slug: ${unknownIndexed.join(", ")}`
+  );
+}

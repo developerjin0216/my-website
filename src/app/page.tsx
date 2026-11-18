@@ -3,7 +3,8 @@ import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
 import CoupangGoldbox from "@/components/CoupangGoldbox";
-import { helpTopics, orderedHelpTopics } from "@/data/help";
+import { helpTopics, orderedHelpTopics, type HelpInfo } from "@/data/help";
+import { guides } from "@/data/guides";
 
 // 하루에 한 번 다시 만듭니다. 계절 글을 철에 맞춰 내리려면 '지금이 몇 월인지'를
 // 알아야 하는데, 정적 생성으로 굳히면 배포한 달에 값이 멈춥니다.
@@ -29,6 +30,54 @@ export const metadata: Metadata = {
   },
 };
 
+// 이번 달에 앞세울 생활 가이드 — 편집 선택입니다(조회수 데이터가 아닙니다).
+// 철마다 사람들이 실제로 찾는 주제가 달라서(연초 최저임금·4대보험, 여름 전기요금)
+// 달마다 세 편을 골라 맨 위에 둡니다. 없는 id를 적으면 빌드가 깨집니다.
+const MONTHLY_GUIDES: Record<number, string[]> = {
+  1: ["minimum-wage-2027", "insurance-rates", "severance"],
+  2: ["minimum-wage-2027", "insurance-rates", "severance"],
+  3: ["insurance-rates", "severance", "unemployment-benefits"],
+  4: ["insurance-rates", "severance", "unemployment-benefits"],
+  5: ["severance", "unemployment-benefits", "insurance-rates"],
+  6: ["electricity-progressive", "severance", "unemployment-benefits"],
+  7: ["electricity-progressive", "severance", "unemployment-benefits"],
+  8: ["electricity-progressive", "severance", "pension-reform"],
+  9: ["electricity-progressive", "severance", "pension-reform"],
+  10: ["severance", "unemployment-benefits", "pension-reform"],
+  11: ["severance", "unemployment-benefits", "pension-reform"],
+  12: ["insurance-rates", "severance", "minimum-wage-2027"],
+};
+
+const missingGuideIds = [...new Set(Object.values(MONTHLY_GUIDES).flat())].filter(
+  (id) => !guides.some((g) => g.id === id)
+);
+if (missingGuideIds.length) {
+  throw new Error(`홈 이번 달 가이드에 없는 id: ${missingGuideIds.join(", ")}`);
+}
+
+function monthlyGuides(month: number) {
+  return (MONTHLY_GUIDES[month] ?? MONTHLY_GUIDES[1])
+    .map((id) => guides.find((g) => g.id === id))
+    .filter((g): g is (typeof guides)[number] => Boolean(g));
+}
+
+/** 상황 카드 하나 — 대표 목록과 접힌 목록이 같은 모양을 씁니다 */
+function TopicCard({ topic }: { topic: HelpInfo }) {
+  return (
+    <Link
+      href={`/help/${topic.id}`}
+      className="block bg-card rounded-2xl p-4 transition-transform active:scale-[0.98] hover:brightness-110"
+    >
+      <p className="font-semibold text-sm">
+        <span aria-hidden="true">{topic.icon}</span> {topic.title}
+      </p>
+      <p className="text-xs text-[#a0a0b0] mt-1 leading-relaxed">
+        {topic.description}
+      </p>
+    </Link>
+  );
+}
+
 // 첫 화면 긴급번호 퀵 그리드
 const QUICK_NUMBERS = [
   { num: "112", label: "경찰·범죄 신고", color: "#5B86E5" },
@@ -40,6 +89,21 @@ const QUICK_NUMBERS = [
 ];
 
 export default function InfoHome() {
+  const month = new Date().getMonth() + 1;
+  const ordered = orderedHelpTopics(month);
+  // 대표 6개만 펼쳐 두고, 나머지는 <details> 안에 둡니다. 조건부 렌더링이 아니라
+  // details 라서 접힌 상태에도 DOM 에 남습니다 — 크롤러는 링크를 그대로 봅니다.
+  const featured = ordered.slice(0, 6);
+  const rest = ordered.slice(6);
+  const monthly = monthlyGuides(month);
+  // 최근에 손본 글 — date 는 각 글이 마지막으로 바뀐 날입니다(지어낸 날짜 아님).
+  // 철이 지난 계절 글은 뺍니다. 11월에 설 선물 글이 "최근 업데이트" 첫 줄에 오면
+  // 날짜는 맞아도 관리가 멈춘 사이트처럼 보입니다(orderedHelpTopics 와 같은 이유).
+  const recent = [...helpTopics]
+    .filter((t) => !t.season || t.season.includes(month))
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 4);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -49,7 +113,7 @@ export default function InfoHome() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto w-full">
+    <div className="flex flex-col min-h-screen page-shell">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -86,25 +150,83 @@ export default function InfoHome() {
         </p>
       </div>
 
-      {/* 상황별 안내 카드 */}
-      <div className="px-5 pb-4 flex-1">
-        <h2 className="text-lg font-bold mb-3">상황별 대처 안내</h2>
-        <div className="space-y-2.5">
-          {orderedHelpTopics(new Date().getMonth() + 1).map((topic) => (
+      {/* 편집 섹션 — 안내 글 27장을 그대로 늘어놓는 대신, 지금 볼 만한 세 편과
+          최근에 손본 글을 먼저 보여 줍니다. 첫 화면이 "링크 목록"이 아니라
+          편집된 표지가 되게 하는 것이 목적입니다(2026-11 애드센스 개선). */}
+      <section className="px-5 pb-5">
+        <h2 className="text-lg font-bold mb-1">이번 달 주요 생활 가이드</h2>
+        <p className="text-xs text-[#606070] mb-3">
+          {month}월에 다시 확인할 만한 제도·요율 글입니다
+        </p>
+        <div className="card-grid">
+          {monthly.map((g) => (
             <Link
-              key={topic.id}
-              href={`/help/${topic.id}`}
-              className="block bg-card rounded-2xl p-4 transition-transform active:scale-[0.98] hover:brightness-110"
+              key={g.id}
+              href={`/guides/${g.id}`}
+              className="block bg-card rounded-2xl p-4 border border-[#2a3a5a] hover:border-accent transition-colors"
             >
-              <p className="font-semibold text-sm">
-                <span aria-hidden="true">{topic.icon}</span> {topic.title}
+              <p className="text-[11px] text-[#707080]">최종 확인 {g.date}</p>
+              <p className="font-semibold text-sm mt-1">
+                <span aria-hidden="true">{g.icon}</span> {g.title}
               </p>
               <p className="text-xs text-[#a0a0b0] mt-1 leading-relaxed">
-                {topic.description}
+                {g.description}
               </p>
             </Link>
           ))}
         </div>
+      </section>
+
+      <section className="px-5 pb-5">
+        <h2 className="text-lg font-bold mb-3">최근 업데이트</h2>
+        <ul className="bg-card rounded-2xl divide-y divide-[#2a3a5a]">
+          {recent.map((t) => (
+            <li key={t.id}>
+              <Link
+                href={`/help/${t.id}`}
+                className="flex items-baseline justify-between gap-3 px-4 py-3 hover:bg-[#16213e] rounded-2xl transition-colors"
+              >
+                <span className="text-sm text-[#c0c8d8]">
+                  <span aria-hidden="true">{t.icon}</span> {t.title}
+                </span>
+                <time dateTime={t.date} className="text-[11px] text-[#606070] shrink-0">
+                  {t.date}
+                </time>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* 상황별 안내 카드 — 대표 6개 + 접기. 접힌 카드도 DOM 에 남습니다. */}
+      <div className="px-5 pb-4 flex-1">
+        <h2 className="text-lg font-bold mb-3">상황별 대처 안내</h2>
+        <div className="card-grid">
+          {featured.map((topic) => (
+            <TopicCard key={topic.id} topic={topic} />
+          ))}
+        </div>
+
+        {rest.length > 0 && (
+          <details className="mt-3 group">
+            <summary className="cursor-pointer list-none bg-card rounded-xl px-4 py-3 text-sm text-[#a0a0b0] hover:text-accent border border-[#2a3a5a]">
+              나머지 {rest.length}가지 상황 펼쳐 보기
+            </summary>
+            <div className="card-grid mt-2.5">
+              {rest.map((topic) => (
+                <TopicCard key={topic.id} topic={topic} />
+              ))}
+            </div>
+          </details>
+        )}
+
+        <Link
+          href="/help"
+          className="mt-3 flex items-center justify-between rounded-xl px-4 py-3 bg-[#16213e] border border-[#2a3a5a] text-sm text-[#c0c8d8] hover:border-accent transition-colors"
+        >
+          <span>상황별 안내 {helpTopics.length}편 한눈에 보기</span>
+          <span className="text-accent shrink-0 ml-2">→</span>
+        </Link>
       </div>
 
       {/* Ad */}

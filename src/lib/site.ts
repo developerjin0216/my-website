@@ -1,9 +1,9 @@
 // 사이트 공용 상수 — sitemap, robots, 메타데이터, JSON-LD, 프록시(도메인 분리)에서 공유
 //
-// ── 3분할 구조 ──
-// 루트(8282114.xyz)      = 급할때 생활안내 (도메인 브랜드: 빨리빨리+114)
-// quiz.8282114.xyz       = 상식왕 퀴즈
-// calc.8282114.xyz       = 모두의 계산기
+// ── 3분할 구조 (2026-07~09 에 쓰고 되돌린 구조 — 지금은 호스트 판정에만 남음) ──
+// 루트(8282114.xyz)      = 급할 때 생활안내 (도메인 브랜드: 빨리빨리+114)
+// quiz.8282114.xyz       = (종료) 2026-11-17 퀴즈 삭제, 410
+// calc.8282114.xyz       = 지금은 /calculators 경로
 //
 // env로 제어 (빌드 타임 상수 — 변경 시 재배포 필요):
 //   NEXT_PUBLIC_QUIZ_URL=https://quiz.8282114.xyz
@@ -51,18 +51,24 @@ export const SPLIT_ACTIVE = QUIZ_SPLIT || CALC_SPLIT || TOOLS_SPLIT;
 // 우리가 서빙하는 정식 호스트 — www·*.vercel.app 등 그 외 호스트는 루트로 이관
 export const KNOWN_HOSTS = new Set([ROOT_HOST, QUIZ_HOST, CALC_HOST, TOOLS_HOST]);
 
-// 브랜드명 — 바꾸면 OG·JSON-LD·manifest·푸터에 일괄 반영
+// ── 브랜드명 — 바꾸면 OG·JSON-LD·manifest·제목·공유 문구에 일괄 반영 ──
+//
+// 2026-11 애드센스 '가치 없음' 대응으로 이름을 8282114 하나로 통일했습니다.
+// 그전에는 섹션마다 다른 이름(상식왕 퀴즈·모두의 계산기·모두의 도구)을 썼고, 그 이름이
+// 제목·푸터·OPG·공유 문구에 남아 사이트가 한 서비스가 아니라 서너 개 서비스의 모음처럼
+// 읽혔습니다. 심사자는 사이트 전체를 보므로 이름부터 하나여야 합니다.
+// 퀴즈는 2026-11-17 삭제되어(410) 그 이름을 쓰는 페이지가 없습니다.
 export const INFO_SITE_NAME = "8282114 생활안내";
-export const SITE_NAME = "상식왕 퀴즈";
-// 통합 상태의 계산기는 루트 사이트의 일부입니다. 예전엔 SITE_NAME("상식왕 퀴즈")으로
-// 떨어져서 계산기 페이지의 og:site_name·빵부스러기가 퀴즈 사이트를 자칭했습니다.
-export const CALC_SITE_NAME = CALC_SPLIT ? "모두의 계산기" : INFO_SITE_NAME;
-export const TOOLS_SITE_NAME = TOOLS_SPLIT ? "모두의 도구" : INFO_SITE_NAME;
+/** 화면과 제목에서 사이트를 부르는 짧은 이름 */
+export const BRAND = "8282114";
+// 아래 셋은 분리 시절 이름 자리입니다. 분리를 되살려도 이름은 하나로 둡니다 —
+// 사이트가 하나의 브랜드로 읽히는 편이 색인·심사에 유리합니다.
+export const SITE_NAME = INFO_SITE_NAME;
+export const CALC_SITE_NAME = INFO_SITE_NAME;
+export const TOOLS_SITE_NAME = INFO_SITE_NAME;
 
-// 루트(/)를 가리키는 이름. 단일 도메인에서 "상식왕 퀴즈"는 사이트 이름이 아니라
-// 섹션 이름이라, 빵부스러기 1번 항목이 이걸 쓰면 이름은 '상식왕 퀴즈'인데 주소는
-// 8282114.xyz 또는 /calculators인 불일치가 생깁니다(구조화 데이터 검사에서 잡힙니다).
-export const ROOT_SITE_NAME = SPLIT_ACTIVE ? SITE_NAME : INFO_SITE_NAME;
+// 루트(/)를 가리키는 이름 — 빵부스러기 1번 항목이 주소(ROOT_URL)와 같은 이름을 쓰도록 합니다.
+export const ROOT_SITE_NAME = INFO_SITE_NAME;
 
 export const CONTACT_EMAIL = "developerjin0216@gmail.com";
 

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { tools } from "@/data/tools";
+import { everydayTools } from "@/data/tools";
 import { CALC_COUNT } from "@/data/calculators";
 import { helpTopics } from "@/data/help";
 import {
   TOOLS_URL,
   TOOLS_SPLIT,
-  TOOLS_SITE_NAME,
+  BRAND,
   ROOT_URL,
   ROOT_SITE_NAME,
 } from "@/lib/site";
@@ -27,8 +27,8 @@ const FAQ = [
     a: "가지 않습니다. 확인하고 싶다면 도구 페이지를 연 뒤 인터넷 연결을 끊고 파일을 올려보세요. 그대로 동작하면 서버와 주고받는 것이 없다는 뜻입니다. 브라우저 개발자 도구의 네트워크 탭을 열어둬도 파일이 올라가는 요청이 잡히지 않습니다.",
   },
   {
-    q: "인스타그램 비밀번호를 입력해야 하나요?",
-    a: "아닙니다. 계정 연동이나 로그인을 요구하는 도구는 하나도 없습니다. 인스타그램이 공식으로 제공하는 '내 정보 다운로드' 파일을 받아서 올리는 방식입니다. 비밀번호를 묻는 언팔 확인 서비스는 계정을 통째로 넘기는 것과 같으니 쓰지 마세요.",
+    q: "인터넷을 끊어도 쓸 수 있나요?",
+    a: "대부분 그렇습니다. 파일을 서버로 보내지 않고 브라우저 안에서 처리하기 때문입니다. 다만 첫 방문에는 페이지 자체를 받아와야 하고, 광고·통계 스크립트는 네트워크가 있어야 동작합니다.",
   },
   {
     q: "올린 파일이 나중에 남아 있나요?",
@@ -45,17 +45,17 @@ const FAQ = [
 ];
 
 export const metadata: Metadata = {
-  title: { absolute: "모두의 도구 - 로그인 없이 쓰는 무료 웹 도구" },
+  title: { absolute: `생활·서류 도구 - 로그인 없이 쓰는 무료 웹 도구 | ${BRAND}` },
   description:
-    "인스타그램·쓰레드 언팔 확인(맞팔 체크)부터 — 비밀번호 입력 없이, 파일이 서버로 전송되지 않는 안전한 무료 웹 도구 모음입니다.",
+    "사진 위치정보 확인·제거, 이미지 압축, PDF 합치기·나누기, 여권사진 규격, QR 생성까지 — 로그인 없이, 파일이 서버로 전송되지 않는 무료 생활·서류 도구 모음입니다.",
   alternates: { canonical: TOOLS_HOME },
   openGraph: {
-    title: "모두의 도구 - 로그인 없이 쓰는 무료 웹 도구",
+    title: `생활·서류 도구 - 로그인 없이 쓰는 무료 웹 도구 | ${BRAND}`,
     description:
-      "인스타 언팔 확인 등 개인정보 안전(브라우저 처리) 무료 도구 모음",
+      "사진·PDF·문서를 브라우저 안에서만 처리하는 무료 생활·서류 도구 모음",
     // TOOLS_URL 그대로 쓰면 og:url이 홈을 가리킵니다
     url: TOOLS_HOME,
-    siteName: TOOLS_SITE_NAME,
+    siteName: ROOT_SITE_NAME,
     locale: "ko_KR",
     type: "website",
   },
@@ -69,7 +69,7 @@ export default function ToolsHubPage() {
     "@graph": [
       {
         "@type": "CollectionPage",
-        name: TOOLS_SITE_NAME,
+        name: "생활·서류 도구",
         url: TOOLS_HOME,
         description:
           "로그인 없이 브라우저에서만 동작하는 무료 웹 도구 모음. 파일이 서버로 전송되지 않습니다.",
@@ -78,7 +78,7 @@ export default function ToolsHubPage() {
       {
         "@type": "ItemList",
         name: "도구 목록",
-        itemListElement: tools.map((t, i) => ({
+        itemListElement: everydayTools.map((t, i) => ({
           "@type": "ListItem",
           position: i + 1,
           name: t.name,
@@ -104,7 +104,7 @@ export default function ToolsHubPage() {
   };
 
   return (
-    <div className="max-w-lg mx-auto w-full">
+    <div className="page-shell">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -113,16 +113,17 @@ export default function ToolsHubPage() {
       />
 
       <header className="bg-header px-5 py-8 text-center">
-        <h1 className="text-3xl font-bold text-accent">🧰 {TOOLS_SITE_NAME}</h1>
+        <h1 className="text-3xl font-bold text-accent">🧰 생활·서류 도구</h1>
         <p className="text-sm text-[#a0a0b0] mt-2">
           로그인 없이 · 파일 전송 없이 · 브라우저에서만 동작하는 무료 도구
         </p>
       </header>
 
       <div className="px-5 py-5 space-y-5">
-        {/* 도구 목록 */}
-        <div className="space-y-3">
-          {tools.map((tool) => (
+        {/* 도구 목록 — 생활·서류 도구만. SNS·대화 분석 4종은 주소로는 열리지만
+            이 목록에 넣지 않습니다(2026-11-18). */}
+        <div className="card-grid">
+          {everydayTools.map((tool) => (
             <Link
               key={tool.id}
               href={`/tools/${tool.id}`}
@@ -136,22 +137,6 @@ export default function ToolsHubPage() {
           ))}
         </div>
 
-        {/* 2026-11: AI 프롬프트 카드를 뺐습니다. "내부 링크가 홈 하나뿐이면
-            크롤러가 중요하게 보지 않는다"고 달아둔 카드인데, /prompts 는 이제
-            색인 대상이 아니라 그 목적 자체가 사라졌습니다. 이 자리는 이 허브가
-            실제로 밀어야 하는 색인 도구로 바꿉니다. */}
-        <Link
-          href="/tools/insta-follow-check"
-          className="flex items-center justify-between rounded-xl px-4 py-3 mb-3 bg-card border border-[#2a3a5a] hover:border-[#E1306C] transition-colors"
-        >
-          <span className="text-sm text-[#a0a0b0]">
-            <span aria-hidden="true">🔍</span>{" "}
-            <span className="font-semibold text-[#e8e8f0]">인스타 언팔 확인</span>
-            {" — "}비밀번호 없이, 공식 내보내기 파일로 맞팔·언팔 체크
-          </span>
-          <span className="text-[#E1306C] text-sm shrink-0 ml-2">→</span>
-        </Link>
-
         <AdBanner slot="XXXXXXXXXX" format="auto" />
 
         <CoupangGoldbox placement="tools" />
@@ -161,12 +146,12 @@ export default function ToolsHubPage() {
         {/* SEO 소개 */}
         <section className="bg-card rounded-2xl p-5">
           <h2 className="text-base font-bold text-accent mb-3">
-            {TOOLS_SITE_NAME}는 이렇게 다릅니다
+            생활·서류 도구는 이렇게 다릅니다
           </h2>
           <ul className="text-sm text-[#a0a0b0] leading-relaxed space-y-2 break-keep">
             <li>
-              • <strong className="text-[#e8e8f0]">비밀번호를 묻지 않습니다</strong> —
-              계정 연동·로그인 없이 공식 내보내기 파일만으로 동작합니다.
+              • <strong className="text-[#e8e8f0]">로그인을 요구하지 않습니다</strong> —
+              회원가입도 계정 연동도 없고, 비밀번호·인증번호를 받지 않습니다.
             </li>
             <li>
               • <strong className="text-[#e8e8f0]">파일이 서버로 가지 않습니다</strong> —
@@ -218,11 +203,11 @@ export default function ToolsHubPage() {
               연결을 끊어도 대부분 그대로 동작하는 이유가 그것입니다.
             </p>
             <p>
-              카톡 대화 내보내기 파일에는 대화 상대의 이름과 나눈 말이 전부 들어
-              있습니다. 인스타 내보내기에는 팔로워 목록이 들어 있고, 사진에는 찍은
-              위치가 좌표로 박혀 있는 경우가 많습니다. 이런 파일을 분석해 주겠다며
-              서버로 받아가는 서비스는, 받아간 다음 무엇을 하는지 이용자가 확인할
-              방법이 없습니다.
+              사진에는 찍은 위치가 좌표로 박혀 있는 경우가 많고, PDF에는 주민등록
+              번호가 적힌 서류가 들어 있습니다. 여권사진을 자르는 일, 서류 PDF를
+              합치는 일은 모두 그런 파일을 다루는 일입니다. 이런 파일을 처리해
+              주겠다며 서버로 받아가는 서비스는, 받아간 뒤 무엇을 하는지 이용자가
+              확인할 방법이 없습니다.
             </p>
             <p>
               서버로 보내지 않으면 보관 정책이나 삭제 약속을 믿어야 할 이유 자체가

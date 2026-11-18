@@ -27,8 +27,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
     default: "8282114 - 급할 때 바로 찾는 생활 긴급 안내",
-    // 루트 이름을 씁니다. SITE_NAME("상식왕 퀴즈")은 섹션 이름이라 전 페이지 제목이
-    // 퀴즈 사이트를 자칭하게 됩니다.
+    // 사이트 이름은 8282114 하나입니다(2026-11-18 브랜드 통일). 섹션 이름을 따로 두지 않으므로
+    // 제목 접미사와 og:site_name 이 서로 다른 사이트를 자칭하는 일이 없습니다.
     template: `%s | ${ROOT_SITE_NAME}`,
   },
   description:
@@ -62,11 +62,12 @@ export const metadata: Metadata = {
   },
 };
 
+// 확대 금지(maximumScale/userScalable)를 뺐습니다 — WCAG 1.4.4 위반이고,
+// 작은 글씨를 읽어야 하는 안내 사이트에서 확대를 막을 이유가 없습니다.
+// 애드센스 심사도 접근성 문제를 감점 요소로 봅니다.
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   themeColor: "#1a1a2e",
 };
 
