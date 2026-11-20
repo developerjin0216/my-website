@@ -1,6 +1,8 @@
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 import CoupangBanner from "@/components/CoupangBanner";
+import RelatedCards, { helpItems } from "@/components/RelatedCards";
+import { helpIdsForCalc } from "@/lib/crossLinks";
 import { getCalc } from "@/data/calculators";
 import {
   CALC_URL,
@@ -27,6 +29,8 @@ export default function CalcShell({
   const reviewed = calcReviewedDate(id);
   const sources = CALC_SOURCES[id] ?? [];
   const relatedGuides = guides.filter((g) => g.relatedCalcs.includes(id));
+  // 이 계산기가 나오는 상황의 대처법 — lib/crossLinks.ts 의 역방향 표
+  const relatedHelpItems = helpItems(helpIdsForCalc(id));
 
   // 도메인 분리 시: 계산기 허브가 사이트 홈 역할 (2단계 경로)
   const breadcrumb = SPLIT
@@ -70,6 +74,21 @@ export default function CalcShell({
         "@type": "BreadcrumbList",
         itemListElement: breadcrumb,
       },
+      // 화면에 보이는 FAQ 와 1:1 로 같은 내용을 구조화 데이터로도 냅니다
+      // (도움말 페이지와 같은 원칙, 2026-11-20). 계산기 21개 중 20개가
+      // 화면에는 FAQ 를 갖고 있는데 기계가 읽을 수 있는 형태로는 내지 않고 있었습니다.
+      ...(calc.faq.length > 0
+        ? [
+            {
+              "@type": "FAQPage",
+              mainEntity: calc.faq.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            },
+          ]
+        : []),
     ],
   };
 
@@ -243,9 +262,13 @@ export default function CalcShell({
         </section>
       )}
 
-      <div className="px-5 pb-6">
-        <AdBanner slot="XXXXXXXXXX" format="horizontal" />
-      </div>
+      {/* 관련 대처법 — 계산기에서 /help 로 가는 길이 없었습니다(2026-11-20).
+          돈이 걸린 계산기를 쓰는 사람은 대개 그 상황을 이미 겪고 있습니다. */}
+      <RelatedCards
+        title="이 계산기가 나오는 상황"
+        lead="같은 상황에서 지금 해야 할 일을 정리한 글입니다."
+        items={relatedHelpItems}
+      />
 
       {/* 공식 출처 — 계산 근거를 밝히는 신뢰 신호 (help 페이지와 같은 원칙) */}
       {sources.length > 0 && (
@@ -275,6 +298,10 @@ export default function CalcShell({
           </div>
         </section>
       )}
+
+      <div className="px-5 pb-6">
+        <AdBanner slot="XXXXXXXXXX" format="horizontal" />
+      </div>
 
       <footer className="px-5 py-4 text-center border-t border-[#2a3a5a]">
         <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-2">

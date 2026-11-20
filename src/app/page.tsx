@@ -165,7 +165,7 @@ export default function InfoHome() {
               href={`/guides/${g.id}`}
               className="block bg-card rounded-2xl p-4 border border-[#2a3a5a] hover:border-accent transition-colors"
             >
-              <p className="text-[11px] text-[#707080]">최종 확인 {g.date}</p>
+              <p className="text-[11px] text-[#707080]">최근 수정 {g.updated}</p>
               <p className="font-semibold text-sm mt-1">
                 <span aria-hidden="true">{g.icon}</span> {g.title}
               </p>

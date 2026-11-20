@@ -4,6 +4,8 @@ import AdBanner from "@/components/AdBanner";
 import CoupangGoldbox from "@/components/CoupangGoldbox";
 import CoupangProducts from "@/components/CoupangProducts";
 import { Sec, secSlug } from "@/components/guides/GuideShell";
+import RelatedCards, { calcItems, guideItems } from "@/components/RelatedCards";
+import { linksForHelp } from "@/lib/crossLinks";
 import { getHelp } from "@/data/help";
 import { CASES_CHECKED } from "@/data/helpCases";
 import { helpGear, NO_SHOPPING, OWN_SHOPPING } from "@/data/helpGear";
@@ -23,6 +25,10 @@ export default function HelpShell({
   const url = `${ROOT_URL}/help/${id}`;
   const cases = casesFor(id);
   const gear = helpGear[id];
+  // 이 상황에서 금액을 확인하는 계산기와 배경 제도 글 (lib/crossLinks.ts).
+  // 짝이 정해진 글만 링크가 붙고, 나머지는 이 블록 자체가 나오지 않습니다.
+  const crossed = linksForHelp(id);
+  const toolItems = [...calcItems(crossed.calc), ...guideItems(crossed.guide)];
 
   // 본문의 Sec 제목을 모아 목차를 만듭니다. 클라이언트에서 DOM 을 훑지 않는 이유:
   // 이 목차의 목적 절반이 크롤러에게 하위 주제를 보여주는 것이라 서버 HTML 에
@@ -278,6 +284,14 @@ export default function HelpShell({
           })}
         </div>
       </section>
+
+      {/* 같은 상황의 계산기·가이드 — /help 안에서만 맴돌던 링크를 넓힙니다.
+          급한 일을 겪은 사람의 다음 질문은 대개 "그래서 얼마인가"입니다. */}
+      <RelatedCards
+        title="이 상황에서 금액을 확인하려면"
+        lead="같은 상황에서 쓰는 계산기와, 그 숫자가 어떻게 정해지는지 설명한 글입니다."
+        items={toolItems}
+      />
 
       {/* 광고·제휴는 콘텐츠가 끝난 뒤에 — 애드센스 심사 대비 배치.
           쇼핑 블록은 페이지당 하나: 상황에 맞는 물건이 정해진 주제는 그 상품만(data/helpGear.ts),
