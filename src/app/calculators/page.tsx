@@ -3,6 +3,7 @@ import AdBanner from "@/components/AdBanner";
 import CoupangGoldbox from "@/components/CoupangGoldbox";
 import { calculators, calcGroups, CALC_COUNT } from "@/data/calculators";
 import { guides } from "@/data/guides";
+import { RATE_BASED } from "@/lib/trust";
 import { CALC_URL, SPLIT, CALC_SITE_NAME, BRAND } from "@/lib/site";
 
 // 서버 컴포넌트 — 계산기 허브. 크롤러가 읽을 수 있는 정적 콘텐츠 포함
@@ -96,6 +97,39 @@ export default function CalculatorsPage() {
             </div>
           </section>
         ))}
+
+        {/* 요율 기준일 — 이 허브에서 "내 숫자가 최신인가"에 답하는 표.
+            계산기 페이지마다 따로 보여주던 기준일을 한자리에 모았습니다.
+            금액이 법령·고시로 정해지는 계산기만 올라옵니다(환율·BMI 등 제외). */}
+        <section className="mb-6">
+          <h2 className="text-lg font-bold mb-3">고시 요율을 쓰는 계산기</h2>
+          <p className="text-xs text-[#a0a0b0] leading-relaxed mb-3 break-keep">
+            아래 계산기는 결과가 공식 요율·금액에 따라 달라지므로, 페이지마다
+            마지막으로 공식 자료와 대조한 날짜를 적어 둡니다. 요율이 개정되면
+            계산식과 설명글을 같은 자료를 보고 함께 고칩니다.
+          </p>
+          <ul className="bg-card rounded-2xl divide-y divide-[#2a3a5a]">
+            {Object.entries(RATE_BASED).map(([id, asOf]) => {
+              const c = calculators.find((x) => x.id === id);
+              if (!c) return null;
+              return (
+                <li key={id}>
+                  <Link
+                    href={`/calculators/${id}`}
+                    className="flex items-baseline justify-between gap-3 px-4 py-2.5 hover:bg-[#16213e] transition-colors"
+                  >
+                    <span className="text-sm text-[#c0c8d8]">
+                      <span aria-hidden="true">{c.icon}</span> {c.name}
+                    </span>
+                    <time dateTime={asOf} className="text-[11px] text-[#707080] shrink-0">
+                      {asOf}
+                    </time>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
 
         {/* 생활 가이드 — 정보성 콘텐츠 */}
         <section className="mb-6">

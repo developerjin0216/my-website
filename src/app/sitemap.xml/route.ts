@@ -5,6 +5,7 @@ import { helpTopics } from "@/data/help";
 import { tools } from "@/data/tools";
 import { enGuides } from "@/data/guidesEn";
 import { isIndexableUrl } from "@/lib/indexPolicy";
+import { REVIEWED, calcReviewedDate } from "@/lib/trust";
 import { HIGHWAYS, SNAPSHOT_DATE } from "@/data/cctvHighways";
 import {
   ROOT_URL,
@@ -26,6 +27,16 @@ import {
 
 const OMOK_LAUNCH = "2026-09-15"; // 1:1 온라인 오목 공개일
 
+/** 가이드 허브의 lastmod — 가장 최근에 손본 글의 수정일 */
+function latestGuideDate(): string {
+  return guides.map((g) => g.updated).sort().at(-1) ?? REVIEWED.calculators;
+}
+
+/** 영문 가이드 허브의 lastmod — 개별 글 date 의 최대값 */
+function latestEnDate(): string {
+  return enGuides.map((g) => g.date).sort().at(-1) ?? REVIEWED.help;
+}
+
 // 섹션 홈. 서브도메인 시절에는 그 호스트의 루트가 곧 섹션 홈이었지만,
 // 단일 도메인으로 합친 뒤에는 경로가 따로 생겼습니다(proxy.ts의 LEGACY_HOME과 같은 쌍).
 // 이걸 갱신하지 않아 /tools와 /quiz-home 두 허브가 사이트맵에서 빠져 있었습니다 —
@@ -41,8 +52,10 @@ interface Entry {
 
 function rootEntries(): Entry[] {
   return [
-    { url: ROOT_URL, changefreq: "weekly", priority: 1 },
-    { url: `${ROOT_URL}/help`, changefreq: "weekly", priority: 0.9 },
+    // 홈·허브도 lastmod 를 갖습니다 — "이 사이트가 언제 바뀌었나"를 구글이
+    // 사이트맵만 보고 알 수 있게. 값은 그 섹션 데이터의 마지막 갱신일입니다.
+    { url: ROOT_URL, lastmod: REVIEWED.help, changefreq: "weekly", priority: 1 },
+    { url: `${ROOT_URL}/help`, lastmod: REVIEWED.help, changefreq: "weekly", priority: 0.9 },
     ...helpTopics.map((t) => ({
       url: `${ROOT_URL}/help/${t.id}`,
       lastmod: t.date,
@@ -50,17 +63,17 @@ function rootEntries(): Entry[] {
       priority: 0.8,
     })),
     // 외국인용 영문 가이드
-    { url: `${ROOT_URL}/en`, changefreq: "weekly", priority: 0.8 },
+    { url: `${ROOT_URL}/en`, lastmod: latestEnDate(), changefreq: "weekly", priority: 0.8 },
     ...enGuides.map((g) => ({
       url: `${ROOT_URL}/en/${g.id}`,
       lastmod: g.date,
       changefreq: "monthly" as const,
       priority: 0.7,
     })),
-    { url: `${ROOT_URL}/about`, changefreq: "yearly", priority: 0.4 },
-    { url: `${ROOT_URL}/contact`, changefreq: "yearly", priority: 0.4 },
-    { url: `${ROOT_URL}/privacy`, changefreq: "yearly", priority: 0.3 },
-    { url: `${ROOT_URL}/terms`, changefreq: "yearly", priority: 0.3 },
+    { url: `${ROOT_URL}/about`, lastmod: REVIEWED.trustPages, changefreq: "yearly", priority: 0.4 },
+    { url: `${ROOT_URL}/contact`, lastmod: REVIEWED.trustPages, changefreq: "yearly", priority: 0.4 },
+    { url: `${ROOT_URL}/privacy`, lastmod: REVIEWED.trustPages, changefreq: "yearly", priority: 0.3 },
+    { url: `${ROOT_URL}/terms`, lastmod: REVIEWED.trustPages, changefreq: "yearly", priority: 0.3 },
   ];
 }
 
@@ -74,16 +87,20 @@ function quizEntries(): Entry[] {
 
 function calcEntries(): Entry[] {
   return [
-    { url: `${CALC_URL}/calculators`, changefreq: "weekly", priority: 1 },
+    { url: `${CALC_URL}/calculators`, lastmod: REVIEWED.calculators, changefreq: "weekly", priority: 1 },
     ...calculators.map((c) => ({
       url: `${CALC_URL}/calculators/${c.id}`,
+      // 2026-11-20 까지 계산기 URL 에는 lastmod 가 아예 없었습니다. 사이트맵에서
+      // 날짜가 빠지면 구글은 크롤 주기를 추측으로 정합니다. 값은 그 계산기의
+      // 요율·내용을 마지막으로 대조한 날입니다(rate 기반이면 그 요율 파일의 날짜).
+      lastmod: calcReviewedDate(c.id),
       changefreq: "monthly" as const,
       priority: 0.8,
     })),
-    { url: `${CALC_URL}/guides`, changefreq: "monthly", priority: 0.6 },
+    { url: `${CALC_URL}/guides`, lastmod: latestGuideDate(), changefreq: "monthly", priority: 0.6 },
     ...guides.map((g) => ({
       url: `${CALC_URL}/guides/${g.id}`,
-      lastmod: g.date,
+      lastmod: g.updated,
       changefreq: "monthly" as const,
       priority: 0.7,
     })),
@@ -95,6 +112,9 @@ function toolsEntries(): Entry[] {
     { url: TOOLS_HOME, changefreq: "weekly", priority: 1 },
     ...tools.map((t) => ({
       url: `${TOOLS_URL}/tools/${t.id}`,
+      // 색인되는 것은 /tools/cctv 뿐이라 나머지는 필터에서 빠집니다(그래도 값을 답니다).
+      // CCTV 허브는 지점 스냅샷을 다시 받은 날이 곧 내용이 바뀠 날입니다.
+      lastmod: t.id === "cctv" ? SNAPSHOT_DATE : REVIEWED.tools,
       changefreq: "monthly" as const,
       priority: 0.9,
     })),

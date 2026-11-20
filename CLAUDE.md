@@ -323,6 +323,20 @@ invented experience is exactly what Google and AdSense penalise. Instead, 14 hel
 hardcoded in 10 places across 6 files while the real count was 20, and `/about` advertised 18 help
 articles when there were 27. Any "N종 / N편" string must interpolate.
 
+### Sections link to each other (`src/lib/crossLinks.ts`)
+
+Until 2026-11-20 the link graph was one-way and answered inside its own section: `guides →
+calculators` (from `relatedCalcs`), `calculators → guides` (the reverse lookup added 2026-11-18),
+and `help → help` only. A reader who finished `/help/unpaid-wages` had no route to the severance
+calculator or the severance guide; a calculator user had no route to the 대처법 for that situation.
+
+`lib/crossLinks.ts` now holds **one** table of topic pairs keyed on a help id, and
+`components/RelatedCards.tsx` renders it. Both directions are derived there — never add a second
+list on the calculator or guide side. Missing ids throw at module load, so a renamed page fails the
+build. Only four help topics have honest pairs (unpaid-wages, utility-outage, jeonse-check,
+moving-checklist); consumer-refund, lost-item and report pages have no calculator twin and
+correctly show nothing. **Don't invent a link to fill the block.**
+
 ### Category documents, not per-item pages
 
 Meme terms (95) once had one page each at ~540 chars; **none were indexed**. They were consolidated
@@ -360,8 +374,15 @@ attached to the Organization, the Article author and the `/about` founder. `VERI
 is the single sentence behind `/about`'s "검증 절차" section (1350·1332·국세청 대조, 법률·의료·세무
 자문 아님); change it there, not in the page.
 
-**Dates are never invented** — `REVIEWED` holds the real last-changed date of each data file.
-Update it whenever rates change.
+**Dates are never invented** — `REVIEWED` holds the real last-changed date of each data file, and
+for `salaryRates`/`electricityRates` the date the figures were last compared against the official
+page (a re-check that changes nothing still moves it, with what was checked and what was not
+written in the comment). Guides carry their own three dates in `data/guides.ts`: `date` (published →
+`datePublished`), `updated` (last edit → `dateModified`, shown as "본문 최종 수정"), and `rateAsOf`
+(the rate figure's date, from `REVIEWED`). The old single label "최종 확인·업데이트" printed a
+July publication date over content edited in November. `REVIEWED` feeds the sitemap `lastmod`,
+the RSS item dates and every "최종 점검" line, so updating it is how a stale-looking page becomes
+current — never edit the rendered string instead.
 
 ### Rates and official figures
 

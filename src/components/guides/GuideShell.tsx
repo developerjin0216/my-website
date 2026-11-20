@@ -1,6 +1,9 @@
 import { Children, isValidElement } from "react";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
+import RelatedCards, { helpItems } from "@/components/RelatedCards";
+import { helpIdsForGuide } from "@/lib/crossLinks";
+import { authorship } from "@/lib/trust";
 import { getGuide } from "@/data/guides";
 import { getCalc } from "@/data/calculators";
 import {
@@ -117,6 +120,8 @@ export default function GuideShell({
   // /guides/pension-reform 아래에 "고용노동부 — 퇴직금 제도"가 뜨고, 반대로 퇴직금 글에는
   // 국민연금공단이 붙었습니다. 지금은 guides.ts 의 sources 만 렌더합니다.
   const guideSources = guide.sources;
+  // 이 제도가 걸린 상황의 대처법 — lib/crossLinks.ts 의 역방향 표
+  const relatedHelpItems = helpItems(helpIdsForGuide(id));
 
   // 본문 Sec 제목으로 목차 — HelpShell 과 같은 이유입니다(하위 주제에 주소 주기).
   const sections = Children.toArray(children)
@@ -138,11 +143,11 @@ export default function GuideShell({
         description: guide.description,
         url,
         datePublished: guide.date,
-        dateModified: guide.date,
-        inLanguage: "ko",
-        author: { "@type": "Organization", name: CALC_SITE_NAME },
-        publisher: { "@type": "Organization", name: CALC_SITE_NAME },
         mainEntityOfPage: url,
+        // 저작·검증 정보(sameAs, publishingPrinciples, dateModified)는 계산기와 같이
+        // lib/trust.ts 의 authorship 하나에서 가져옵니다. 2026-11-20 전까지 가이드만
+        // 조직 이름만 있고 사이트 밖에서 운영자를 확인할 경로(sameAs)가 없었습니다.
+        ...authorship(guide.updated),
       },
       {
         "@type": "BreadcrumbList",
@@ -203,7 +208,8 @@ export default function GuideShell({
         </h1>
         <p className="text-sm text-[#a0a0b0] mt-1">{guide.description}</p>
         <p className="text-[11px] text-[#707080] mt-2">
-          최종 확인·업데이트 {guide.date}
+          발행 {guide.date} · 본문 최종 수정 {guide.updated}
+          {guide.rateAsOf && <> · 요율 기준 {guide.rateAsOf}</>}
         </p>
       </header>
 
@@ -277,6 +283,13 @@ export default function GuideShell({
           })}
         </div>
       </section>
+
+      {/* 같은 제도의 상황별 대처법 — 가이드에서 /help 로 가는 길이 없었습니다(2026-11-20). */}
+      <RelatedCards
+        title="이 제도가 걸린 상황이라면"
+        lead="지금 벌어진 일이라면 대처 순서가 따로 있습니다."
+        items={relatedHelpItems}
+      />
 
       <div className="px-5 pb-6">
         <AdBanner slot="XXXXXXXXXX" format="horizontal" />

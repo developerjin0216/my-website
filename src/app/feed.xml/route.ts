@@ -145,7 +145,7 @@ export function GET(request: NextRequest) {
           title: g.title,
           link: `${ROOT_URL}/guides/${g.id}`,
           description: g.description,
-          date: g.date,
+          date: g.updated,
         })),
         // /en — 영어 가이드도 색인 대상입니다. 2026-11-05 까지 피드에 없었습니다.
         ...enGuides.map((g) => ({
@@ -176,7 +176,7 @@ export function GET(request: NextRequest) {
           title: g.title,
           link: `${CALC_URL}/guides/${g.id}`,
           description: g.description,
-          date: g.date,
+          date: g.updated,
         }))
         .sort((a, b) => (a.date! < b.date! ? 1 : -1))
     );

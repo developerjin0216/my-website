@@ -3,6 +3,7 @@
 
 import type { Metadata } from "next";
 import { CALC_URL, CALC_SITE_NAME } from "@/lib/site";
+import { REVIEWED } from "@/lib/trust";
 
 export interface GuideInfo {
   id: string;
@@ -10,7 +11,22 @@ export interface GuideInfo {
   metaTitle: string;
   description: string;
   icon: string;
-  date: string; // 최초 발행일 (Article JSON-LD)
+  /** 처음 발행한 날 — Article JSON-LD 의 datePublished */
+  date: string;
+  /** 본문(페이지·출처 블록·설명)을 마지막으로 손본 날 — dateModified.
+   *
+   * 화면에는 "발행 {date} · 본문 최종 수정 {updated}" 로 같이 나옵니다.
+   * 2026-11-20 전에는 발행일 하나를 "최종 확인·업데이트"로 표시했습니다. 발행일은
+   * 7월인데 그 뒤 본문을 두 번 고쳤으므로, 그 표시는 사실과 달랐습니다(7월 이후
+   * 손대지 않은 사이트처럼 보이기도 했습니다). 날짜를 앞당겨 지어내지 않고, 실제로
+   * 바꾼 날을 따로 적습니다. 값은 git log -1 --format=%ad --date=short --
+   * <해당 데이터·페이지 경로> 로 확인합니다. */
+  updated: string;
+  /** 글이 인용한 요율·수치의 기준일 — 요율 기반 글만 있습니다(trust.ts 의 REVIEWED).
+   *
+   * 발행일·수정일과 다른 숫자입니다: 이 글의 4대보험 요율은 2026년 고시 기준이고,
+   * 그 값을 마지막으로 대조한 날이 여기에 들어갑니다. */
+  rateAsOf?: string;
   keywords: string[];
   relatedCalcs: string[]; // 관련 계산기 id
   /** 이 글의 실제 근거 기관 — 글마다 다릅니다(GuideShell 의 '공식 출처' 블록).
@@ -30,6 +46,8 @@ export const guides: GuideInfo[] = [
       "국민연금 4.75%, 건강보험 3.595%, 장기요양, 고용보험 0.9%까지 — 내 월급에서 빠지는 2026년 4대보험 요율과 회사 부담분, 상한·하한 기준을 표로 정리했습니다.",
     icon: "📋",
     date: "2026-07-28",
+    updated: "2026-11-18",
+    rateAsOf: REVIEWED.salaryRates,
     keywords: ["4대보험 요율", "국민연금 요율", "건강보험 요율", "고용보험 요율", "4대보험 계산"],
     relatedCalcs: ["salary", "severance"],
     sources: [
@@ -46,6 +64,8 @@ export const guides: GuideInfo[] = [
       "주택용 전기요금 누진제 3단계 구간과 단가, 여름철 완화 구간, 슈퍼유저 요금까지 — 누진제 원리와 전기세 절약 방법을 알기 쉽게 정리했습니다.",
     icon: "💡",
     date: "2026-07-28",
+    updated: "2026-11-18",
+    rateAsOf: REVIEWED.electricityRates,
     keywords: ["전기요금 누진제", "누진세 구간", "전기세 절약", "주택용 전기요금", "하계 누진구간"],
     relatedCalcs: ["electricity", "aircon"],
     sources: [{ name: "한국전력공사 — 전기요금표", url: "https://cyber.kepco.co.kr" }],
@@ -58,6 +78,8 @@ export const guides: GuideInfo[] = [
       "2027년 최저임금 시급 10,700원(3.7% 인상) 확정 — 월급 환산 2,236,300원, 주휴수당 포함 실질 시급, 연도별 인상 추이, 수습 감액까지 한 번에 정리했습니다.",
     icon: "💵",
     date: "2026-07-29",
+    updated: "2026-11-18",
+    rateAsOf: REVIEWED.calculators,
     keywords: ["2027 최저임금", "최저임금 10700", "2027 최저시급 월급", "최저임금 인상률", "주휴수당"],
     relatedCalcs: ["minimum-wage", "salary", "annual-leave"],
     sources: [
@@ -73,6 +95,8 @@ export const guides: GuideInfo[] = [
       "실업급여(구직급여) 받는 조건, 신청 절차, 지급액과 기간을 정리했습니다. 2026년 상한 68,100원 인상, 반복수급 감액 등 바뀐 제도까지 확인하세요.",
     icon: "🗂️",
     date: "2026-07-29",
+    updated: "2026-11-18",
+    rateAsOf: REVIEWED.calculators,
     keywords: ["실업급여 조건", "실업급여 신청방법", "구직급여", "실업급여 상한액", "자발적 퇴사 실업급여"],
     relatedCalcs: ["unemployment", "severance", "annual-leave"],
     sources: [
@@ -88,6 +112,7 @@ export const guides: GuideInfo[] = [
       "국민연금 보험료율이 2026년부터 매년 0.5%p씩 올라 2033년 13%가 됩니다. 연도별 인상 일정, 내 월급 기준 추가 부담액, 소득대체율 43% 변화를 정리했습니다.",
     icon: "🏛️",
     date: "2026-07-29",
+    updated: "2026-11-18",
     keywords: ["연금개혁", "국민연금 보험료 인상", "국민연금 요율", "소득대체율 43", "국민연금 개혁 내용"],
     relatedCalcs: ["salary", "severance"],
     sources: [
@@ -103,6 +128,8 @@ export const guides: GuideInfo[] = [
       "퇴직금 받을 수 있는 조건(1년·주15시간), 평균임금 계산법, 14일 지급기한과 지연이자, IRP 지급 의무, 퇴직소득세까지 한 번에 정리했습니다.",
     icon: "📑",
     date: "2026-07-28",
+    updated: "2026-11-18",
+    rateAsOf: REVIEWED.salaryRates,
     keywords: ["퇴직금 지급기준", "퇴직금 계산방법", "퇴직금 지급기한", "퇴직소득세", "퇴직금 IRP"],
     relatedCalcs: ["severance", "annual-leave", "salary"],
     sources: [{ name: "고용노동부 — 퇴직금 제도", url: "https://www.moel.go.kr" }],

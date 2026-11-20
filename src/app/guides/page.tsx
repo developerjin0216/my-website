@@ -111,6 +111,10 @@ export default function GuidesPage() {
                 <p className="text-sm text-[#a0a0b0] mt-1.5 leading-relaxed">
                   {g.description}
                 </p>
+                <p className="text-[11px] text-[#606070] mt-2">
+                  최근 수정 {g.updated}
+                  {g.rateAsOf && <> · 요율 기준 {g.rateAsOf}</>}
+                </p>
               </Link>
               {calcs.length > 0 && (
                 <p className="mt-3 pt-3 border-t border-[#2a3a5a] text-xs text-[#606070]">
