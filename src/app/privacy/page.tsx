@@ -36,8 +36,8 @@ export default function PrivacyPage() {
               구성되며, 운영자는 한 명입니다.
             </p>
             <p className="mt-2 text-[#a0a0b0]">
-              예전에 쓰던 주소(calc.·tools.·quiz.8282114.xyz, sangsikwang.vercel.app,
-              moducalc.vercel.app)는 2026년 9~11월에 모두 8282114.xyz로 옮겼고, 지금은
+              예전에 쓰던 하위 주소와 Vercel 기본 주소는 2026년 9~11월에 모두
+              8282114.xyz로 옮겼고, 지금은
               해당 주소로 접속하면 같은 페이지로 자동 연결됩니다.
             </p>
           </section>

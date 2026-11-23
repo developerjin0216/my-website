@@ -90,6 +90,10 @@ split four ways had each part starting trust from zero (index count stayed at 0 
   *referring pages* for apex URLs in URL inspection. That is stale crawl memory, not something we emit:
   sitemap, feed, robots and all sitemap pages were checked on 2026-11-12 and carry only the apex.
   301 (not 308) on this branch because Search Console's 주소 변경 tool documents only 301.
+  To verify an old host for that tool, drop Google's HTML verification file into `public/`: the proxy
+  matcher skips any path with a dot, so `moducalc.vercel.app/google….html` is served with 200 while every
+  page still 301s (checked 2026-11-23 with `ads.txt`). No code change is needed. Never serve a
+  verification file for an arbitrary token — anyone could then claim the site in Search Console.
 - **Keep the subdomains attached to the Vercel project** — detaching them kills the redirects.
 - Re-splitting means restoring the env reads in `site.ts`; canonical/OG/sitemap/RSS/proxy all key
   off those constants and follow automatically. The `SPLIT_ACTIVE` branches left in
