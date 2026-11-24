@@ -94,6 +94,9 @@ split four ways had each part starting trust from zero (index count stayed at 0 
   matcher skips any path with a dot, so `moducalc.vercel.app/google….html` is served with 200 while every
   page still 301s (checked 2026-11-23 with `ads.txt`). No code change is needed. Never serve a
   verification file for an arbitrary token — anyone could then claim the site in Search Console.
+  The file actually used is `public/googlef2006df50d550b19.html` (Search Console property
+  `https://moducalc.vercel.app/`, added 2026-11-24, 주소 변경 requested the same day). **Never delete
+  it**: Search Console re-checks the file and drops the old property's verification without it.
 - **Keep the subdomains attached to the Vercel project** — detaching them kills the redirects.
 - Re-splitting means restoring the env reads in `site.ts`; canonical/OG/sitemap/RSS/proxy all key
   off those constants and follow automatically. The `SPLIT_ACTIVE` branches left in
