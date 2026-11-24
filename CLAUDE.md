@@ -97,6 +97,10 @@ split four ways had each part starting trust from zero (index count stayed at 0 
   The file actually used is `public/googlef2006df50d550b19.html` (Search Console property
   `https://moducalc.vercel.app/`, added 2026-11-24, 주소 변경 requested the same day). **Never delete
   it**: Search Console re-checks the file and drops the old property's verification without it.
+  The same file serves on every `*.vercel.app` host of the project, so it also owns the
+  `https://sangsikwang.vercel.app/` property (added 2026-11-24 and auto-confirmed as "HTML 파일",
+  주소 변경 to `8282114.xyz` requested the same day). One file, two old properties — deleting it
+  breaks both.
 - **Keep the subdomains attached to the Vercel project** — detaching them kills the redirects.
 - Re-splitting means restoring the env reads in `site.ts`; canonical/OG/sitemap/RSS/proxy all key
   off those constants and follow automatically. The `SPLIT_ACTIVE` branches left in
